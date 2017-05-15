@@ -1,0 +1,75 @@
+<Workspace Version="1.2.0.2514" X="94.6041153966303" Y="-4.3962725535219" zoom="0.878940113562795" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="False">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.DSModelElementsSelection guid="f8724d8d-89a2-4147-b4d5-5e1f3e025d2f" type="Dynamo.Nodes.DSModelElementsSelection" nickname="Select Model Elements" x="-52.2217869764133" y="196.648252838515" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="6c4fb897-0f68-4625-a33f-63ad6718c6a0" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="63.4734952640686" y="374.413201825366" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="0;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="303a3d34-b9fd-4e67-a042-30428a6002a6" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="57.9885686237442" y="512" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="1;" ShouldFocus="false" />
+    <PythonNodeModels.PythonNode guid="690e08c3-558d-490d-86c0-c0b5e4a57c5a" type="PythonNodeModels.PythonNode" nickname="Python Script" x="361.232657774706" y="246.890838008998" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="2">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <Script>#Put view on sheet
+import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+import clr
+clr.AddReference('ProtoGeometry')
+
+from Autodesk.DesignScript.Geometry import *
+
+doc = DocumentManager.Instance.CurrentDBDocument
+#The inputs to this node will be stored as a list in the IN variables.
+grids = UnwrapElement(IN[0])
+
+a = UnwrapElement(IN[1])
+
+if a == "0":
+	b = DatumEnds.End0
+else:
+	b = DatumEnds.End1
+
+	# "Start" the transaction
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+view = doc.ActiveView	
+
+for grid in grids:
+	
+	grid.HideBubbleInView(DatumEnds.End0, view);
+	grid.HideBubbleInView(DatumEnds.End1, view);
+	grid.ShowBubbleInView(b, view);
+
+# "End" the transaction
+TransactionManager.Instance.TransactionTaskDone()
+
+
+#Assign your output to the OUT variable.
+OUT = 0
+</Script>
+    </PythonNodeModels.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="f8724d8d-89a2-4147-b4d5-5e1f3e025d2f" start_index="0" end="690e08c3-558d-490d-86c0-c0b5e4a57c5a" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="6c4fb897-0f68-4625-a33f-63ad6718c6a0" start_index="0" end="690e08c3-558d-490d-86c0-c0b5e4a57c5a" end_index="1" portType="0" />
+  </Connectors>
+  <Notes>
+    <Dynamo.Graph.Notes.NoteModel guid="9e9f3043-44dc-41f1-8e01-5fccc9a2e946" text="Grid End 0" x="61.0873744382113" y="339.375388941171" />
+    <Dynamo.Graph.Notes.NoteModel guid="8a852e8d-cdeb-41f3-9f15-78a2d30a4756" text="Grid End 1" x="60.4236092526241" y="470.238070090824" />
+    <Dynamo.Graph.Notes.NoteModel guid="1232dd88-a00f-47bb-8451-8f92ad3f1022" text="Swap Bubble Grid Ends" x="358.796917922167" y="211.457093195893" />
+    <Dynamo.Graph.Notes.NoteModel guid="1a742895-352b-4f26-9a5e-b062f2a9cf55" text="Select Grids" x="36.8523133081123" y="155.95600551027" />
+  </Notes>
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

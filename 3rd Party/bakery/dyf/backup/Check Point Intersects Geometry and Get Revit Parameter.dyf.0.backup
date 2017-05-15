@@ -1,0 +1,84 @@
+<Workspace Version="0.8.2.2371" X="-548.518599381355" Y="216.270518977975" zoom="1.130842140625" Name="Check Point Intersects Geometry and Get Revit Parameter" Description="" ID="edeb2c90-a642-46c3-a17a-cd6788d1a4be" Category="Bakery.Geometry">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.DSFunction guid="2f69e70c-61d7-4c3e-a40b-abe821c77e0a" type="Dynamo.Nodes.DSFunction" nickname="Element.Geometry" x="369.775622278777" y="0" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="RevitNodes.dll" function="Revit.Elements.Element.Geometry" />
+    <Dynamo.Nodes.DSFunction guid="44926222-65bf-4582-b406-657c79210aea" type="Dynamo.Nodes.DSFunction" nickname="Flatten" x="585.215170877498" y="184.04982609482" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="BuiltIn" function="Flatten@var[]..[]" />
+    <Dynamo.Nodes.Watch guid="e3439605-fd8f-4cc0-b3b5-7aad6e69e617" type="Dynamo.Nodes.Watch" nickname="Watch" x="250" y="482.919943778811" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+    <Dynamo.Nodes.DSFunction guid="efbade5a-d054-401e-b3b3-702292cb764e" type="Dynamo.Nodes.DSFunction" nickname="Geometry.DoesIntersect" x="784.844015227899" y="398.92016208614" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Geometry.DoesIntersect@Autodesk.DesignScript.Geometry.Geometry" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="97d52dd7-ffdd-4137-8a80-2a3dcf699036" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1032.72566738254" y="498.107029423725" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="true;" ShouldFocus="false" />
+    <Dynamo.Nodes.Function guid="91b3b4ff-c749-4999-ae9d-e50c0f14d142" type="Dynamo.Nodes.Function" nickname="NullAllIndicesOf" x="1190.44176427516" y="385.431703932925" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="858e6bd7-c0fa-4568-a225-ef815e68f8e3" />
+      <Name value="NullAllIndicesOf" />
+      <Description value="list all of the indices of a list that match the specified value. Capable of handling null values, part of the SmartCopyMonitor workflow." />
+      <Inputs>
+        <Input value="list" />
+        <Input value="value" />
+      </Inputs>
+      <Outputs>
+        <Output value="indices" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.DSFunction guid="00a6954f-d919-45af-a03b-361b9b0ec570" type="Dynamo.Nodes.DSFunction" nickname="List.GetItemAtIndex" x="1278.6867855611" y="181.927879334742" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.DSFunction guid="9c3c0cad-774d-4b50-ae3f-6e7510d4161b" type="Dynamo.Nodes.DSFunction" nickname="Element.GetParameterValueByName" x="1608.25492628205" y="190.932473343511" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="RevitNodes.dll" function="Revit.Elements.Element.GetParameterValueByName@string" />
+    <Dynamo.Nodes.Symbol guid="043c6d95-6e64-41dc-9aee-5969351587c0" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="element list" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="a86bd88f-6606-4a80-ac2a-17ac522469f8" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="150" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="onePoint" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="e13827b4-5183-444f-92fc-ed8abaf988dc" type="Dynamo.Nodes.Output" nickname="Output" x="1925.25492628205" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="Parameter value" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Function guid="ceac3770-34b0-4325-b7fe-f50a25774152" type="Dynamo.Nodes.Function" nickname="Element.Level" x="1572" y="500" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="23a94b80-4bd0-436f-a1b1-f77654b4428c" />
+      <Name value="Element.Level" />
+      <Description value="Gets an element's level" />
+      <Inputs>
+        <Input value="element" />
+      </Inputs>
+      <Outputs>
+        <Output value="level" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Output guid="0c5e3653-0034-401f-a54d-0523d5e265c3" type="Dynamo.Nodes.Output" nickname="Output" x="1922" y="489" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="Level" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Symbol guid="5072bd01-3658-41eb-8a71-0929d11c3c40" type="Dynamo.Nodes.Symbol" nickname="Input" x="1230.68545994065" y="754.195845697329" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="parameter name to get" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Function guid="7824625a-d8fe-49a6-a20e-c997f788e5d2" type="Dynamo.Nodes.Function" nickname="Element Name Universal" x="1799.11813178178" y="609.04122359764" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="879451ea-d61b-4ff2-bed0-b3020778e187" />
+      <Name value="Element Name Universal" />
+      <Description value="Modified for 0.8.1" />
+      <Inputs>
+        <Input value="Element(s)" />
+      </Inputs>
+      <Outputs>
+        <Output value="Name(s)" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="2f69e70c-61d7-4c3e-a40b-abe821c77e0a" start_index="0" end="44926222-65bf-4582-b406-657c79210aea" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="44926222-65bf-4582-b406-657c79210aea" start_index="0" end="efbade5a-d054-401e-b3b3-702292cb764e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e3439605-fd8f-4cc0-b3b5-7aad6e69e617" start_index="0" end="efbade5a-d054-401e-b3b3-702292cb764e" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="efbade5a-d054-401e-b3b3-702292cb764e" start_index="0" end="91b3b4ff-c749-4999-ae9d-e50c0f14d142" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="97d52dd7-ffdd-4137-8a80-2a3dcf699036" start_index="0" end="91b3b4ff-c749-4999-ae9d-e50c0f14d142" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="91b3b4ff-c749-4999-ae9d-e50c0f14d142" start_index="0" end="00a6954f-d919-45af-a03b-361b9b0ec570" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="00a6954f-d919-45af-a03b-361b9b0ec570" start_index="0" end="9c3c0cad-774d-4b50-ae3f-6e7510d4161b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="00a6954f-d919-45af-a03b-361b9b0ec570" start_index="0" end="ceac3770-34b0-4325-b7fe-f50a25774152" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9c3c0cad-774d-4b50-ae3f-6e7510d4161b" start_index="0" end="e13827b4-5183-444f-92fc-ed8abaf988dc" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="043c6d95-6e64-41dc-9aee-5969351587c0" start_index="0" end="2f69e70c-61d7-4c3e-a40b-abe821c77e0a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="043c6d95-6e64-41dc-9aee-5969351587c0" start_index="0" end="00a6954f-d919-45af-a03b-361b9b0ec570" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a86bd88f-6606-4a80-ac2a-17ac522469f8" start_index="0" end="e3439605-fd8f-4cc0-b3b5-7aad6e69e617" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ceac3770-34b0-4325-b7fe-f50a25774152" start_index="0" end="7824625a-d8fe-49a6-a20e-c997f788e5d2" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="5072bd01-3658-41eb-8a71-0929d11c3c40" start_index="0" end="9c3c0cad-774d-4b50-ae3f-6e7510d4161b" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="7824625a-d8fe-49a6-a20e-c997f788e5d2" start_index="0" end="0c5e3653-0034-401f-a54d-0523d5e265c3" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="-4069.58471722876" eyeY="322667.103440654" eyeZ="14083.2911813722" lookX="-86664.2043452712" lookY="-300367.104440654" lookZ="-136035.556806372" />
+  </Cameras>
+</Workspace>

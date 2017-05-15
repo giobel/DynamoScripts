@@ -1,0 +1,53 @@
+<Workspace Version="0.8.2.2371" X="153.56" Y="213.26" zoom="1.1575" Name="Create Parent Child Dictionary using XML ElementTree" Description="" ID="47aa67f3-5640-498f-a296-012be54122f2" Category="Bakery.XML">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="822a3f6d-ec1c-40e3-8f41-e4821bf5bd24" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="250" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+import sys
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+sys.path.append("C:\Program Files (x86)\IronPython 2.7\Lib")
+#from xml.parsers.expat import expat -- can't find this
+import xml.etree.ElementTree as ET
+#The inputs to this node will be stored as a list in the IN variables.
+xmTree = IN[0]
+
+#xmParsed = xmTree.parse(xmlFile)
+#root = xmTree.getroot()
+
+parent_map = dict((c, p) for p in xmTree.getiterator() for c in p)
+list_key_values = [ [str(k),str(v)] for k, v in parent_map.items() ]
+
+OUT = str(parent_map), list_key_values
+#, jsonStr</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="d9556e55-f3fa-4d26-9707-6771a49549a8" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="416.52766191873" y="104.186056127788" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="0;" ShouldFocus="false" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="d8855244-30ac-4270-a612-57e6e10ccd7a" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="424.740887507653" y="282.568317193534" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="1;" ShouldFocus="false" />
+    <Dynamo.Nodes.DSFunction guid="a855d67b-54f2-4e91-87c7-50e043f266cc" type="Dynamo.Nodes.DSFunction" nickname="List.GetItemAtIndex" x="563.123148573398" y="54.2168074173842" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.DSFunction guid="3a432375-58ec-4646-bc2a-a02df453b6ce" type="Dynamo.Nodes.DSFunction" nickname="List.GetItemAtIndex" x="571.336374162323" y="232.599068483134" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.Symbol guid="82cf55d2-8e17-47d4-b507-94e80be014ac" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="ElementTree" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="0c33a879-ddcc-4fd5-abfb-8f27cfe64d12" type="Dynamo.Nodes.Output" nickname="Output" x="781.336374162323" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="string representation" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="3505f533-3a86-4bb3-b70f-d1f111d2581f" type="Dynamo.Nodes.Output" nickname="Output" x="781.336374162323" y="150" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="list of pairs" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="822a3f6d-ec1c-40e3-8f41-e4821bf5bd24" start_index="0" end="a855d67b-54f2-4e91-87c7-50e043f266cc" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="822a3f6d-ec1c-40e3-8f41-e4821bf5bd24" start_index="0" end="3a432375-58ec-4646-bc2a-a02df453b6ce" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d9556e55-f3fa-4d26-9707-6771a49549a8" start_index="0" end="a855d67b-54f2-4e91-87c7-50e043f266cc" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d8855244-30ac-4270-a612-57e6e10ccd7a" start_index="0" end="3a432375-58ec-4646-bc2a-a02df453b6ce" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a855d67b-54f2-4e91-87c7-50e043f266cc" start_index="0" end="0c33a879-ddcc-4fd5-abfb-8f27cfe64d12" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3a432375-58ec-4646-bc2a-a02df453b6ce" start_index="0" end="3505f533-3a86-4bb3-b70f-d1f111d2581f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="82cf55d2-8e17-47d4-b507-94e80be014ac" start_index="0" end="822a3f6d-ec1c-40e3-8f41-e4821bf5bd24" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="175.444717407227" eyeY="108.055969238281" eyeZ="66.9599990844727" lookX="-125.331512451172" lookY="-97.2981491088867" lookZ="-125.331512451172" />
+  </Cameras>
+</Workspace>

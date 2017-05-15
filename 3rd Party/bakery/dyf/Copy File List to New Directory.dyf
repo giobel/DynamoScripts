@@ -1,0 +1,79 @@
+<Workspace Version="0.9.1.4062" X="298" Y="127" zoom="1" Name="Copy File List to New Directory" Description="takes list of file paths and a Directory Path" ID="87ce2a73-00f2-48be-852a-ea14ce53c3b4" Category="Bakery.Standalone">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="0c3d2e89-77d4-49fb-9f63-9fb906b4a5bf" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="subnode to Copy One File to New Directory" x="250" y="590.001674987962" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false">
+      <ID value="9a91c964-7e3f-4e85-a252-b1c5f22e4c29" />
+      <Name value="subnode to Copy One File to New Directory" />
+      <Description value="" />
+      <Inputs>
+        <Input value="filepathlist" />
+        <Input value="counter" />
+        <Input value="directoryWithoutEndSlash" />
+      </Inputs>
+      <Outputs>
+        <Output value="void" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <CoreNodeModels.Watch guid="9b2d04a0-9760-43f7-b6f0-ab9a256b8d5c" type="CoreNodeModels.Watch" nickname="Watch" x="321.279243359754" y="33" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="b0f1e7cd-b5de-485a-aa41-c41196ced8dd" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="776.325942668524" y="372.012012824593" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" CodeText="0..(x-1);" ShouldFocus="false" />
+    <CoreNodeModels.HigherOrder.Map guid="81f62a79-4b43-41d0-be20-6e34ab3dc0be" type="CoreNodeModels.HigherOrder.Map" nickname="List.Map" x="787.062187046966" y="581.005145814848" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="59d1a3b1-34c3-495f-8fbb-77df262f014f" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Count" x="871.575246229028" y="252.475507304295" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" assembly="BuiltIn" function="Count@var[]..[]" />
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="22fba390-a00c-4763-8256-9907f5cdff03" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-231" y="550" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false">
+      <Symbol value="TargetDirectoryPath" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="8cc5578f-daaa-425f-b845-510937181916" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="0" y="150" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false">
+      <Symbol value="fileList" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="132406b2-fffb-4172-a0ce-c949e1037804" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1082.57524622903" y="377" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false">
+      <Symbol value="unhelpfulOutput" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="c95143d1-5c05-45f3-bc4c-b932a1f16bda" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Directory.ContentsAll" x="1223" y="680" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false">
+      <PortInfo index="1" default="True" />
+      <ID value="2276a44a-c7cc-4438-ac43-2ae6b821d4c9" />
+      <Name value="Directory.ContentsAll" />
+      <Description value="Unlike the built-in node Directory.Contents, this node browses a directory recursively and returns all relevant files contained in subfolders as well." />
+      <Inputs>
+        <Input value="dir" />
+        <Input value="searchString" />
+      </Inputs>
+      <Outputs>
+        <Output value="files" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="498b65dc-1661-4a53-ae85-d55007cb9b53" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Input.Wait" x="978" y="703" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false">
+      <ID value="10e44f91-a8da-4f5e-82ca-3e3489fd906f" />
+      <Name value="Input.Wait" />
+      <Description value="Waits for all inputs to be completed before continuing the execution process.Part of the SmartCopyMon workflow." />
+      <Inputs>
+        <Input value="WaitForMe" />
+        <Input value="Output" />
+      </Inputs>
+      <Outputs>
+        <Output value="Output" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="b750acac-4f31-4973-8ab0-a5c5f65e15b6" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1519.57524622903" y="613" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false">
+      <Symbol value="targetDirContents" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="0c3d2e89-77d4-49fb-9f63-9fb906b4a5bf" start_index="0" end="81f62a79-4b43-41d0-be20-6e34ab3dc0be" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9b2d04a0-9760-43f7-b6f0-ab9a256b8d5c" start_index="0" end="0c3d2e89-77d4-49fb-9f63-9fb906b4a5bf" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9b2d04a0-9760-43f7-b6f0-ab9a256b8d5c" start_index="0" end="59d1a3b1-34c3-495f-8fbb-77df262f014f" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="b0f1e7cd-b5de-485a-aa41-c41196ced8dd" start_index="0" end="81f62a79-4b43-41d0-be20-6e34ab3dc0be" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="81f62a79-4b43-41d0-be20-6e34ab3dc0be" start_index="0" end="132406b2-fffb-4172-a0ce-c949e1037804" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="81f62a79-4b43-41d0-be20-6e34ab3dc0be" start_index="0" end="498b65dc-1661-4a53-ae85-d55007cb9b53" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="59d1a3b1-34c3-495f-8fbb-77df262f014f" start_index="0" end="b0f1e7cd-b5de-485a-aa41-c41196ced8dd" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="22fba390-a00c-4763-8256-9907f5cdff03" start_index="0" end="0c3d2e89-77d4-49fb-9f63-9fb906b4a5bf" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="22fba390-a00c-4763-8256-9907f5cdff03" start_index="0" end="498b65dc-1661-4a53-ae85-d55007cb9b53" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="8cc5578f-daaa-425f-b845-510937181916" start_index="0" end="9b2d04a0-9760-43f7-b6f0-ab9a256b8d5c" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c95143d1-5c05-45f3-bc4c-b932a1f16bda" start_index="0" end="b750acac-4f31-4973-8ab0-a5c5f65e15b6" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="498b65dc-1661-4a53-ae85-d55007cb9b53" start_index="0" end="c95143d1-5c05-45f3-bc4c-b932a1f16bda" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

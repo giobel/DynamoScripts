@@ -1,0 +1,70 @@
+<Workspace Version="0.8.2.2371" X="350.208069266315" Y="5.62405577179931" zoom="0.770516848202245" Name="Get Type List for this project" Description="" ID="d1bd75c3-8d60-466f-909b-7295795bfb16" Category="Bakery.Families">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="65d21408-1c0c-4f39-9d34-2e5e96cb4fe5" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="-295.497087711305" y="726.832472959163" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="0">
+      <Script>#Made by Marc Tavenier @marctavenier
+import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference('RevitServices')
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+elementlist = []
+doc = DocumentManager.Instance.CurrentDBDocument
+
+collector = FilteredElementCollector(doc).OfClass(FamilySymbol)
+elementlist = collector.ToElements()
+
+#Assign your output to the OUT variable
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Output guid="9d3baa5e-1ca6-43d6-85e3-55d77af649cd" type="Dynamo.Nodes.Output" nickname="Output" x="-72.3427515306183" y="718.968707497613" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="FamilySymbols" />
+    </Dynamo.Nodes.Output>
+    <DSCoreNodesUI.CreateList guid="30ac2b68-2f87-47bd-9184-94e09bd2dcb9" type="DSCoreNodesUI.CreateList" nickname="List.Create" x="438.407851110795" y="720.592386001518" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2" />
+    <Dynamo.Nodes.DSFunction guid="a5510a7c-13eb-4baf-8bda-008d5d4c8812" type="Dynamo.Nodes.DSFunction" nickname="List.UniqueItems" x="313.231540469425" y="851.353699496395" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.UniqueItems@var[]..[]" />
+    <Dynamo.Nodes.Output guid="c9d32818-b8cc-4d5c-a48f-ab6ecb6409bb" type="Dynamo.Nodes.Output" nickname="Output" x="543.356816590654" y="873.077791186611" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="uniquified flat list" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.DSFunction guid="aeb18541-9fe7-410c-a942-d5b16b37db05" type="Dynamo.Nodes.DSFunction" nickname="Flatten" x="430.382289737505" y="975.506802554688" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="BuiltIn" function="Flatten@var[]..[]" />
+    <Dynamo.Nodes.Output guid="9e618613-fd75-4e02-a651-d7b249a7e5f1" type="Dynamo.Nodes.Output" nickname="Output" x="63.3403597186843" y="906.240189199092" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="System Types" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Function guid="94dc14c9-7613-42dd-b437-895c3c480a32" type="Dynamo.Nodes.Function" nickname="Get System Types as List" x="-357.421863587426" y="818.499330697962" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="True">
+      <ID value="3c9ec9d4-c6dd-4d3c-9511-b9459d65ee99" />
+      <Name value="Get System Types as List" />
+      <Description value="uses HostObjAttributes parent class to collect" />
+      <Inputs />
+      <Outputs>
+        <Output value="OUT" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="65d21408-1c0c-4f39-9d34-2e5e96cb4fe5" start_index="0" end="9d3baa5e-1ca6-43d6-85e3-55d77af649cd" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="65d21408-1c0c-4f39-9d34-2e5e96cb4fe5" start_index="0" end="30ac2b68-2f87-47bd-9184-94e09bd2dcb9" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="30ac2b68-2f87-47bd-9184-94e09bd2dcb9" start_index="0" end="a5510a7c-13eb-4baf-8bda-008d5d4c8812" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a5510a7c-13eb-4baf-8bda-008d5d4c8812" start_index="0" end="aeb18541-9fe7-410c-a942-d5b16b37db05" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="aeb18541-9fe7-410c-a942-d5b16b37db05" start_index="0" end="c9d32818-b8cc-4d5c-a48f-ab6ecb6409bb" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="94dc14c9-7613-42dd-b437-895c3c480a32" start_index="0" end="9e618613-fd75-4e02-a651-d7b249a7e5f1" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="94dc14c9-7613-42dd-b437-895c3c480a32" start_index="0" end="30ac2b68-2f87-47bd-9184-94e09bd2dcb9" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations>
+    <Dynamo.Models.AnnotationModel guid="748be683-41b1-4565-ae36-0a21dfeee48d" annotationText="&lt;Click here to edit the group title&gt;" left="303.231540469425" top="690.592386001518" width="385.125276121229" height="377.91441655317" fontSize="14" InitialTop="720.592386001518" InitialHeight="377.91441655317" TextblockHeight="20" backgrouund="#FFC1D676">
+      <Models ModelGuid="30ac2b68-2f87-47bd-9184-94e09bd2dcb9" />
+      <Models ModelGuid="a5510a7c-13eb-4baf-8bda-008d5d4c8812" />
+      <Models ModelGuid="c9d32818-b8cc-4d5c-a48f-ab6ecb6409bb" />
+      <Models ModelGuid="aeb18541-9fe7-410c-a942-d5b16b37db05" />
+    </Dynamo.Models.AnnotationModel>
+  </Annotations>
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

@@ -1,0 +1,43 @@
+<Workspace Version="0.8.1.1942" X="0" Y="0" zoom="1" Name="Element Name Universal" ID="879451ea-d61b-4ff2-bed0-b3020778e187" Description="Modified for 0.8.1" Category="Bakery.Elements">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Symbol guid="d220d171-c7b9-42fe-a3f8-78b3cb84e520" type="Dynamo.Nodes.Symbol" nickname="Input" x="10" y="10" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Element(s)" />
+    </Dynamo.Nodes.Symbol>
+    <DSIronPythonNode.PythonNode guid="bdb59e55-28f7-4588-90c7-8428af8d9e70" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="328.363059809674" y="65.0429913000665" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+faminsts = UnwrapElement(IN[0])
+elementlist = list()
+for item in faminsts:
+	try:
+		elementlist.append(item.Name)
+	except:
+		elementlist.append(list())
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="39c6829d-496c-43ed-a5c7-8606bd257875" type="Dynamo.Nodes.Function" nickname="Turn Into List" x="166.622248350452" y="64.8304027926355" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="var[]" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Output guid="781211fc-85fc-4908-87d8-663181a93b76" type="Dynamo.Nodes.Output" nickname="Output" x="725.530387125298" y="11.0103609029844" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Name(s)" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="d220d171-c7b9-42fe-a3f8-78b3cb84e520" start_index="0" end="39c6829d-496c-43ed-a5c7-8606bd257875" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="bdb59e55-28f7-4588-90c7-8428af8d9e70" start_index="0" end="781211fc-85fc-4908-87d8-663181a93b76" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="39c6829d-496c-43ed-a5c7-8606bd257875" start_index="0" end="bdb59e55-28f7-4588-90c7-8428af8d9e70" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+</Workspace>

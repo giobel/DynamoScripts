@@ -1,0 +1,64 @@
+<Workspace Version="0.7.2.2921" X="30" Y="421.900746549561" zoom="0.685069008782936" Description="Select the input elements in active view" Category="SteamNodes.Element" Name="Element.SelectInView" ID="3aad227f-68ab-471c-856a-f835c5293c37">
+  <Elements>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="d22ae1d0-98af-4138-a62a-fbcdb53fae23" nickname="Python Script" x="507" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="1">
+      <Script>#python nodes in dynamo 0.7
+#proposed by Julien Benoit @jbenoit44 
+#http://aecuandme.wordpress.com/
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+# Import geometry conversion extension methods
+clr.ImportExtensions(Revit.GeometryConversion)
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+from System.Collections.Generic import *
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+uidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+
+elt = []
+for i in IN[0]:
+	elt.append(UnwrapElement(i))
+
+# Start Transaction
+TransactionManager.Instance.EnsureInTransaction(doc)
+b=[]
+
+for item in elt:
+	uidoc.Selection.Elements.Add(item)
+	b.append(item.Id)
+
+doc.Regenerate()
+# End Transaction
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = b</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="2088ce20-7afe-4b97-8259-5199b816ddbb" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Element(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="39108650-f2b5-4d76-a98f-92d033f27cce" nickname="Output" x="731" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="IDs" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.CodeBlockNodeModel type="Dynamo.Nodes.CodeBlockNodeModel" guid="69f11f1f-c25d-442c-b073-f932f70b1f7b" nickname="Code Block" x="199" y="4.21833333333333" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="Flatten({item});" ShouldFocus="false" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="d22ae1d0-98af-4138-a62a-fbcdb53fae23" start_index="0" end="39108650-f2b5-4d76-a98f-92d033f27cce" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="2088ce20-7afe-4b97-8259-5199b816ddbb" start_index="0" end="69f11f1f-c25d-442c-b073-f932f70b1f7b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="69f11f1f-c25d-442c-b073-f932f70b1f7b" start_index="0" end="d22ae1d0-98af-4138-a62a-fbcdb53fae23" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

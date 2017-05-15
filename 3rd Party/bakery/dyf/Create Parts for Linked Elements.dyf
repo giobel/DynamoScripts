@@ -1,0 +1,113 @@
+<Workspace Version="1.0.0.1180" X="34.249979017514" Y="102.30199596885" zoom="0.5830130162092" Name="Create Parts for Linked Elements" Description="currently does not handle multiple instances of Link" ID="a71e1fed-e24c-4c5f-be8e-1e4285bd338d" Category="Bakery.Parts">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="4d9b9ad2-8a3e-4e67-9e7d-6f776be196eb" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="If Equal Return Index using IndexOf" x="513.793488890386" y="240.212869592175" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <ID value="ca92b390-30de-4023-886c-cb172a3025bf" />
+      <Name value="If Equal Return Index using IndexOf" />
+      <Description value="" />
+      <Inputs>
+        <Input value="searchForThese" />
+        <Input value="inThisList" />
+      </Inputs>
+      <Outputs>
+        <Output value="indices" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="2bb540d1-fa7f-4b54-8d6d-15eeafda8cbf" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Get Linked RVT Documents" x="250" y="317.920706201515" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <ID value="98458ceb-6e1f-49f2-ab12-e054d5034efc" />
+      <Name value="Get Linked RVT Documents" />
+      <Description value="" />
+      <Inputs />
+      <Outputs>
+        <Output value="Link Doc" />
+        <Output value="Link Name" />
+        <Output value="Link Instance" />
+        <Output value="Link Instance Id" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="022bc804-509c-4a21-b06e-bc2a5c11d6fc" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.GetItemAtIndex" x="514.34067996076" y="498.392245365537" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <CoreNodeModels.Watch guid="991b75ec-06ef-44a0-a28a-6163fd3d49bb" type="CoreNodeModels.Watch" nickname="Watch" x="922.109905472401" y="170.184568411953" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="345bcd01-8118-49d1-bc1e-f1ca8eb6ed18" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Count" x="1097.26730201338" y="0" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="BuiltIn" function="Count@var[]..[]" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="5a2099b6-e392-42f5-a0b0-c24713798f68" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1291.06602585748" y="10.4881111942864" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="0..x-1;" ShouldFocus="false" />
+    <CoreNodeModels.Watch guid="d84fc12a-f91f-49f4-8656-7ed172a5217a" type="CoreNodeModels.Watch" nickname="Watch" x="1224.4391519999" y="126.605289797864" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" />
+    <PythonNodeModels.PythonNode guid="b0f6a837-8f02-4532-a88d-9a8d609bef09" type="PythonNodeModels.PythonNode" nickname="Python Script" x="1721.56921032882" y="190.03305307382" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="4">
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+# Import geometry conversion extension methods
+clr.ImportExtensions(Revit.GeometryConversion)
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+from System.Collections.Generic import *
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+elemlist = UnwrapElement(IN[0])
+docs = UnwrapElement(IN[1])
+instId = IN[2]
+counter = IN[3]
+result = []
+for z in counter:
+	y = LinkElementId(instId[z], elemlist[z].Id)
+	Ids = []
+	Ids.append(y)
+	IDS = List[Autodesk.Revit.DB.LinkElementId](Ids)
+	TransactionManager.Instance.EnsureInTransaction(doc)
+#created = []
+	try:
+		a=PartUtils.CreateParts(doc,IDS)
+		result.append(True)
+	except:
+		result.append(False)
+
+	TransactionManager.Instance.TransactionTaskDone()
+#TransactionManager.Instance.ForceCloseTransaction()
+
+OUT = result</Script>
+    </PythonNodeModels.PythonNode>
+    <CoreNodeModels.Watch guid="5c9ef00d-6da5-4e94-a412-447d6218fff0" type="CoreNodeModels.Watch" nickname="Watch" x="1220.6744978817" y="545.641611853726" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" />
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="97491bd2-e5f4-441d-8eed-909c540f6792" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="linkDocumentList_sameLength" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="56bf0f6f-05c6-45c7-8d25-f3ffc2a6e700" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="0" y="150" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="linkedElementList" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="3690d0a2-3f97-47bf-ac06-c62d34dfa54d" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1920.56921032882" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="Parts created?" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="4d9b9ad2-8a3e-4e67-9e7d-6f776be196eb" start_index="0" end="022bc804-509c-4a21-b06e-bc2a5c11d6fc" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="2bb540d1-fa7f-4b54-8d6d-15eeafda8cbf" start_index="0" end="4d9b9ad2-8a3e-4e67-9e7d-6f776be196eb" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="2bb540d1-fa7f-4b54-8d6d-15eeafda8cbf" start_index="3" end="022bc804-509c-4a21-b06e-bc2a5c11d6fc" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="022bc804-509c-4a21-b06e-bc2a5c11d6fc" start_index="0" end="5c9ef00d-6da5-4e94-a412-447d6218fff0" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="991b75ec-06ef-44a0-a28a-6163fd3d49bb" start_index="0" end="345bcd01-8118-49d1-bc1e-f1ca8eb6ed18" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="991b75ec-06ef-44a0-a28a-6163fd3d49bb" start_index="0" end="b0f6a837-8f02-4532-a88d-9a8d609bef09" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="345bcd01-8118-49d1-bc1e-f1ca8eb6ed18" start_index="0" end="5a2099b6-e392-42f5-a0b0-c24713798f68" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="5a2099b6-e392-42f5-a0b0-c24713798f68" start_index="0" end="b0f6a837-8f02-4532-a88d-9a8d609bef09" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="d84fc12a-f91f-49f4-8656-7ed172a5217a" start_index="0" end="b0f6a837-8f02-4532-a88d-9a8d609bef09" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="b0f6a837-8f02-4532-a88d-9a8d609bef09" start_index="0" end="3690d0a2-3f97-47bf-ac06-c62d34dfa54d" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="5c9ef00d-6da5-4e94-a412-447d6218fff0" start_index="0" end="b0f6a837-8f02-4532-a88d-9a8d609bef09" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="97491bd2-e5f4-441d-8eed-909c540f6792" start_index="0" end="4d9b9ad2-8a3e-4e67-9e7d-6f776be196eb" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="97491bd2-e5f4-441d-8eed-909c540f6792" start_index="0" end="d84fc12a-f91f-49f4-8656-7ed172a5217a" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="56bf0f6f-05c6-45c7-8d25-f3ffc2a6e700" start_index="0" end="991b75ec-06ef-44a0-a28a-6163fd3d49bb" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

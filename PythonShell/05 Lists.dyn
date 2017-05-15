@@ -1,0 +1,39 @@
+<Workspace Version="1.2.0.2514" X="0" Y="0" zoom="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="d796d74e-9456-40db-8f0f-fb44fa3caa96" type="PythonNodeModels.PythonNode" nickname="Python Script" x="232.5" y="568.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+import math
+
+#The inputs to this node will be stored as a list in the IN variables.
+PtA = Point.ByCoordinates(0,0,5)
+
+Vct = []
+listPts = []
+
+for i in range (0,50):
+	x = math.sin(2*math.pi/10*i)*i/5
+	y = math.cos(2*math.pi/10*i)*i/5
+	z = -i/10
+	
+	Vct.append(Vector.ByCoordinates(x,y,z))
+	
+	listPts.append(Geometry.Translate(PtA, Vct[i]))
+	
+crv = NurbsCurve.ByControlPoints(listPts,2)
+
+#Assign your output to the OUT variable.
+OUT = listPts, crv</Script>
+    </PythonNodeModels.PythonNode>
+  </Elements>
+  <Connectors />
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-15.5542871991489" eyeY="16.9484671445017" eyeZ="-17.8230174979925" lookX="12.5712898048457" lookY="-16.2802487957004" lookZ="12.2205076626667" upX="0.363925282064462" upY="0.861629160441544" upZ="0.353770517357148" />
+  </Cameras>
+</Workspace>

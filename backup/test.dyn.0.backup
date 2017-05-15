@@ -1,0 +1,52 @@
+<Workspace Version="0.9.1.4062" X="-155.105446350485" Y="-48.1838126649395" zoom="0.95978869958127" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="False">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="1db6cdd3-5df5-4a93-8b44-339c2e98efc2" type="PythonNodeModels.PythonNode" nickname="Python Script" x="849.152216328268" y="429.020385231243" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" inputcount="0">
+      <Script>import clr
+#dynamo geometry
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#import revit nodes
+clr.AddReference("RevitNodes")
+import Revit
+from Revit.Elements import *
+import System
+
+
+
+
+#Assign your output to the OUT variable
+#OUT is defined as a list of three items
+OUT=[doc,uiapp,app]
+#The inputs to this node will be stored as a list in the IN variables.
+
+t = Transaction(doc, 'create a single reference point')
+ 
+t.Start()
+ 
+#define x, y, and z variables
+x = 10
+y = 10
+z = 0
+ 
+#declare a XYZ variable
+myXYZ = XYZ(x,y,z)
+ 
+#use XYZ to define a reference point
+refPoint = doc.FamilyCreate.NewReferencePoint(myXYZ)
+ 
+t.Commit()
+ 
+
+#Assign your output to the OUT variable.
+OUT = 0</Script>
+    </PythonNodeModels.PythonNode>
+  </Elements>
+  <Connectors />
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-46.5129737854004" eyeY="42.5746116638184" eyeZ="-38.9308395385742" lookX="41.5129737854004" lookY="-31.574613571167" lookZ="30.9308376312256" upX="0.26106870174408" upY="0.945518553256989" upZ="0.194519281387329" />
+  </Cameras>
+</Workspace>

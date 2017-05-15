@@ -1,0 +1,74 @@
+<Workspace Version="0.8.2.2371" X="447.735842991529" Y="370.53471174803" zoom="1.545620359375" Name="Get Elements from Documents by Id" Description="requires 1:1 input" ID="e6efd8c6-02ce-4aa0-9760-22871d0cf5ff" Category="Bakery.Collect">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.DSFunction guid="77152aaf-5f71-4397-989d-04d3a47cd22e" type="Dynamo.Nodes.DSFunction" nickname="Count" x="184.654069877262" y="204.64038074067" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="BuiltIn" function="Count@var[]..[]" />
+    <DSIronPythonNode.PythonNode guid="d6828e2f-691f-4a2f-9073-2f16cae1212c" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="452.255416042117" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="3">
+      <Script>#Copyright(c) 2015, Konrad K Sobon
+# @arch_laboratory, http://archi-lab.net
+
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+#The inputs to this node will be stored as a list in the IN variable.
+docIn = IN[0]
+elemId = IN[1]
+counter = IN[2]
+
+result = []
+#apply lineweight override to elements in an input list
+for k in counter:
+	try:
+		elem = docIn[k].GetElement(elemId[k])
+		result.append(elem)
+	except:
+		result.append("failure")
+	
+
+# "End" the transaction
+TransactionManager.Instance.TransactionTaskDone()
+
+#Assign your output to the OUT variable
+OUT = result</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="9c5d4ad7-7314-4478-8fc2-532c1a5e8e3c" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="333.059128005986" y="149.817642430023" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="0..(x-1);" ShouldFocus="false" />
+    <Dynamo.Nodes.Symbol guid="acdac556-d752-4ee7-9dcc-91989bb729ec" type="Dynamo.Nodes.Symbol" nickname="Input" x="-94.46045344475" y="-3.88193644293494" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="elementIdList" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="8829b57e-594f-479e-bfa0-b31bce493bce" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="150" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="docList" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="8802ef14-a441-4579-a52c-42c11badf10f" type="Dynamo.Nodes.Output" nickname="Output" x="651.255416042118" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="elementList" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="77152aaf-5f71-4397-989d-04d3a47cd22e" start_index="0" end="9c5d4ad7-7314-4478-8fc2-532c1a5e8e3c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d6828e2f-691f-4a2f-9073-2f16cae1212c" start_index="0" end="8802ef14-a441-4579-a52c-42c11badf10f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9c5d4ad7-7314-4478-8fc2-532c1a5e8e3c" start_index="0" end="d6828e2f-691f-4a2f-9073-2f16cae1212c" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="acdac556-d752-4ee7-9dcc-91989bb729ec" start_index="0" end="77152aaf-5f71-4397-989d-04d3a47cd22e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="acdac556-d752-4ee7-9dcc-91989bb729ec" start_index="0" end="d6828e2f-691f-4a2f-9073-2f16cae1212c" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="8829b57e-594f-479e-bfa0-b31bce493bce" start_index="0" end="d6828e2f-691f-4a2f-9073-2f16cae1212c" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

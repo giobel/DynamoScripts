@@ -1,0 +1,58 @@
+<Workspace Version="0.8.2.2392" X="14.1327682732962" Y="275.534421919398" zoom="1.58672317267038" Name="bv Elements in Views" Description="forked" ID="495f442f-6163-4504-ad84-ca89954fd982" Category="Bakery.Forks">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="db2def25-a9e0-493c-8b12-a31eeb87eb47" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="242.79035293788" y="12.818624863976" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>#Made by Marc Tavenier @marctavenier
+import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference('RevitServices')
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+views = UnwrapElement(IN[0])
+
+elementlist = []
+doc = DocumentManager.Instance.CurrentDBDocument
+
+for view in views:
+	collector = FilteredElementCollector(doc, view.Id)
+	elementlist.append(collector.ToElements())
+
+#Assign your output to the OUT variable
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol guid="ccc68624-de9c-413f-bf9b-258fda962135" type="Dynamo.Nodes.Symbol" nickname="Input" x="10" y="10" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="Views" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="a43dac92-2f55-44c6-8f0f-9d416995234f" type="Dynamo.Nodes.Output" nickname="Output" x="395.845252829061" y="12.582349836771" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="Elements" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Function guid="3175b124-fb8e-4715-979b-3b3cc77c0872" type="Dynamo.Nodes.Function" nickname="Turn Into List" x="105.417033677849" y="11.302668634438" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element into a (flat) list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="var[]" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="db2def25-a9e0-493c-8b12-a31eeb87eb47" start_index="0" end="a43dac92-2f55-44c6-8f0f-9d416995234f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ccc68624-de9c-413f-bf9b-258fda962135" start_index="0" end="3175b124-fb8e-4715-979b-3b3cc77c0872" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3175b124-fb8e-4715-979b-3b3cc77c0872" start_index="0" end="db2def25-a9e0-493c-8b12-a31eeb87eb47" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

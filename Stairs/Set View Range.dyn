@@ -1,0 +1,251 @@
+<Workspace Version="1.2.0.2514" X="-8683.15045244576" Y="2250.03070486941" zoom="0.979029962142698" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="9130869b-9899-4c4a-99b9-3f2f96307e23" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="9399.83827966576" y="-1921.82221372232" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="4;" ShouldFocus="false" />
+    <PythonNodeModels.PythonNode guid="2a059317-09ce-42a0-b3a2-dfb3d6d7ef62" type="PythonNodeModels.PythonNode" nickname="Python Script" x="9581.31923965503" y="-2348.14595783126" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="5">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <PortInfo index="3" default="False" />
+      <PortInfo index="4" default="False" />
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import*
+clr.AddReference('RevitServices')
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+
+
+views = UnwrapElement(IN[0])
+ltop = UnwrapElement(IN[1])
+toffset = IN[2]
+lbottom = UnwrapElement(IN[3])
+boffset = IN[4]
+count = 0
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+for v,lt,tof,lb,bof in zip(views,ltop,toffset,lbottom,boffset):
+
+	#getting the viewrange of the view
+	viewrange = v.GetViewRange()
+
+	#Setting top clip plane of the viewrange
+	#	Setting level of topclip plane
+	viewrange.SetLevelId(PlanViewPlane.TopClipPlane,lt.Id)
+	#	setting offset of top clip plane
+	viewrange.SetOffset(PlanViewPlane.TopClipPlane,tof)
+	
+	viewrange.SetOffset(PlanViewPlane.CutPlane, tof);
+	
+	viewrange.SetLevelId(PlanViewPlane.CutPlane, lbottom.Id)
+	viewrange.SetOffset(PlanViewPlane.CutPlane, toffset)
+	
+	#Setting bottom clip plane of the viewrange
+	#	Setting level of bottom clip plane
+	viewrange.SetLevelId(PlanViewPlane.BottomClipPlane,lb.Id)
+	#	setting offset of bottom clip plane
+	viewrange.SetOffset(PlanViewPlane.BottomClipPlane,bof)
+
+
+	#Applying the viewrange to the view
+	v.SetViewRange(viewrange)
+	count = count +1
+
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = '%d view ranges altered' %(count)</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="cfb4d51c-5b51-46e9-b20b-d2ea57115eb0" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="9156.83719656726" y="-2034.65397889414" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="-2;" ShouldFocus="false" />
+    <CoreNodeModels.CreateList guid="d60e42e6-80c1-4411-9965-e1c8de93dad3" type="CoreNodeModels.CreateList" nickname="List.Create" x="9062.3085185005" y="-1960.06674074344" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.CreateList>
+    <DSRevitNodesUI.Levels guid="00b7f6ac-17c7-482c-9e51-fb5103039e27" type="DSRevitNodesUI.Levels" nickname="Levels" x="8636.2251978006" y="-2259.69644902082" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="true" index="0:00" />
+    <CoreNodeModels.CreateList guid="18575505-1908-459a-9050-74884d098cca" type="CoreNodeModels.CreateList" nickname="List.Create" x="8949.2251978006" y="-2318.69644902082" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.CreateList>
+    <PythonNodeModels.PythonNode guid="e477fbe3-eb3b-47e4-88ba-b0e9d84372bf" type="PythonNodeModels.PythonNode" nickname="Python Script" x="9813.0069084016" y="-1993.60362242241" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="5">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <PortInfo index="3" default="False" />
+      <PortInfo index="4" default="False" />
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import*
+clr.AddReference('RevitServices')
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+
+
+views = UnwrapElement(IN[0])
+ltop = UnwrapElement(IN[1])
+toffset = IN[2]
+lbottom = UnwrapElement(IN[3])
+boffset = IN[4]
+count = 0
+
+
+
+#for v,lt,tof,lb,bof in zip(views,ltop,toffset,lbottom,boffset):
+
+
+
+#for v in views:
+	#getting the viewrange of the view
+viewrange = views[0].GetViewRange()
+	#topClipPlane = v.GetLevelId(PlanViewPlane.TopClipPlane)
+topClipPlane = views[0].GetViewRange().GetLevelId(PlanViewPlane.TopClipPlane)
+
+	#Setting top clip plane of the viewrange
+	#	Setting level of topclip plane
+viewrange.SetLevelId(PlanViewPlane.TopClipPlane, ltop.Id)
+#	setting offset of top clip plane
+viewrange.SetOffset(PlanViewPlane.TopClipPlane,toffset)
+
+viewrange.SetLevelId(PlanViewPlane.CutPlane, lbottom.Id)
+viewrange.SetOffset(PlanViewPlane.CutPlane, toffset)
+	#Setting bottom clip plane of the viewrange
+	#	Setting level of bottom clip plane
+viewrange.SetLevelId(PlanViewPlane.BottomClipPlane,lbottom.Id)
+	#	setting offset of bottom clip plane
+viewrange.SetOffset(PlanViewPlane.BottomClipPlane,boffset)
+
+	
+TransactionManager.Instance.EnsureInTransaction(doc)
+	#Applying the viewrange to the view
+views[0].SetViewRange(viewrange)
+count = count +1
+
+
+TransactionManager.Instance.TransactionTaskDone()
+
+#OUT= viewrange, topClipPlane
+
+OUT = '%d view ranges altered' %(count),ltop.Id</Script>
+    </PythonNodeModels.PythonNode>
+    <DSRevitNodesUI.Levels guid="e99b48d9-8cdc-4bf2-965f-5585d3aadafd" type="DSRevitNodesUI.Levels" nickname="Levels" x="9032.06018084048" y="-1858.92274158999" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="true" index="0:00" />
+    <CoreNodeModels.CreateList guid="3d5778bf-eaf8-478b-b469-6e23d02473a0" type="CoreNodeModels.CreateList" nickname="List.Create" x="9359.97825648945" y="-2074.38778137846" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.CreateList>
+    <CoreNodeModels.CreateList guid="fda30a82-0b5a-459d-805e-af90e5b26b21" type="CoreNodeModels.CreateList" nickname="List.Create" x="9313.74106259075" y="-2174.25746376466" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.CreateList>
+    <CoreNodeModels.CreateList guid="dc7ec61c-e356-4e61-8641-e30e012c9630" type="CoreNodeModels.CreateList" nickname="List.Create" x="8896.2251978006" y="-2196.69644902082" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.CreateList>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="15717b77-1f3e-4b03-a2e2-5fe265900a22" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Get All Views" x="8026.25744651986" y="-2280.78532911334" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <ID value="b4f3c852-454e-4648-b8d6-2c8bfe20fdb7" />
+      <Name value="Get All Views" />
+      <Description value="This node will query all views in the model and return them based on category" />
+      <Inputs />
+      <Outputs>
+        <Output value="Renderings" />
+        <Output value="Pressure Loss Reports" />
+        <Output value="Panel Schedules" />
+        <Output value="Walkthroughs" />
+        <Output value="Elevations" />
+        <Output value="Drawing Sheets" />
+        <Output value="Drafting Views" />
+        <Output value="Undefined Views" />
+        <Output value="Details" />
+        <Output value="Loads Reports" />
+        <Output value="Cost Reports" />
+        <Output value="Legends" />
+        <Output value="3D Views" />
+        <Output value="Column Schedules" />
+        <Output value="Internal Views" />
+        <Output value="Sections" />
+        <Output value="Ceiling Plans" />
+        <Output value="Floor Plans" />
+        <Output value="Schedules" />
+        <Output value="Area Plans" />
+        <Output value="Engineering Plans" />
+        <Output value="Reports" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <CoreNodeModels.Watch guid="3713500f-a716-4c26-9e4f-fe4efa3e508f" type="CoreNodeModels.Watch" nickname="Watch" x="8833.76789175333" y="-1928.43966724071" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.Watch>
+    <CoreNodeModels.Watch guid="e8fbabe5-5848-40f2-a7f6-f6c9e213674f" type="CoreNodeModels.Watch" nickname="Watch" x="8241.5121917153" y="-1550.93221135605" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.Watch>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="300ab8dd-3d0b-4ec6-8455-9f146016f445" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="String.Contains" x="8596.03237932687" y="-1714.7419939246" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <ID value="07ab3a10-1b85-4dd7-b3c6-15461b90604b" />
+      <Name value="String.Contains" />
+      <Description value="This node takes a list of strings and checks if any string contains a matching string from filter input. " />
+      <Inputs>
+        <Input value="StringList" />
+        <Input value="FilterList" />
+      </Inputs>
+      <Outputs>
+        <Output value="mask" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="5fef1e14-bf77-42da-94d8-546e3d30ca98" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.Name" x="8678.73324966956" y="-1487.82799153806" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="RevitNodes.dll" function="Revit.Elements.Element.Name">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="8b282622-3a0e-4c41-b629-a118cf2c6fc1" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="String.Contains" x="9184.63265646951" y="-1544.60929036791" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.String.Contains@string,string,bool">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="True" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="a445fb6c-059f-4d85-bd72-069c3c9fa105" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="8956.58293867993" y="-1437.49832144251" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;01&quot;;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="b55032eb-d562-430e-98c2-71c3aa0537a1" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.FilterByBoolMask" x="9447.07390695738" y="-1682.79264266561" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="DSCoreNodes.dll" function="DSCore.List.FilterByBoolMask@var[]..[],var[]..[]">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="6d26649a-0b07-4fb6-af89-a7a3ddc3d201" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="9034" y="-1397" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="1;" ShouldFocus="false" />
+    <CoreNodeModels.Watch guid="63b8be71-96ed-4287-b445-56ece863df54" type="CoreNodeModels.Watch" nickname="Watch" x="9865.90871896048" y="-1694.57571921813" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.Watch>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="d7cc408f-67a3-4850-95c7-271bde32ca47" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Active View" x="9182.31557549619" y="-1734.11362250982" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true">
+      <PortInfo index="0" default="True" />
+      <ID value="58849545-7510-4baf-99da-98c0b1e184fd" />
+      <Name value="Active View" />
+      <Description value="Selects the current document's active view. Supports more view types than the built-in option.&#xD;&#xA;Will be depreciated once the bult in node works with all plan types." />
+      <Inputs>
+        <Input value="refresh" />
+      </Inputs>
+      <Outputs>
+        <Output value="view" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="256df0b7-72f9-43b4-97ec-534d59bcda7e" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="8999.04969908987" y="-1686.59896830813" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="1;" ShouldFocus="false" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="9130869b-9899-4c4a-99b9-3f2f96307e23" start_index="0" end="e477fbe3-eb3b-47e4-88ba-b0e9d84372bf" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9130869b-9899-4c4a-99b9-3f2f96307e23" start_index="0" end="dc7ec61c-e356-4e61-8641-e30e012c9630" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="cfb4d51c-5b51-46e9-b20b-d2ea57115eb0" start_index="0" end="e477fbe3-eb3b-47e4-88ba-b0e9d84372bf" end_index="4" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="cfb4d51c-5b51-46e9-b20b-d2ea57115eb0" start_index="0" end="fda30a82-0b5a-459d-805e-af90e5b26b21" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="00b7f6ac-17c7-482c-9e51-fb5103039e27" start_index="0" end="18575505-1908-459a-9050-74884d098cca" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="00b7f6ac-17c7-482c-9e51-fb5103039e27" start_index="0" end="e477fbe3-eb3b-47e4-88ba-b0e9d84372bf" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="18575505-1908-459a-9050-74884d098cca" start_index="0" end="2a059317-09ce-42a0-b3a2-dfb3d6d7ef62" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="e99b48d9-8cdc-4bf2-965f-5585d3aadafd" start_index="0" end="e477fbe3-eb3b-47e4-88ba-b0e9d84372bf" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="e99b48d9-8cdc-4bf2-965f-5585d3aadafd" start_index="0" end="3d5778bf-eaf8-478b-b469-6e23d02473a0" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="3d5778bf-eaf8-478b-b469-6e23d02473a0" start_index="0" end="2a059317-09ce-42a0-b3a2-dfb3d6d7ef62" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="fda30a82-0b5a-459d-805e-af90e5b26b21" start_index="0" end="2a059317-09ce-42a0-b3a2-dfb3d6d7ef62" end_index="4" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="dc7ec61c-e356-4e61-8641-e30e012c9630" start_index="0" end="2a059317-09ce-42a0-b3a2-dfb3d6d7ef62" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="15717b77-1f3e-4b03-a2e2-5fe265900a22" start_index="20" end="d60e42e6-80c1-4411-9965-e1c8de93dad3" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="15717b77-1f3e-4b03-a2e2-5fe265900a22" start_index="20" end="e8fbabe5-5848-40f2-a7f6-f6c9e213674f" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="e8fbabe5-5848-40f2-a7f6-f6c9e213674f" start_index="0" end="5fef1e14-bf77-42da-94d8-546e3d30ca98" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="e8fbabe5-5848-40f2-a7f6-f6c9e213674f" start_index="0" end="b55032eb-d562-430e-98c2-71c3aa0537a1" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="5fef1e14-bf77-42da-94d8-546e3d30ca98" start_index="0" end="8b282622-3a0e-4c41-b629-a118cf2c6fc1" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="8b282622-3a0e-4c41-b629-a118cf2c6fc1" start_index="0" end="b55032eb-d562-430e-98c2-71c3aa0537a1" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="a445fb6c-059f-4d85-bd72-069c3c9fa105" start_index="0" end="8b282622-3a0e-4c41-b629-a118cf2c6fc1" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="b55032eb-d562-430e-98c2-71c3aa0537a1" start_index="0" end="63b8be71-96ed-4287-b445-56ece863df54" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="d7cc408f-67a3-4850-95c7-271bde32ca47" start_index="0" end="e477fbe3-eb3b-47e4-88ba-b0e9d84372bf" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

@@ -1,0 +1,71 @@
+<Workspace Version="0.7.1.17276" X="93" Y="123" zoom="1" Description="Computes the angle between two vectors." Category="LunchBox.Geometry.Vector" Name="LunchBox Vector Angle" ID="63001e95-2900-4494-be79-28cd155fcfad">
+  <Elements>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="6cb36fac-8125-40b7-a720-0b54adfe724c" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Vector A" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="c0ccdee7-3062-43d8-826d-e1ce8c4acb32" nickname="Input" x="-2" y="73" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Vector B" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="491a0acc-9175-43a6-b768-5eca6eef9936" nickname="Output" x="304.786362007394" y="31" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Angle" />
+    </Dynamo.Nodes.Output>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="89714cb5-3b1d-404f-8060-55fdb9492ead" nickname="Python Script" x="130.164301564403" y="24.2632737212524" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="2">
+      <Script>#Copyright(c) 2014, Nathan Miller
+#TheProvingGround.org
+
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+#The input to this node will be stored in the IN[0] variable.
+vecA = IN[0]
+vecB = IN[1]
+
+testA = hasattr(vecA, "__iter__")
+testB = hasattr(vecB, "__iter__")
+
+bools = testA + testB
+
+angles = []
+
+origin = Point.ByCoordinates(0,0,0)
+
+#if the input is an array
+if bools&gt;0:
+	if bools == 2:
+		for i in range(0,len(vecA)):
+			angle = []
+			for j in range(0,len(vecB)):
+				arc = Arc.ByCenterPointStartPointEndPoint(origin,Vector.AsPoint(vecA),Vector.AsPoint(vecB))
+				a = arc.SweepAngle
+				angle.append(a)
+			angles.append(angle)
+	
+	elif hasattr(vecA, "__iter__"):
+		for i in range(0,len(vecA)):
+			arc = Arc.ByCenterPointStartPointEndPoint(origin,Vector.AsPoint(vecA),Vector.AsPoint(vecB))
+			a = arc.SweepAngle
+			angles.append(a)
+		
+	elif hasattr(vecB, "__iter__"):
+		angle = []
+		for i in range(0,len(vecB)):
+			arc = Arc.ByCenterPointStartPointEndPoint(origin,Vector.AsPoint(vecA),Vector.AsPoint(vecB))
+			a = arc.SweepAngle
+			angles.append(a)
+else:
+	arc = Arc.ByCenterPointStartPointEndPoint(origin,Vector.AsPoint(vecA),Vector.AsPoint(vecB))
+	a = arc.SweepAngle
+	angles.append(a)
+
+#Assign your output to the OUT variable
+OUT = angles</Script>
+    </DSIronPythonNode.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="6cb36fac-8125-40b7-a720-0b54adfe724c" start_index="0" end="89714cb5-3b1d-404f-8060-55fdb9492ead" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c0ccdee7-3062-43d8-826d-e1ce8c4acb32" start_index="0" end="89714cb5-3b1d-404f-8060-55fdb9492ead" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="89714cb5-3b1d-404f-8060-55fdb9492ead" start_index="0" end="491a0acc-9175-43a6-b768-5eca6eef9936" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

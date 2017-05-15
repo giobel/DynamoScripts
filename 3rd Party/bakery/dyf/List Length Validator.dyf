@@ -1,0 +1,45 @@
+<Workspace Version="0.8.2.2371" X="697.775012504507" Y="375.486666854578" zoom="1.05429821501133" Name="List Length Validator" Description="" ID="fea88a4f-7457-4d39-ae65-da37267eb281" Category="Bakery.Lists">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="List" resolvedName="DSCore.List" assemblyName="DSCoreNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="4635d134-4100-4dca-b9ca-7d51e3ed9356" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="9.60760774068712" y="-14.3702761634862" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variables.
+lists = IN[0]
+myList = []
+
+for x in lists:
+	myList.append(len(x))
+
+#def checkEqual1(iterator):
+#   try:
+#      iterator = iter(iterator)
+#      first = next(iterator)
+#      return all(first == rest for rest in iterator)
+#   except StopIteration:
+#      return True
+
+#Assign your output to the OUT variable.
+OUT = all(x==myList[0] for x in myList)</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Output guid="a7c77894-6ec7-410d-9288-688a3aac4915" type="Dynamo.Nodes.Output" nickname="Output" x="457" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="equal lengths?" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Symbol guid="8e66b3a6-105c-4ac3-b872-a03c51a2fc00" type="Dynamo.Nodes.Symbol" nickname="Input" x="-278.645081933816" y="27.0448462678236" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="listOfLists" />
+    </Dynamo.Nodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="4635d134-4100-4dca-b9ca-7d51e3ed9356" start_index="0" end="a7c77894-6ec7-410d-9288-688a3aac4915" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="8e66b3a6-105c-4ac3-b872-a03c51a2fc00" start_index="0" end="4635d134-4100-4dca-b9ca-7d51e3ed9356" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

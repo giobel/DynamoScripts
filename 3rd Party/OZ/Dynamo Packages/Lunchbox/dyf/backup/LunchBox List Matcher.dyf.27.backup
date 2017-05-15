@@ -1,0 +1,83 @@
+<Workspace Version="0.7.5.3566" X="-36.3448088986938" Y="412.100766194873" zoom="1.45962255988686" Description="Compares a List A against a List B and matches length of List A.  If ListA &gt; ListB, ListB will be extended.  If ListA &lt; ListB, ListB will be truncated." Category="LunchBox.Archive.Format" Name="LunchBox List Matcher" ID="80d036ba-246a-40cc-b565-92ef2c41e425">
+  <Elements>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="307ea636-92e3-4c0b-80bf-80f1c53a0636" nickname="Python Script" x="250" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="2">
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+#The inputs to this node will be stored as a list in the IN variable.
+A = IN[0]
+B = IN[1]
+
+listA = []
+listB = []
+
+#convert lists
+if hasattr(A, "__iter__"):
+	for i in range(0,len(A)):
+		listA.append(A[i])
+else:
+	listA.append(A)
+	
+if hasattr(B, "__iter__"):
+	for i in range(0,len(B)):
+		listB.append(B[i])
+else:
+	listB.append(B)
+
+# matched lists
+lists = []
+
+# if list A is larger than B, replicate the remaining digits of B
+if len(listA) &gt; len(listB):	
+	dif = len(listA) - len(listB)
+	for i in range(0,dif):
+		listB.append(listB[len(listB)-1])
+# if list B is larger than A, remove the remaining digits of B
+elif len(listB) &gt; len(listA):
+	dif = len(listA) - len(listB)
+	listC = []
+	for i in range(0,len(listA)):
+		listC.append(listB[i])
+	listB = listC
+		
+lists.append(listA)
+lists.append(listB)
+
+
+#Assign your output to the OUT variable
+OUT = lists</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="c54a0870-1003-41e9-9133-95c9f28166a5" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="ListA" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="88083074-601d-4142-87f9-3b4a6451981c" nickname="Input" x="0" y="150" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="ListB" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="d0c48abb-4c26-4abe-940d-c954f3abc84f" nickname="Output" x="644.545442046847" y="-41.7091386083302" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="ListA" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="6de565a0-1186-472a-afda-db8369b9f954" nickname="Output" x="615.505145393486" y="49.8342954800829" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="MatchListB" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="a704ba6c-d68c-4de8-8af2-0b5f3317ef53" nickname="List.GetItemAtIndex" x="447.04453617309" y="-129.738602940546" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="29ae4bb9-3529-4ecf-8680-d58e8ba7d1b1" nickname="Number" x="339.250788341172" y="-102.113069576587" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Double value="0" />
+    </Dynamo.Nodes.DoubleInput>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="f654520d-806f-465e-bd02-3c7469ad442f" nickname="List.GetItemAtIndex" x="451.588221256308" y="97.2241123437438" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="1607ac30-0a12-4e80-ac94-081011678eff" nickname="Number" x="343.794473424389" y="124.849645707703" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Double value="1" />
+    </Dynamo.Nodes.DoubleInput>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="307ea636-92e3-4c0b-80bf-80f1c53a0636" start_index="0" end="a704ba6c-d68c-4de8-8af2-0b5f3317ef53" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="307ea636-92e3-4c0b-80bf-80f1c53a0636" start_index="0" end="f654520d-806f-465e-bd02-3c7469ad442f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c54a0870-1003-41e9-9133-95c9f28166a5" start_index="0" end="307ea636-92e3-4c0b-80bf-80f1c53a0636" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="88083074-601d-4142-87f9-3b4a6451981c" start_index="0" end="307ea636-92e3-4c0b-80bf-80f1c53a0636" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a704ba6c-d68c-4de8-8af2-0b5f3317ef53" start_index="0" end="d0c48abb-4c26-4abe-940d-c954f3abc84f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="29ae4bb9-3529-4ecf-8680-d58e8ba7d1b1" start_index="0" end="a704ba6c-d68c-4de8-8af2-0b5f3317ef53" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f654520d-806f-465e-bd02-3c7469ad442f" start_index="0" end="6de565a0-1186-472a-afda-db8369b9f954" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1607ac30-0a12-4e80-ac94-081011678eff" start_index="0" end="f654520d-806f-465e-bd02-3c7469ad442f" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

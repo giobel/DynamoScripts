@@ -1,0 +1,200 @@
+<Workspace Version="1.2.0.2514" X="-130.947303811276" Y="-661.185563638243" zoom="1.13810346721663" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="f76dd452-4f7e-4f15-940e-b8acd57f1df5" type="PythonNodeModels.PythonNode" nickname="Python Script" x="280.5" y="241" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+clr.AddReference('RevitAPI') 
+clr.AddReference('RevitAPIUI') 
+from Autodesk.Revit.DB import * 
+
+# Import DocumentManager
+clr.AddReference('RevitServices')
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+#The inputs to this node will be stored as a list in the IN variables.
+
+collector = FilteredElementCollector(doc)
+stairs = collector.OfCategory(BuiltInCategory.OST_Stairs)
+stairslist = list(stairs)
+
+stairsName = []
+
+for i in stairslist:
+	stairsName.append(i.GetType().Name)
+
+#for i in views:
+#	viewsName.append(i.Name)
+
+#Assign your output to the OUT variable.
+OUT = stairs,stairslist,stairsName</Script>
+    </PythonNodeModels.PythonNode>
+    <CoreNodeModels.Watch guid="cf05b769-8007-476e-a986-2ad103fefd7d" type="CoreNodeModels.Watch" nickname="Watch" x="460.5" y="170" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.Watch>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="28dad534-2a01-4bdb-a7ab-d83d757d6c0b" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.Name" x="1019.4690420095" y="671.548131207156" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="RevitNodes.dll" function="Revit.Elements.Element.Name">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="70035cff-8aec-4427-8fab-dec793ebbf3a" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.GetItemAtIndex" x="870.5" y="469" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="dd0d2034-88cb-46be-8bd1-6208ddb7d489" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="697.139465875371" y="577.326409495549" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="1;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="80bea184-e5c4-4bc1-afbc-9c771d6b3639" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="554.967359050445" y="575.540059347181" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="0;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="6fc487e3-100a-432f-bc94-91ee60c2184e" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="667" y="686" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="2;" ShouldFocus="false" />
+    <PythonNodeModels.PythonNode guid="53eb2b9b-3dbc-4700-ab36-bb6664c8490f" type="PythonNodeModels.PythonNode" nickname="All Categories.Names" x="293.658415538832" y="731.024070387975" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+documentSettings = DocumentManager.Instance.CurrentDBDocument
+
+group = documentSettings.Settings.Categories
+
+groupName = []
+
+for i in group:
+	groupName.append(i.Name)
+
+#OUT = "Number of all categories in current Revit document:" + str(group.Size)
+
+floorCategory = group.get_Item(BuiltInCategory.OST_Floors)
+
+
+OUT = floorCategory.Name</Script>
+    </PythonNodeModels.PythonNode>
+    <CoreNodeModels.Watch guid="ead4b8cd-2aa5-4076-a74a-110641d67ea7" type="CoreNodeModels.Watch" nickname="Watch" x="902.40488279943" y="921.964970398104" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.Watch>
+    <PythonNodeModels.PythonNode guid="b112932f-8d7b-4182-a1fa-82d5b96a3748" type="PythonNodeModels.PythonNode" nickname="All Categories" x="271.319625842936" y="1293.54326869143" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+documentSettings  = DocumentManager.Instance.CurrentDBDocument
+
+group = doc.Settings.Categories
+
+cat = []
+
+for i in categoriesCollector:
+	cat.append(i.Name)
+
+
+collector = FilteredElementCollector(doc).WhereElementIsElementType()
+Type = []
+
+for e in collector:
+	try:
+		out1.append(e.ToDSType(True))
+	except:
+		pass
+
+#cat = collector.OfCategory(BuiltInCategory())
+#stairs = collector.OfCategory(BuiltInCategory.OST_Stairs)
+
+#Assign your output to the OUT variable.
+OUT = cat</Script>
+    </PythonNodeModels.PythonNode>
+    <PythonNodeModels.PythonNode guid="4d345d44-7d2f-4248-ba11-47e2e8b8f2ca" type="PythonNodeModels.PythonNode" nickname="All Categories" x="321.59644475352" y="998.810781810806" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+documentSettings = DocumentManager.Instance.CurrentDBDocument
+
+group = documentSettings.Settings.Categories
+
+groupName = []
+
+for i in group:
+	groupName.append(i.Name)
+
+#OUT = "Number of all categories in current Revit document:" + str(group.Size)
+
+floorCategory = group.get_Item(BuiltInCategory.OST_Floors)
+
+
+OUT = floorCategory</Script>
+    </PythonNodeModels.PythonNode>
+    <DSRevitNodesUI.ElementsOfCategory guid="ea768b04-9c67-4291-b078-156210942bd8" type="DSRevitNodesUI.ElementsOfCategory" nickname="All Elements of Category" x="665.745866119828" y="816.123268318023" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </DSRevitNodesUI.ElementsOfCategory>
+    <PythonNodeModels.PythonNode guid="97ac3568-7310-4975-97eb-add532fa1bdb" type="PythonNodeModels.PythonNode" nickname="All Floor Types" x="285.327268995757" y="875.928036066462" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+doc = DocumentManager.Instance.CurrentDBDocument
+
+collector = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Floors)
+
+floorElements = []
+
+for floor in collector:
+	floorElements.append(floor)
+
+
+OUT = floorElements</Script>
+    </PythonNodeModels.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="f76dd452-4f7e-4f15-940e-b8acd57f1df5" start_index="0" end="cf05b769-8007-476e-a986-2ad103fefd7d" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="cf05b769-8007-476e-a986-2ad103fefd7d" start_index="0" end="70035cff-8aec-4427-8fab-dec793ebbf3a" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="70035cff-8aec-4427-8fab-dec793ebbf3a" start_index="0" end="28dad534-2a01-4bdb-a7ab-d83d757d6c0b" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="dd0d2034-88cb-46be-8bd1-6208ddb7d489" start_index="0" end="70035cff-8aec-4427-8fab-dec793ebbf3a" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="53eb2b9b-3dbc-4700-ab36-bb6664c8490f" start_index="0" end="ea768b04-9c67-4291-b078-156210942bd8" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="ea768b04-9c67-4291-b078-156210942bd8" start_index="0" end="ead4b8cd-2aa5-4076-a74a-110641d67ea7" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

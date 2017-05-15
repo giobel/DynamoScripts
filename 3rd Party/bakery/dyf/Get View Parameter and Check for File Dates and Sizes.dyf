@@ -1,0 +1,53 @@
+<Workspace Version="0.9.2.4472" X="41.1905058750688" Y="232.45462036623" zoom="0.658674852158215" Name="Get View Parameter and Check for File Dates and Sizes" Description="" ID="7fb03f69-204f-445b-99d3-adc108d192ac" Category="Bakery.Links">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="ec1d0c38-96e5-4033-ad7f-e10621bef4b1" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.Id" x="369.993603879565" y="146.695128803302" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" assembly="RevitNodes.dll" function="Revit.Elements.Element.Id" />
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="825dc987-eced-404b-98f4-7d0000422992" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="10" y="156.735292013151" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false">
+      <Symbol value="viewFromViewsList" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="c96ab0fd-b7be-4e43-ab65-7d52f0db69ca" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.FirstItem" x="750.42095533068" y="140.366758558109" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" assembly="DSCoreNodes.dll" function="DSCore.List.FirstItem@var[]..[]" />
+    <CoreNodeModels.Input.StringInput guid="ee4f2544-1756-4dbe-86e2-cf560d776196" type="CoreNodeModels.Input.StringInput" nickname="String" x="1218.97865580833" y="294.437723960022" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false">
+      <System.String>
+</System.String>
+      <System.String value="&#xD;&#xA;" />
+    </CoreNodeModels.Input.StringInput>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="4807f013-1ddb-4883-96e5-61d017df4b8f" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.GetParameterValueByName" x="1032.86828998627" y="161.427010388171" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" assembly="RevitNodes.dll" function="Revit.Elements.Element.GetParameterValueByName@string" />
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="e422edb8-2ca0-4cc0-8356-696d4a66f396" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="285.352305366832" y="527.362689245339" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false">
+      <Symbol value="parameterName" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSVarArgFunction guid="b60f35dd-1d68-4e85-98eb-12c8d87d64a6" type="Dynamo.Graph.Nodes.ZeroTouch.DSVarArgFunction" nickname="String.Split" x="1498.32617574074" y="231.214465012365" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" assembly="DSCoreNodes.dll" function="DSCore.String.Split@string,string[]" inputcount="2" />
+    <CoreNodeModels.Watch guid="218d71f5-5e43-4b2c-ae69-81bcbfb5d27b" type="CoreNodeModels.Watch" nickname="Watch" x="1780.32606471088" y="229.998948249562" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" />
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="58837159-4ccf-4af4-a466-5da06bd69642" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="2206.26229977255" y="371.268735754055" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false">
+      <Symbol value="filenames found" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="992160cd-cc29-4f46-9078-700cf7a4f7a5" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="bv IDs to Elements" x="558.104644378666" y="9.02627391085196" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false">
+      <ID value="b2a2941e-7151-4158-81ce-522d451de0ff" />
+      <Name value="bv IDs to Elements" />
+      <Description value="forked from CAAD_RWTH" />
+      <Inputs>
+        <Input value="ID(s)" />
+      </Inputs>
+      <Outputs>
+        <Output value="Element(s)" />
+        <Output value="unmatched" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="ec1d0c38-96e5-4033-ad7f-e10621bef4b1" start_index="0" end="992160cd-cc29-4f46-9078-700cf7a4f7a5" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="825dc987-eced-404b-98f4-7d0000422992" start_index="0" end="ec1d0c38-96e5-4033-ad7f-e10621bef4b1" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c96ab0fd-b7be-4e43-ab65-7d52f0db69ca" start_index="0" end="4807f013-1ddb-4883-96e5-61d017df4b8f" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="ee4f2544-1756-4dbe-86e2-cf560d776196" start_index="0" end="b60f35dd-1d68-4e85-98eb-12c8d87d64a6" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="4807f013-1ddb-4883-96e5-61d017df4b8f" start_index="0" end="b60f35dd-1d68-4e85-98eb-12c8d87d64a6" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="e422edb8-2ca0-4cc0-8356-696d4a66f396" start_index="0" end="4807f013-1ddb-4883-96e5-61d017df4b8f" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="b60f35dd-1d68-4e85-98eb-12c8d87d64a6" start_index="0" end="218d71f5-5e43-4b2c-ae69-81bcbfb5d27b" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="218d71f5-5e43-4b2c-ae69-81bcbfb5d27b" start_index="0" end="58837159-4ccf-4af4-a466-5da06bd69642" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="992160cd-cc29-4f46-9078-700cf7a4f7a5" start_index="0" end="c96ab0fd-b7be-4e43-ab65-7d52f0db69ca" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

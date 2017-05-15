@@ -1,0 +1,77 @@
+<Workspace Version="0.7.2.2921" X="-314.327057973958" Y="261.536826190331" zoom="0.849853903501729" Description="Applies a view template to any given view(s). Supply a string with a view template name." Category="SteamNodes.View" Name="View.ApplyViewTemplate" ID="d97a3d27-734d-4a3b-bbd4-aa6b1d26d032">
+  <Elements>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="4b8b2cce-a161-4d89-9c28-beaf6d47e2b0" nickname="Python Script" x="709" y="66" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="2">
+      <Script>#template for python nodes in dynamo 0.7
+#proposed by Julien Benoit @jbenoit44 
+#http://aecuandme.wordpress.com/
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+# Import geometry conversion extension methods
+clr.ImportExtensions(Revit.GeometryConversion)
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+from System.Collections.Generic import *
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+uidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+
+viewTempName = IN[1]
+views = []
+for i in IN[0]:
+	views.append(UnwrapElement(i))
+
+# Start Transaction
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+collector = FilteredElementCollector(doc).OfClass(View)
+for i in collector:
+	if i.IsTemplate == True and i.Name == viewTempName:
+		viewTemp = i
+
+for i in views:
+	i.ViewTemplateId = viewTemp.Id
+		
+
+# End Transaction
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT=views
+</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="dec75c37-ead0-4f81-93f8-464a526a8c30" nickname="Flatten" x="485" y="66" isVisible="true" isUpstreamVisible="true" lacing="Disabled" assembly="" function="Flatten@var[]..[]" />
+    <DSCoreNodesUI.CreateList type="DSCoreNodesUI.CreateList" guid="cae42062-96fb-4127-8c28-db8ba501bdc5" nickname="Create List" x="259" y="66" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="2" />
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="67cf8f77-6f86-4ba9-9af5-5e302e7b59f8" nickname="List.Empty" x="0" y="83" isVisible="true" isUpstreamVisible="true" lacing="Disabled" assembly="DSCoreNodes.dll" function="DSCore.List.Empty" />
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="cfd29705-ab91-43ba-a8f0-5eb1c49235da" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="View(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="6c364fc4-5cd8-41a0-a199-0ec74db1846c" nickname="Input" x="0" y="167" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="View Template Name" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="38723e01-3204-444f-a479-660bdcecc10d" nickname="Output" x="933" y="66" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="View(s)" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="4b8b2cce-a161-4d89-9c28-beaf6d47e2b0" start_index="0" end="38723e01-3204-444f-a479-660bdcecc10d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="dec75c37-ead0-4f81-93f8-464a526a8c30" start_index="0" end="4b8b2cce-a161-4d89-9c28-beaf6d47e2b0" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="cae42062-96fb-4127-8c28-db8ba501bdc5" start_index="0" end="dec75c37-ead0-4f81-93f8-464a526a8c30" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="67cf8f77-6f86-4ba9-9af5-5e302e7b59f8" start_index="0" end="cae42062-96fb-4127-8c28-db8ba501bdc5" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="cfd29705-ab91-43ba-a8f0-5eb1c49235da" start_index="0" end="cae42062-96fb-4127-8c28-db8ba501bdc5" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6c364fc4-5cd8-41a0-a199-0ec74db1846c" start_index="0" end="4b8b2cce-a161-4d89-9c28-beaf6d47e2b0" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

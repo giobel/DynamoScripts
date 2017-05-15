@@ -1,0 +1,65 @@
+<Workspace Version="1.0.0.1180" X="-1887.94186028857" Y="-657.583303325196" zoom="1.78359936238281" Name="bv Select Linked Elements" Description="Dimitar original code. I modded with a Try/Except because it was failing on me." ID="1e470911-7690-4188-a6ad-4edb7ed8528e" Category="Bakery.Forks">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="5187cfa4-89fd-44bb-87bc-588c48e432b6" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="1048.5" y="598" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="refresh:bool = true" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <PythonNodeModels.PythonNode guid="c8f196e4-2134-4ab8-9dd1-7105a256e63c" type="PythonNodeModels.PythonNode" nickname="Python Script" x="1251.37592129965" y="581.423805841204" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <Script>#Copyright(c) 2016, Dimitar Venkov
+# @5devene, dimitar.ven@gmail.com
+
+import clr
+
+clr.AddReference("RevitAPIUI")
+from  Autodesk.Revit.UI import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+doc = DocumentManager.Instance.CurrentDBDocument
+uidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+sel1 = uidoc.Selection
+ot1 = Selection.ObjectType.Element
+ot2 = Selection.ObjectType.LinkedElement
+li_ref = sel1.PickObject(ot1, "Select a link instance first.")
+el_ref = sel1.PickObjects(ot2, "Select the linked elements and press Finish.")
+Link1 = doc.GetElement(li_ref.ElementId)
+LinkDoc = Link1.GetLinkDocument()
+Lel_id = [r1.LinkedElementId for r1 in el_ref]
+elementset = []
+failed = []
+for id1 in Lel_id:
+	try:
+		elementset.append(LinkDoc.GetElement(id1).ToDSType(True))
+	except:
+		failed.append(id1)
+OUT = elementset, failed</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="89b3a967-9602-4b69-bfbd-2a74ee2b7479" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1587.2236018547" y="597.679742474831" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="element(s)" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="b3a2b2cd-c7f8-4b8c-97bf-4a7f5f79d002" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1396.02082889406" y="843.565732898187" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="failedIds" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="58d9a53c-f7f6-49db-b2aa-786bcfe7bd61" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.FirstItem" x="1417.8867259237" y="538.564502535983" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.List.FirstItem@var[]..[]" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="137f3578-3d1b-4ca2-9dff-a9e42f72b88e" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.LastItem" x="1380.88290018123" y="726.386951380355" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.List.LastItem@var[]..[]" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="5187cfa4-89fd-44bb-87bc-588c48e432b6" start_index="0" end="c8f196e4-2134-4ab8-9dd1-7105a256e63c" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c8f196e4-2134-4ab8-9dd1-7105a256e63c" start_index="0" end="58d9a53c-f7f6-49db-b2aa-786bcfe7bd61" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c8f196e4-2134-4ab8-9dd1-7105a256e63c" start_index="0" end="137f3578-3d1b-4ca2-9dff-a9e42f72b88e" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="58d9a53c-f7f6-49db-b2aa-786bcfe7bd61" start_index="0" end="89b3a967-9602-4b69-bfbd-2a74ee2b7479" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="137f3578-3d1b-4ca2-9dff-a9e42f72b88e" start_index="0" end="b3a2b2cd-c7f8-4b8c-97bf-4a7f5f79d002" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

@@ -1,0 +1,47 @@
+<Workspace Version="0.8.0.950" X="79.14" Y="164.545" zoom="1.1575" Name="Remove List from List by Item not Value" ID="3087d2ac-7716-41e4-bc15-14de29d964f6" Description="remove the items in ListA from the items in ListB and return whats left" Category="Bakery.Lists">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Symbol guid="6e64687d-0654-47a7-9a35-d43f19c7249a" type="Dynamo.Nodes.Symbol" nickname="Input" x="10" y="34.4088692109809" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="ListOfItemsToRemove" />
+    </Dynamo.Nodes.Symbol>
+    <DSIronPythonNode.PythonNode guid="83054626-cd3f-48a7-bce1-013ca2cc1db1" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="242.709435150938" y="75.0200750913927" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="2">
+      <Script>listA = IN[0]
+listB = IN[1]
+unmatched = []
+
+#listC = [x for x in listA if x not in listB]
+for x in range(len(listA)):
+#	s = set(listA)
+	if listA[x] in listB:
+		listB.remove(listA[x])
+	else:
+		unmatched.append(listA[x])
+
+OUT = [listB, unmatched]</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol guid="ca19cb2f-5d6e-4c0c-a590-3c18ccd039d3" type="Dynamo.Nodes.Symbol" nickname="Input" x="10" y="260.408869210981" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="ListToRemoveFrom" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="20ee5357-5992-4aee-b9d1-a3342a16202c" type="Dynamo.Nodes.Output" nickname="Output" x="904.529314043654" y="-51.1396472091872" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="reducedList" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.DSFunction guid="5163f231-2a7d-4c4d-8c3b-94dcef8bc8ba" type="Dynamo.Nodes.DSFunction" nickname="List.GetItemAtIndex" x="562.082073434125" y="-59.866090712743" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="1ac56674-c766-4904-8bb1-32b151d4a302" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="360" y="-45" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="0;" ShouldFocus="false" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="b4740179-2bbf-44f0-8291-b07711295c69" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="442.708423326134" y="196.317494600432" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="1;" ShouldFocus="false" />
+    <Dynamo.Nodes.DSFunction guid="f9c31b00-2ec2-4d86-a4f7-96f458b4193c" type="Dynamo.Nodes.DSFunction" nickname="List.GetItemAtIndex" x="644.790496760259" y="181.451403887689" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.Output guid="cfc19238-980d-4b28-a9d3-a686403154e7" type="Dynamo.Nodes.Output" nickname="Output" x="987.237737369788" y="190.177847391245" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="unmatched" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="6e64687d-0654-47a7-9a35-d43f19c7249a" start_index="0" end="83054626-cd3f-48a7-bce1-013ca2cc1db1" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="83054626-cd3f-48a7-bce1-013ca2cc1db1" start_index="0" end="5163f231-2a7d-4c4d-8c3b-94dcef8bc8ba" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="83054626-cd3f-48a7-bce1-013ca2cc1db1" start_index="0" end="f9c31b00-2ec2-4d86-a4f7-96f458b4193c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ca19cb2f-5d6e-4c0c-a590-3c18ccd039d3" start_index="0" end="83054626-cd3f-48a7-bce1-013ca2cc1db1" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="5163f231-2a7d-4c4d-8c3b-94dcef8bc8ba" start_index="0" end="20ee5357-5992-4aee-b9d1-a3342a16202c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1ac56674-c766-4904-8bb1-32b151d4a302" start_index="0" end="5163f231-2a7d-4c4d-8c3b-94dcef8bc8ba" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="b4740179-2bbf-44f0-8291-b07711295c69" start_index="0" end="f9c31b00-2ec2-4d86-a4f7-96f458b4193c" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f9c31b00-2ec2-4d86-a4f7-96f458b4193c" start_index="0" end="cfc19238-980d-4b28-a9d3-a686403154e7" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

@@ -1,0 +1,46 @@
+<Workspace Version="0.9.2.4472" X="40.972907660643" Y="221.610950272027" zoom="0.691347793867188" Name="Parse CSV Text of Elem IDs to Actual Revit Elements" Description="input file path" ID="e3d4b2fd-d79d-41a7-82b8-596fc20da127" Category="Bakery.Standalone">
+  <NamespaceResolutionMap />
+  <Elements>
+    <CoreNodeModels.Input.FileObject guid="c49ffe81-0be7-4755-ac1b-f1978dca4faf" type="CoreNodeModels.Input.FileObject" nickname="File.FromPath" x="188.147613463764" y="10" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" />
+    <CoreNodeModels.Input.StringInput guid="929b1763-6214-461f-bbb8-c162809148fc" type="CoreNodeModels.Input.StringInput" nickname="String" x="10" y="305.124058449007" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false">
+      <System.String>,</System.String>
+      <System.String value="," />
+    </CoreNodeModels.Input.StringInput>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="e9de005c-c600-48d2-8c13-708f1071da64" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="File.ReadText" x="187.074435069404" y="116.244661041643" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" assembly="DSCoreNodes.dll" function="DSCore.IO.File.ReadText@var" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSVarArgFunction guid="b7ea3520-e53b-4edb-b0cb-c5d1dd8943cc" type="Dynamo.Graph.Nodes.ZeroTouch.DSVarArgFunction" nickname="String.Split" x="287.953204139246" y="224.635678872005" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" assembly="DSCoreNodes.dll" function="DSCore.String.Split@string,string[]" inputcount="2" />
+    <CoreNodeModels.Watch guid="b1ec8f9e-5bd3-4832-ba21-6500b7009a9c" type="CoreNodeModels.Watch" nickname="Watch" x="523.515076279365" y="225.708071844462" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" />
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="b1148824-acd2-43a3-bcdb-ed493cbd877b" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="943.652845557452" y="222.976440669554" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false">
+      <Symbol value="elements" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="d154e38b-49a2-4093-ba51-6d42aedaa27b" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-76.0943876787262" y="-30.1523051692135" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false">
+      <Symbol value="FilePathNode" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="738e8bc7-7989-4797-99d6-27ac0338fe40" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="bv IDs to Elements" x="766.946965106273" y="94.8712794194192" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false">
+      <ID value="b2a2941e-7151-4158-81ce-522d451de0ff" />
+      <Name value="bv IDs to Elements" />
+      <Description value="forked from CAAD_RWTH" />
+      <Inputs>
+        <Input value="ID(s)" />
+      </Inputs>
+      <Outputs>
+        <Output value="Element(s)" />
+        <Output value="unmatched" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="c49ffe81-0be7-4755-ac1b-f1978dca4faf" start_index="0" end="e9de005c-c600-48d2-8c13-708f1071da64" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="929b1763-6214-461f-bbb8-c162809148fc" start_index="0" end="b7ea3520-e53b-4edb-b0cb-c5d1dd8943cc" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="e9de005c-c600-48d2-8c13-708f1071da64" start_index="0" end="b7ea3520-e53b-4edb-b0cb-c5d1dd8943cc" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="b7ea3520-e53b-4edb-b0cb-c5d1dd8943cc" start_index="0" end="b1ec8f9e-5bd3-4832-ba21-6500b7009a9c" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="b1ec8f9e-5bd3-4832-ba21-6500b7009a9c" start_index="0" end="738e8bc7-7989-4797-99d6-27ac0338fe40" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="d154e38b-49a2-4093-ba51-6d42aedaa27b" start_index="0" end="c49ffe81-0be7-4755-ac1b-f1978dca4faf" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="738e8bc7-7989-4797-99d6-27ac0338fe40" start_index="0" end="b1148824-acd2-43a3-bcdb-ed493cbd877b" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

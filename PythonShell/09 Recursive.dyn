@@ -1,0 +1,99 @@
+<Workspace Version="1.2.0.2514" X="266.820718846677" Y="114.27832534328" zoom="0.910063803931435" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="False">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="Vector.ZAxis" resolvedName="Autodesk.DesignScript.Geometry.Vector" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Autodesk.Point" resolvedName="Autodesk.DesignScript.Geometry.Point" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Autodesk.DesignScript.Geometry.Point" resolvedName="Autodesk.DesignScript.Geometry.Point" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Line" resolvedName="Autodesk.DesignScript.Geometry.Line" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Vector" resolvedName="Autodesk.DesignScript.Geometry.Vector" assemblyName="ProtoGeometry.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="2a89a86f-eb0f-4dd2-9cc8-d55be0d09e6a" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="267" y="317" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="Vector.ZAxis;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="d4b40c5d-803f-40ec-aa39-7634a33ab264" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="319" y="402" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="30;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="6361aa3e-3d12-4d14-88ea-712aee464153" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="366" y="484" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="1.5;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="1248045f-2abc-45a8-9ff2-98bba62b3c43" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="457" y="551" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="9;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="7037adc7-19c5-4dd0-8ed9-b6ed9751c77d" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-443.22455433326" y="189.894104793869" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="Autodesk.Point.ByCoordinates(0,0,0);" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="32821a8d-dc42-4542-b3fb-d853bac36be5" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-434.72455433326" y="280.394104793869" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="Autodesk.Point.ByCoordinates(0,0,10);" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="0dd43eb6-8b6f-4d54-904a-25f23e757895" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-72.0734338245269" y="235" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="Line.ByStartPointEndPoint(a,b);" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <PythonNodeModels.PythonNode guid="c690aa32-0dee-4916-b191-59d5c3692f1b" type="PythonNodeModels.PythonNode" nickname="Python Script" x="621.779292543125" y="294.28326773399" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="5">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <PortInfo index="3" default="False" />
+      <PortInfo index="4" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variables.
+
+line = IN[0]
+axis = IN[1]
+angle = IN[2]
+scale = IN[3]
+n = IN[4]
+
+"""
+
+def branch(line,angle,scale,axis,n):
+	if n&gt;0:
+		start = Curve.PointAtParameter(line,0)
+		end = Curve.PointAtParameter(line,1)
+		
+		vect = Vector.ByTwoPoints(end,start)
+		vect = Vector.Scale(vect,scale)
+		
+		vectRotA = Vector.Rotate(vect,angle,axis)
+		vectRotB = Vector.Rotate(vect,-angle,axis)
+		
+		endA = Vector.Add(end,vectRotA)
+		endB = Vector.Add(end,vectRotB)
+		
+		lineA = Line.ByStartPointEndPoint(end,endA)
+		lineB = Line.ByStartPointEndPoint(end,endB)
+		
+		branch(lineA,angle,scale,axis,n-1))
+		branch(lineB,angle,scale,axis,n-1))
+	
+
+brancho = branch(lineA,angle,scale,axis,n-1))
+"""
+crv = Curve.PointAtParameter(line,0)
+
+#Assign your output to the OUT variable.
+OUT = crv
+</Script>
+    </PythonNodeModels.PythonNode>
+    <PythonNodeModels.PythonNode guid="48f674ee-2675-47d9-ba72-66f92c250da5" type="PythonNodeModels.PythonNode" nickname="Python Script" x="311.16070074806" y="19.4694969557133" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variables.
+crv = IN[0]
+
+pt = Curve.PointAtParameter(crv,0)
+
+
+#Assign your output to the OUT variable.
+OUT = pt</Script>
+    </PythonNodeModels.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="2a89a86f-eb0f-4dd2-9cc8-d55be0d09e6a" start_index="0" end="c690aa32-0dee-4916-b191-59d5c3692f1b" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="d4b40c5d-803f-40ec-aa39-7634a33ab264" start_index="0" end="c690aa32-0dee-4916-b191-59d5c3692f1b" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="6361aa3e-3d12-4d14-88ea-712aee464153" start_index="0" end="c690aa32-0dee-4916-b191-59d5c3692f1b" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="1248045f-2abc-45a8-9ff2-98bba62b3c43" start_index="0" end="c690aa32-0dee-4916-b191-59d5c3692f1b" end_index="4" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="7037adc7-19c5-4dd0-8ed9-b6ed9751c77d" start_index="0" end="0dd43eb6-8b6f-4d54-904a-25f23e757895" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="32821a8d-dc42-4542-b3fb-d853bac36be5" start_index="0" end="0dd43eb6-8b6f-4d54-904a-25f23e757895" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0dd43eb6-8b6f-4d54-904a-25f23e757895" start_index="0" end="c690aa32-0dee-4916-b191-59d5c3692f1b" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0dd43eb6-8b6f-4d54-904a-25f23e757895" start_index="0" end="48f674ee-2675-47d9-ba72-66f92c250da5" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-10.7127466201782" eyeY="16.6054763793945" eyeZ="51.7782745361328" lookX="10.7127466201782" lookY="-11.6054754257202" lookZ="-51.7782745361328" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

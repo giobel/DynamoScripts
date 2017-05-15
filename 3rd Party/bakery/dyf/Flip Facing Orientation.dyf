@@ -1,0 +1,55 @@
+<Workspace Version="0.9.1.4062" X="-228.989092098491" Y="127.420649353366" zoom="0.852765925581498" Name="Flip Facing Orientation" Description="" ID="27342811-2d5b-4730-a588-9ce50f02d1fa" Category="Bakery.Elements">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="17e9971f-17c5-49f4-a843-c024dc63423e" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="250" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false">
+      <Symbol value="ElementsIn" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="b809b5a8-6e75-4453-ab3c-2cdb28b3e7d4" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="TurnIntoList" x="397.312012480499" y="133.918876755071" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <PythonNodeModels.PythonNode guid="c1ad450d-c945-4321-a81c-5949d5d32fe8" type="PythonNodeModels.PythonNode" nickname="Python Script" x="600.748472834583" y="148.482416400987" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+faminstances = IN[0]
+elementlist = list()
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+for item in faminstances:
+#	try:
+		item.Mirror()
+		elementlist.append(item)
+#	except:
+#		elementlist.append(list())
+TransactionManager.Instance.TransactionTaskDone()
+		
+OUT = elementlist</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="2af418c9-325f-4cbc-a5cb-71be6afbdb77" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1103.3120124805" y="120.918876755071" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false">
+      <Symbol value="Element(s)" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="17e9971f-17c5-49f4-a843-c024dc63423e" start_index="0" end="b809b5a8-6e75-4453-ab3c-2cdb28b3e7d4" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="b809b5a8-6e75-4453-ab3c-2cdb28b3e7d4" start_index="0" end="c1ad450d-c945-4321-a81c-5949d5d32fe8" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c1ad450d-c945-4321-a81c-5949d5d32fe8" start_index="0" end="2af418c9-325f-4cbc-a5cb-71be6afbdb77" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+</Workspace>

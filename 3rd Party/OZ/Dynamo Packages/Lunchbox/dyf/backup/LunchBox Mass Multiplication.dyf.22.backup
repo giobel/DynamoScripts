@@ -1,0 +1,67 @@
+<Workspace Version="0.7.1.29946" X="288.715024754455" Y="161.539230882163" zoom="0.822695359375" Description="Returns the total value of a list of numbers." Category="LunchBox.Math.Operators" Name="LunchBox Mass Multiplication" ID="b9855834-cdac-442b-8a59-743d7a68e3c5">
+  <Elements>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="d2d7b5ee-363e-4590-88bf-e10c5eaaaaa2" nickname="Input" x="91" y="49" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Numbers" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="d4cdb549-d47c-469a-9f6a-018bb4550d57" nickname="Output" x="433.727272727273" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Result" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="68395fcc-15af-400c-bad8-e59a52bcc6de" nickname="Output" x="429.727272727273" y="106" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Partials" />
+    </Dynamo.Nodes.Output>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="0e07c713-1a24-4d23-b0f9-73947812ed7f" nickname="Python Script" x="232.965641671394" y="116.640439583488" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="1">
+      <Script>#Copyright(c) 2014, Nathan Miller
+# The Proving Ground, http://theprovingground.org
+# Default imports
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+#The input to this node will be stored in the IN[0] variable.
+list = IN[0]
+mass = 1
+
+#The input to this node will be stored in the IN[0] variable.
+list = IN[0]
+mass = 1
+masspart = []
+if hasattr(list, "__iter__"):
+    for i in range(1,len(list)):
+	mass = mass * list[i]
+	masspart.append(mass)
+else:
+    masspart.append(list)
+
+#Assign your output to the OUT variable
+OUT = masspart</Script>
+    </DSIronPythonNode.PythonNode>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="6496a3b0-4fbf-4ed0-b492-51dd8dc9e5fc" nickname="Python Script" x="229.692914398667" y="-13.9050149619667" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="1">
+      <Script>#Copyright(c) 2014, Nathan Miller
+# The Proving Ground, http://theprovingground.org
+
+# Default imports
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+#The input to this node will be stored in the IN[0] variable.
+list = IN[0]
+mass = 1
+if hasattr(list, "__iter__"):
+    for i in range(1,len(list)):
+	mass = mass * list[i]
+else:
+    mass = list
+
+#Assign your output to the OUT variable
+OUT = mass</Script>
+    </DSIronPythonNode.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="d2d7b5ee-363e-4590-88bf-e10c5eaaaaa2" start_index="0" end="6496a3b0-4fbf-4ed0-b492-51dd8dc9e5fc" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d2d7b5ee-363e-4590-88bf-e10c5eaaaaa2" start_index="0" end="0e07c713-1a24-4d23-b0f9-73947812ed7f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0e07c713-1a24-4d23-b0f9-73947812ed7f" start_index="0" end="68395fcc-15af-400c-bad8-e59a52bcc6de" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6496a3b0-4fbf-4ed0-b492-51dd8dc9e5fc" start_index="0" end="d4cdb549-d47c-469a-9f6a-018bb4550d57" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

@@ -1,0 +1,101 @@
+<Workspace Version="0.7.1.29946" X="-96.910621109751" Y="115.042888222165" zoom="0.96162654456011" Description="Create a quadrangular XYZ grid on a face.  The face surface must have an untrimmed UV parameter space." Category="LunchBox.Geometry.Panel" Name="LunchBox Quad Grid by Face" ID="c5005aed-546e-4dd8-9404-99f6aca0e3e9">
+  <Elements>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="8d85fb30-bc86-43bd-9288-2a1ced4469d7" nickname="Input" x="152.072761762115" y="118.037618453259" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Surface" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="5b620cf9-cc7c-4455-9c07-c693d820aef8" nickname="Input" x="173" y="194.04" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="U" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="d3b4a7b7-7a58-44b8-9aec-60e61cd9bcf6" nickname="Input" x="172" y="261.79" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="V" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="de1e1cf3-a58c-411c-b292-50763e6bf743" nickname="Output" x="1012.83846540623" y="95.5618173529408" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Panel Pts" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="f8734666-530b-4d7a-a0c6-391351b33f69" nickname="Output" x="1011.41112208546" y="217.577152233599" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Panel Polys" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="73ccd0ed-27a3-44f2-a99c-c9555911e744" nickname="List.GetItemAtIndex" x="649.213944817544" y="219.284717564596" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="4a769b64-77df-428c-9288-e18b5ba06b93" nickname="Number" x="563.170712499498" y="269.967717423171" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Double value="1" />
+    </Dynamo.Nodes.DoubleInput>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="03cad09a-658c-450a-8110-8586b6917b73" nickname="Python Script" x="372.770591490441" y="155.227212799446" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="3">
+      <Script>#Copyright(c) 2014, Nathan Miller
+# The Proving Ground, http://theprovingground.org
+
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+#The input to this node will be stored in the IN[0] variable.
+srf = IN[0]
+
+udiv = IN[1]
+vdiv = IN[2]
+
+ustep = 1.0/udiv
+vstep = 1.0/vdiv
+
+panels = []
+polys = []
+quads = []
+for i in range(0,int(udiv)):
+	for j in range(0,int(vdiv)):
+		quad = []
+		#XYZ Quads
+		myXYZA = srf.PointAtParameter(i*ustep, j*vstep)
+		myXYZB = srf.PointAtParameter((i+1)*ustep,j*vstep)
+		myXYZC = srf.PointAtParameter((i+1)*ustep,(j+1)*vstep)
+		myXYZD = srf.PointAtParameter(i*ustep,(j+1)*vstep)
+		#Append to quad
+		quad.append(myXYZA)
+		quad.append(myXYZB)
+		quad.append(myXYZC)
+		quad.append(myXYZD)
+		#Append quads
+		quads.append(quad)
+		
+		#polygons
+		poly = Polygon.ByPoints(quad)
+		polys.append(poly)
+		
+		#panels
+		panel = Surface.ByPerimeterPoints(quad)
+		panels.append(panel)
+		
+output = []
+output.append(quads)
+output.append(polys)
+output.append(panels)
+
+#Assign your output to the OUT variable
+OUT = output</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="98f97dc8-8097-4223-a1ea-55da6281041f" nickname="List.GetItemAtIndex" x="647.847945100393" y="95.5239039564468" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="ae5dad82-588b-40de-a05d-598210f4960b" nickname="Number" x="561.804712782347" y="146.206903815022" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Double value="0" />
+    </Dynamo.Nodes.DoubleInput>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="1a2f6dab-022d-49db-9e4c-9f0ce9128ade" nickname="List.GetItemAtIndex" x="636.565942820495" y="348.232905092762" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="9def8748-ad07-48c0-a870-d0b0d45f7f45" nickname="Number" x="550.522710502449" y="398.915904951338" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Double value="2" />
+    </Dynamo.Nodes.DoubleInput>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="0473c027-3414-4201-a854-ed8b60cf37bc" nickname="Output" x="1008.12226273159" y="345.485435023636" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Panel Faces" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="8d85fb30-bc86-43bd-9288-2a1ced4469d7" start_index="0" end="03cad09a-658c-450a-8110-8586b6917b73" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="5b620cf9-cc7c-4455-9c07-c693d820aef8" start_index="0" end="03cad09a-658c-450a-8110-8586b6917b73" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d3b4a7b7-7a58-44b8-9aec-60e61cd9bcf6" start_index="0" end="03cad09a-658c-450a-8110-8586b6917b73" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="73ccd0ed-27a3-44f2-a99c-c9555911e744" start_index="0" end="f8734666-530b-4d7a-a0c6-391351b33f69" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4a769b64-77df-428c-9288-e18b5ba06b93" start_index="0" end="73ccd0ed-27a3-44f2-a99c-c9555911e744" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="03cad09a-658c-450a-8110-8586b6917b73" start_index="0" end="73ccd0ed-27a3-44f2-a99c-c9555911e744" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="03cad09a-658c-450a-8110-8586b6917b73" start_index="0" end="98f97dc8-8097-4223-a1ea-55da6281041f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="03cad09a-658c-450a-8110-8586b6917b73" start_index="0" end="1a2f6dab-022d-49db-9e4c-9f0ce9128ade" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="98f97dc8-8097-4223-a1ea-55da6281041f" start_index="0" end="de1e1cf3-a58c-411c-b292-50763e6bf743" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ae5dad82-588b-40de-a05d-598210f4960b" start_index="0" end="98f97dc8-8097-4223-a1ea-55da6281041f" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1a2f6dab-022d-49db-9e4c-9f0ce9128ade" start_index="0" end="0473c027-3414-4201-a854-ed8b60cf37bc" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9def8748-ad07-48c0-a870-d0b0d45f7f45" start_index="0" end="1a2f6dab-022d-49db-9e4c-9f0ce9128ade" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

@@ -1,0 +1,57 @@
+﻿#import libraries and reference the RevitAPI and RevitAPIUI
+import clr
+import math
+clr.AddReference('RevitAPI') 
+clr.AddReference('RevitAPIUI') 
+from Autodesk.Revit.DB import * 
+ 
+#set the active Revit application and document
+app = __revit__.Application
+doc = __revit__.ActiveUIDocument.Document
+ 
+#define a transaction variable and describe the transaction
+t = Transaction(doc, 'This is my new transaction')
+
+original = "30 - Ch - 3D Building (Strength Grade - Steel)"
+
+destination = "10 - Wo - 3D Building"
+
+
+ 
+collector = FilteredElementCollector(doc)
+collector.OfCategory(BuiltInCategory.OST_Views)
+viewscollector = collector.OfClass(View).ToElements()
+views = list(viewscollector)
+
+#for i in views:
+#	print i.Name
+originalView = []
+ExistingFiltersList = []   
+destinationView = []
+
+for v in views: 
+	if v.ViewName == original:
+		originalView.append(v)
+		ExistingFiltersList.append(v.GetFilters())
+
+
+lstFilterView = originalView[0].GetFilters()
+
+fltelmnt = []
+
+for i in lstFilterView:
+	fltelmnt.append(doc.GetElement(i))
+
+
+for v in views: 
+	if v.ViewName == destination:
+		destinationView.append(v)
+		
+t.Start()
+
+for i in fltelmnt:
+	destinationView[0].AddFilter(i.Id)
+	over = originalView[0].GetFilterOverrides(i.Id)
+	destinationView[0].SetFilterOverrides(i.Id,over)
+	
+t.Commit()

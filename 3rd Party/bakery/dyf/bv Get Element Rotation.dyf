@@ -1,0 +1,150 @@
+<Workspace Version="0.8.2.2371" X="437.699332637426" Y="145.760514101037" zoom="0.593767140625" Name="bv Get Element Rotation" Description="" ID="a47b418e-fba5-4111-91cd-6ceff8a2a8b7" Category="Bakery.Forks">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="List" resolvedName="DSCore.List" assemblyName="DSCoreNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Nodes.Symbol guid="0721ecf1-788b-472e-a027-305fc1429a4b" type="Dynamo.Nodes.Symbol" nickname="Input" x="10" y="10.988151903871" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="FamInstance" />
+    </Dynamo.Nodes.Symbol>
+    <DSIronPythonNode.PythonNode guid="a52e554e-b555-461c-a0f8-60f10bb53f45" type="DSIronPythonNode.PythonNode" nickname="Python Script(ListAssurance)" x="160.226912981506" y="11.000280786687" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variables.
+input = IN[0]
+
+if isinstance(input,list) == False:
+	elements = [input]
+else:
+	elements = input
+
+#Assign your output to the OUT variable.
+OUT = elements</Script>
+    </DSIronPythonNode.PythonNode>
+    <DSIronPythonNode.PythonNode guid="bc236d23-26df-4055-b99a-2020832fa111" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="399.365350720082" y="11.574993264373" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+# Import RevitAPI
+clr.AddReference('RevitAPI')
+import Autodesk
+#The inputs to this node will be stored as a list in the IN variable.
+elements = UnwrapElement(IN[0])
+
+outlist = [] #export list
+templist = [] #temporary list to group attributes by element
+for i in elements:
+	templist.append(i.HandOrientation) #vector XYZ Hand
+	templist.append(i.FacingFlipped) #is mirrored over X axis?
+	templist.append(i.HandFlipped) #is mirrored over Y axis?
+	outlist.append(templist[:])
+
+	del templist[:] #clear the templist
+
+#Assign your output to the OUT variable
+OUT = outlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSFunction guid="9d9cec9c-10c8-4b03-bf94-69d1fb5cfd3b" type="Dynamo.Nodes.DSFunction" nickname="List.Transpose" x="575.096867227685" y="11.737255422953" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.Transpose@var[]..[]" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="b2aaa2e3-87e2-4d2f-bee2-1a1762de961f" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="716.372559186084" y="15.819671210398" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="XYZvectorHand = List.GetItemAtIndex(list, 0);&#xA;xMirrored = List.GetItemAtIndex(list, 1);&#xA;yMirrored = List.GetItemAtIndex(list, 2);" ShouldFocus="false" />
+    <DSIronPythonNode.PythonNode guid="004e4d5d-c6b5-4b0f-a0e0-7418548a052b" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="1224.20027161396" y="10" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variable.
+vect = IN[0]
+outlist = []
+templist = []
+
+for e in vect:
+	e = str(e)
+	e = e.replace('(', '')
+	e = e.replace(')', '')
+	e = e.replace(',', '')
+	templist.append(e)
+
+for i in templist:
+	outlist.append(i.split(" "))
+	
+for e in outlist:
+	for i in e:
+		i = float(i)
+
+#Assign your output to the OUT variable
+OUT = outlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="90da9933-c421-4346-a169-7d99496bc637" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="transpose list and split output" x="1516.65682019879" y="15.595652293278" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="IN=List.Transpose(inputlist);&#xA;X=IN[0];&#xA;Y=IN[1];&#xA;Z=IN[2];" ShouldFocus="false" />
+    <Dynamo.Nodes.DSFunction guid="a2ec9bfd-7aa2-4f79-92f1-da87921a80f6" type="Dynamo.Nodes.DSFunction" nickname="String.ToNumber" x="1918.2795284447" y="108.763338095776" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.String.ToNumber@string" />
+    <Dynamo.Nodes.DSFunction guid="cb64366e-8f48-4cce-a42d-6c7a928da7f2" type="Dynamo.Nodes.DSFunction" nickname="String.ToNumber" x="1917.67814556718" y="28.741936733105" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.String.ToNumber@string" />
+    <DSIronPythonNode.PythonNode guid="5dd71504-2500-42be-96bb-f1d1e08ab01a" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="2109.97298310458" y="26.493488461945" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>import clr
+from math import *
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+X=IN[0]
+Y=IN[1]
+outlist = []
+templist = []
+templist2 = []
+count = 0
+
+
+for e in X:
+	templist.append((acos(e)))
+
+
+while count &lt; len(templist):
+#for item in templist:
+	if Y[count] &gt;= 0:
+		templist2.append(degrees(templist[count]))
+	elif Y[count] &lt; 0:
+		templist2.append((degrees(templist[count])) + (2*(180-(degrees(templist[count])))))
+	count = count + 1
+
+for e in templist2:
+	if e == 0:
+		outlist.append(0)
+	else:
+		outlist.append(360 - e)
+
+#Assign your output to the OUT variable
+OUT = outlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Watch guid="072a2d93-5de9-476d-83b8-f5f6c5f2df17" type="Dynamo.Nodes.Watch" nickname="Watch(isYMirrored)" x="2233.64285041365" y="375.920311737819" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+    <Dynamo.Nodes.Watch guid="78f18c2d-fb14-4e8c-8bb2-48308054b5c5" type="Dynamo.Nodes.Watch" nickname="Watch(isXMirrored)" x="2234.6531099114" y="207.538673873162" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+    <Dynamo.Nodes.Output guid="7b5b65c1-1198-41b1-acf7-919fe06135ea" type="Dynamo.Nodes.Output" nickname="Output" x="2405.54673315" y="26.3248829689822" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="Rotation" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="e31ad92a-2977-4a1e-991d-24309834edaa" type="Dynamo.Nodes.Output" nickname="Output" x="2397.14072726303" y="207.654438530907" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="isXmirrored?" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="818d9396-a992-4e58-b746-5911e83eb8a0" type="Dynamo.Nodes.Output" nickname="Output" x="2397.92699952137" y="378.962544496486" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="isYmirrored?" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="0721ecf1-788b-472e-a027-305fc1429a4b" start_index="0" end="a52e554e-b555-461c-a0f8-60f10bb53f45" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a52e554e-b555-461c-a0f8-60f10bb53f45" start_index="0" end="bc236d23-26df-4055-b99a-2020832fa111" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="bc236d23-26df-4055-b99a-2020832fa111" start_index="0" end="9d9cec9c-10c8-4b03-bf94-69d1fb5cfd3b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9d9cec9c-10c8-4b03-bf94-69d1fb5cfd3b" start_index="0" end="b2aaa2e3-87e2-4d2f-bee2-1a1762de961f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="b2aaa2e3-87e2-4d2f-bee2-1a1762de961f" start_index="0" end="004e4d5d-c6b5-4b0f-a0e0-7418548a052b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="b2aaa2e3-87e2-4d2f-bee2-1a1762de961f" start_index="1" end="78f18c2d-fb14-4e8c-8bb2-48308054b5c5" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="b2aaa2e3-87e2-4d2f-bee2-1a1762de961f" start_index="2" end="072a2d93-5de9-476d-83b8-f5f6c5f2df17" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="004e4d5d-c6b5-4b0f-a0e0-7418548a052b" start_index="0" end="90da9933-c421-4346-a169-7d99496bc637" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="90da9933-c421-4346-a169-7d99496bc637" start_index="1" end="cb64366e-8f48-4cce-a42d-6c7a928da7f2" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="90da9933-c421-4346-a169-7d99496bc637" start_index="2" end="a2ec9bfd-7aa2-4f79-92f1-da87921a80f6" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a2ec9bfd-7aa2-4f79-92f1-da87921a80f6" start_index="0" end="5dd71504-2500-42be-96bb-f1d1e08ab01a" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="cb64366e-8f48-4cce-a42d-6c7a928da7f2" start_index="0" end="5dd71504-2500-42be-96bb-f1d1e08ab01a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="5dd71504-2500-42be-96bb-f1d1e08ab01a" start_index="0" end="7b5b65c1-1198-41b1-acf7-919fe06135ea" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="072a2d93-5de9-476d-83b8-f5f6c5f2df17" start_index="0" end="818d9396-a992-4e58-b746-5911e83eb8a0" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="78f18c2d-fb14-4e8c-8bb2-48308054b5c5" start_index="0" end="e31ad92a-2977-4a1e-991d-24309834edaa" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

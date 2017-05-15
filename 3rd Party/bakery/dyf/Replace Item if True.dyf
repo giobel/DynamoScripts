@@ -1,0 +1,88 @@
+<Workspace Version="1.0.0.1180" X="155.146861398887" Y="314.90168956109" zoom="0.822695359375" Name="Replace Item if True" Description="takes two lists, plus a boolean list. If the boolean list says True, list1 item is replaced by list2 item" ID="3cf17278-5756-4a55-8d3b-8a2de1d9fce5" Category="Bakery.Lists">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="5cfb9a76-79ef-4ce4-9895-58ca03a6caf4" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="272.665376533229" y="46.166474178523" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="true;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="79bc2412-53c9-4463-936f-f447961023c6" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="NullAllIndicesOf" x="386.074293827189" y="0" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <ID value="858e6bd7-c0fa-4568-a225-ef815e68f8e3" />
+      <Name value="NullAllIndicesOf" />
+      <Description value="list all of the indices of a list that match the specified value. Capable of handling null values, part of the SmartCopyMonitor workflow." />
+      <Inputs>
+        <Input value="list" />
+        <Input value="value" />
+      </Inputs>
+      <Outputs>
+        <Output value="indices" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="048b2ea4-4c99-4379-99f7-3f73583f5d3a" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.GetItemAtIndex" x="486.011489367832" y="290.213631942971" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="7193a4be-7363-473b-bec3-b4b579b282f2" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="List.ReplaceItemAtIndex" x="690.160042361969" y="150.21003552047" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <ID value="7c6c03d7-a142-4e96-9150-6b3846efa3c2" />
+      <Name value="List.ReplaceItemAtIndex" />
+      <Description value="Replaces the item at a given index (or list of indices) of a list by another item" />
+      <Inputs>
+        <Input value="seq" />
+        <Input value="index" />
+        <Input value="replacement" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="15578b77-18a1-4562-a2d5-8c64e4781b07" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-38.9037835209205" y="165.852971852345" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="list1" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="d7975dfa-aa86-410f-8748-c055a589530e" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-31" y="437" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="list2" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="30a5a82b-3820-4239-a381-ad3c5d3c6bbd" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="127" y="-99" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="booleanlist : var[]" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="7d05758b-3295-43a3-8655-913736f2e4eb" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="920.160042361969" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="indicesReplaced" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="91c03e45-eacb-4263-abb3-a1ecf5fcd484" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="920.160042361969" y="150" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="newList" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="6e5d0169-a14f-46f2-a800-25e7a6ca9986" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="TurnIntoList" x="187.011068979403" y="218.912515290873" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="TurnIntoList" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="b1a2e87a-52f3-4433-85b0-665c66a471e5" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="TurnIntoList" x="167.562800774566" y="415.826230864851" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="TurnIntoList" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="5cfb9a76-79ef-4ce4-9895-58ca03a6caf4" start_index="0" end="79bc2412-53c9-4463-936f-f447961023c6" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="79bc2412-53c9-4463-936f-f447961023c6" start_index="0" end="048b2ea4-4c99-4379-99f7-3f73583f5d3a" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="79bc2412-53c9-4463-936f-f447961023c6" start_index="0" end="7193a4be-7363-473b-bec3-b4b579b282f2" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="79bc2412-53c9-4463-936f-f447961023c6" start_index="0" end="7d05758b-3295-43a3-8655-913736f2e4eb" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="048b2ea4-4c99-4379-99f7-3f73583f5d3a" start_index="0" end="7193a4be-7363-473b-bec3-b4b579b282f2" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="7193a4be-7363-473b-bec3-b4b579b282f2" start_index="0" end="91c03e45-eacb-4263-abb3-a1ecf5fcd484" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="15578b77-18a1-4562-a2d5-8c64e4781b07" start_index="0" end="6e5d0169-a14f-46f2-a800-25e7a6ca9986" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="d7975dfa-aa86-410f-8748-c055a589530e" start_index="0" end="b1a2e87a-52f3-4433-85b0-665c66a471e5" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="30a5a82b-3820-4239-a381-ad3c5d3c6bbd" start_index="0" end="79bc2412-53c9-4463-936f-f447961023c6" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="6e5d0169-a14f-46f2-a800-25e7a6ca9986" start_index="0" end="7193a4be-7363-473b-bec3-b4b579b282f2" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="b1a2e87a-52f3-4433-85b0-665c66a471e5" start_index="0" end="048b2ea4-4c99-4379-99f7-3f73583f5d3a" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="6971.8876953125" eyeY="-16768.001953125" eyeZ="2867.87524414063" lookX="-1725.31408691406" lookY="17399.974609375" lookZ="-1895.38793945313" upX="0.671509921550751" upY="-0.0697564631700516" upZ="0.737704813480377" />
+  </Cameras>
+</Workspace>

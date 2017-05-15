@@ -1,0 +1,96 @@
+<Workspace Version="0.7.5.3566" X="315.137689908917" Y="233.88198055766" zoom="1.545620359375" Description="Projects a list of a 4 or more points to a common plane." Category="LunchBox.Geometry.Rationalize" Name="LunchBox Planarize Points" ID="c3ec529d-8ec6-46ab-b9a5-472ace7c7b5a">
+  <Elements>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="3827a4d1-540e-4b7b-b54f-725a926810f0" nickname="Python Script" x="250" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="1">
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+class Rationalize:
+	
+	#take a list of points and project to a plane
+	def Planarize(self, pts):
+		# create a plane using first three points
+		pt1 = pts[0]
+		pt2 = pts[1]
+		pt3 = pts[2]
+		pln = Plane.ByThreePoints(pt1,pt2,pt3)
+		projvec = pln.Normal
+		projvecneg = projvec.Reverse()
+		
+		# project subsequent points to plane
+		projpts = []
+		projpts.append(pt1)
+		projpts.append(pt2)
+		projpts.append(pt3)
+		for i in range(3,len(pts)):
+			pt = pts[i]
+			
+			# try to project in positive direction
+			try:
+				projpt = pt.Project(pln, projvec)
+			except:
+				projpt = []
+			
+			# try to project in negative direction
+			try:			
+				projptneg = pt.Project(pln, projvecneg)
+			except:
+				projptneg = []
+			
+			# test if there are projected pts in positive
+			if len(projpt) &gt; 0:
+				projpts.append(projpt[0])
+			# test if there are projected pts in negative
+			elif len(projptneg) &gt; 0:
+				projpts.append(projptneg[0])
+			# use original pt if no projections
+			else:
+				projpts.append(pt)
+		
+		self.projectedpoints = projpts
+		self.plane = pln
+		
+	
+inputpts = IN[0]
+
+projectedpts = []
+if hasattr(inputpts, '__iter__'):
+	if hasattr(inputpts[0], '__iter__'):
+		testarr = inputpts[0]
+		if hasattr(testarr[0], '__iter__'):
+			for i in range(0, len(inputpts)):
+				projarr = []
+				inputptsarr = inputpts[i]
+				for j in range(0, len(inputptsarr)):
+					ptlist = inputptsarr[j]
+					rational = Rationalize()
+					rational.Planarize(ptlist)
+					projarr.append(rational.projectedpoints)
+				projectedpts.append(projarr)
+		else:
+			for i in range(0, len(inputpts)):
+				ptlist = inputpts[i]
+				rational = Rationalize()
+				rational.Planarize(ptlist)
+				projectedpts.append(rational.projectedpoints)	
+	else:
+		rational = Rationalize()
+		rational.Planarize(inputpts)
+		projectedpts = rational.projectedpoints
+			
+#Assign your output to the OUT variable
+OUT = projectedpts</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="998389f4-33a9-43e5-9449-4ebcecdaf79e" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Points" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="da42cade-d984-4def-93a6-c1eaf61676d9" nickname="Output" x="449" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="PlanarPoints" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="3827a4d1-540e-4b7b-b54f-725a926810f0" start_index="0" end="da42cade-d984-4def-93a6-c1eaf61676d9" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="998389f4-33a9-43e5-9449-4ebcecdaf79e" start_index="0" end="3827a4d1-540e-4b7b-b54f-725a926810f0" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

@@ -1,0 +1,370 @@
+<Workspace Version="1.2.0.2514" X="426.819298466722" Y="-1594.79082118926" zoom="1.37760506007967" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="f76dd452-4f7e-4f15-940e-b8acd57f1df5" type="PythonNodeModels.PythonNode" nickname="Python Script" x="280.5" y="241" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+clr.AddReference('RevitAPI') 
+clr.AddReference('RevitAPIUI') 
+from Autodesk.Revit.DB import * 
+
+# Import DocumentManager
+clr.AddReference('RevitServices')
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+#The inputs to this node will be stored as a list in the IN variables.
+
+collector = FilteredElementCollector(doc)
+stairs = collector.OfCategory(BuiltInCategory.OST_Stairs)
+stairslist = list(stairs)
+
+stairsName = []
+
+for i in stairslist:
+	stairsName.append(i.GetType().Name)
+
+#for i in views:
+#	viewsName.append(i.Name)
+
+#Assign your output to the OUT variable.
+OUT = stairs,stairslist,stairsName</Script>
+    </PythonNodeModels.PythonNode>
+    <CoreNodeModels.Watch guid="cf05b769-8007-476e-a986-2ad103fefd7d" type="CoreNodeModels.Watch" nickname="Watch" x="460.5" y="170" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.Watch>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="28dad534-2a01-4bdb-a7ab-d83d757d6c0b" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.Name" x="1019.4690420095" y="671.548131207156" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="RevitNodes.dll" function="Revit.Elements.Element.Name">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="70035cff-8aec-4427-8fab-dec793ebbf3a" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.GetItemAtIndex" x="879.493001537146" y="449.515163336183" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="dd0d2034-88cb-46be-8bd1-6208ddb7d489" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="697.139465875371" y="577.326409495549" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="1;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="80bea184-e5c4-4bc1-afbc-9c771d6b3639" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="554.967359050445" y="575.540059347181" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="0;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="6fc487e3-100a-432f-bc94-91ee60c2184e" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="667" y="686" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="2;" ShouldFocus="false" />
+    <PythonNodeModels.PythonNode guid="53eb2b9b-3dbc-4700-ab36-bb6664c8490f" type="PythonNodeModels.PythonNode" nickname="All Categories.Names" x="-720.187390889843" y="351.220578396989" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+documentSettings = DocumentManager.Instance.CurrentDBDocument
+
+group = documentSettings.Settings.Categories
+
+groupName = []
+
+for i in group:
+	groupName.append(i.Name)
+	groupName.append(i.Id)
+
+#OUT = "Number of all categories in current Revit document:" + str(group.Size)
+
+OUT = groupName</Script>
+    </PythonNodeModels.PythonNode>
+    <CoreNodeModels.Watch guid="ead4b8cd-2aa5-4076-a74a-110641d67ea7" type="CoreNodeModels.Watch" nickname="Watch" x="910.609959029039" y="1357.58246306798" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.Watch>
+    <PythonNodeModels.PythonNode guid="b112932f-8d7b-4182-a1fa-82d5b96a3748" type="PythonNodeModels.PythonNode" nickname="All Categories" x="271.319625842936" y="1293.54326869143" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+documentSettings  = DocumentManager.Instance.CurrentDBDocument
+
+group = doc.Settings.Categories
+
+cat = []
+
+for i in categoriesCollector:
+	cat.append(i.Name)
+
+
+collector = FilteredElementCollector(doc).WhereElementIsElementType()
+Type = []
+
+for e in collector:
+	try:
+		out1.append(e.ToDSType(True))
+	except:
+		pass
+
+#cat = collector.OfCategory(BuiltInCategory())
+#stairs = collector.OfCategory(BuiltInCategory.OST_Stairs)
+
+#Assign your output to the OUT variable.
+OUT = cat</Script>
+    </PythonNodeModels.PythonNode>
+    <PythonNodeModels.PythonNode guid="4d345d44-7d2f-4248-ba11-47e2e8b8f2ca" type="PythonNodeModels.PythonNode" nickname="All Categories" x="3.98786627033149" y="1593.74411646019" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+documentSettings = DocumentManager.Instance.CurrentDBDocument
+
+group = documentSettings.Settings.Categories
+
+groupName = []
+
+for i in group:
+	groupName.append(i.Name)
+
+#OUT = "Number of all categories in current Revit document:" + str(group.Size)
+
+floorCategory = group.get_Item(BuiltInCategory.OST_Floors)
+
+
+OUT = floorCategory</Script>
+    </PythonNodeModels.PythonNode>
+    <DSRevitNodesUI.ElementsOfCategory guid="ea768b04-9c67-4291-b078-156210942bd8" type="DSRevitNodesUI.ElementsOfCategory" nickname="All Elements of Category" x="552.03211309125" y="1336.90896083372" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </DSRevitNodesUI.ElementsOfCategory>
+    <PythonNodeModels.PythonNode guid="97ac3568-7310-4975-97eb-add532fa1bdb" type="PythonNodeModels.PythonNode" nickname="All Floor Elements" x="72.8903116937711" y="860.003083273443" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+clr.AddReference('RevitAPI') 
+clr.AddReference('RevitAPIUI') 
+from Autodesk.Revit.DB import * 
+
+# Import DocumentManager
+clr.AddReference('RevitServices')
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+
+
+collector = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Floors).WhereElementIsNotElementType().ToElements()
+
+"""
+collector = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Floors).WhereElementIsNotElementType()
+
+floorElements = []
+
+for floor in collector:
+	floorElements.append(floor)
+"""
+
+OUT = collector</Script>
+    </PythonNodeModels.PythonNode>
+    <DSRevitNodesUI.Categories guid="f6841ce2-3cd4-4f25-b7b3-a34f2d126d01" type="DSRevitNodesUI.Categories" nickname="Categories" x="483.615648896059" y="1509.82978971002" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false" index="197:Floors" />
+    <CoreNodeModels.Watch guid="6252baba-d176-48b1-8f10-702ac4b8ce51" type="CoreNodeModels.Watch" nickname="Watch" x="153.569473402518" y="420.47457418211" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.Watch>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="90da6652-0c7f-4962-8b6c-a76118ed27dc" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Object.Class" x="65.7570199640193" y="169.376565866748" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true">
+      <PortInfo index="0" default="False" />
+      <ID value="e4e8406d-3b77-4822-897b-3f9c08e1cd45" />
+      <Name value="Object.Class" />
+      <Description value="Gets the input object's class name. Can process lists." />
+      <Inputs>
+        <Input value="obj" />
+      </Inputs>
+      <Outputs>
+        <Output value="class(str)" />
+        <Output value="container" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="3792b256-4355-4a4c-8cb4-33a944667910" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Object.Class" x="301.133704252033" y="858.017895482142" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true">
+      <PortInfo index="0" default="False" />
+      <ID value="e4e8406d-3b77-4822-897b-3f9c08e1cd45" />
+      <Name value="Object.Class" />
+      <Description value="Gets the input object's class name. Can process lists." />
+      <Inputs>
+        <Input value="obj" />
+      </Inputs>
+      <Outputs>
+        <Output value="class(str)" />
+        <Output value="container" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <PythonNodeModels.PythonNode guid="1fbab83b-d29a-46a6-b1d6-699e676b3105" type="PythonNodeModels.PythonNode" nickname="All Floor Types" x="-113.945761988522" y="1160.93512210259" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+clr.AddReference('RevitAPI') 
+clr.AddReference('RevitAPIUI') 
+from Autodesk.Revit.DB import * 
+
+# Import DocumentManager
+clr.AddReference('RevitServices')
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+
+
+#collector = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Floors).WhereElementIsElementType().ToElements()
+
+
+collector = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Floors).WhereElementIsElementType()
+
+
+floorElements = []
+
+for floor in collector:
+	floorElements.append(floor)
+
+
+OUT = floorElements</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="db1979ee-67fc-496b-993a-32f2e2d844d2" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Object.Class" x="161.822206942018" y="1158.2621265122" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true">
+      <PortInfo index="0" default="False" />
+      <ID value="e4e8406d-3b77-4822-897b-3f9c08e1cd45" />
+      <Name value="Object.Class" />
+      <Description value="Gets the input object's class name. Can process lists." />
+      <Inputs>
+        <Input value="obj" />
+      </Inputs>
+      <Outputs>
+        <Output value="class(str)" />
+        <Output value="container" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="33150ccc-4651-4302-8374-d51180635091" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Object.Class" x="607.653530771904" y="810.25123064283" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true">
+      <PortInfo index="0" default="False" />
+      <ID value="e4e8406d-3b77-4822-897b-3f9c08e1cd45" />
+      <Name value="Object.Class" />
+      <Description value="Gets the input object's class name. Can process lists." />
+      <Inputs>
+        <Input value="obj" />
+      </Inputs>
+      <Outputs>
+        <Output value="class(str)" />
+        <Output value="container" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <PythonNodeModels.PythonNode guid="e80709dd-97c9-4f4c-bf07-3ba6479d9f9a" type="PythonNodeModels.PythonNode" nickname="All Family Type" x="-161.078472963314" y="776.51062807063" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+from System.Collections.Generic import *
+
+doc = DocumentManager.Instance.CurrentDBDocument
+
+builtInCats = List[BuiltInCategory]()
+
+builtInCats.Add(BuiltInCategory.OST_Floors)
+ 
+filter1 = ElementMulticategoryFilter(builtInCats)
+
+elements = FilteredElementCollector(doc).WherePasses(filter1).ToElements()
+
+OUT = elements</Script>
+    </PythonNodeModels.PythonNode>
+    <CoreNodeModels.Watch guid="5b6176d3-d1a4-408d-90c3-ac3538cef2aa" type="CoreNodeModels.Watch" nickname="Watch" x="-471.482994407279" y="-13.2165221505838" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.Watch>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="695fccf6-6af5-4cea-8a6c-b43049113877" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.GetCategory" x="187.607073958067" y="659.579449469329" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="RevitNodes.dll" function="Revit.Elements.Element.GetCategory">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="f19d1386-c634-425d-9585-64bc1134510c" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Element.IsOfCategory" x="-688.50272155012" y="471.500787219116" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <ID value="ee585799-3d67-4bed-a135-b7b0ce52b916" />
+      <Name value="Element.IsOfCategory" />
+      <Description value="Checks whether an element is of a specified category" />
+      <Inputs>
+        <Input value="element" />
+        <Input value="category" />
+      </Inputs>
+      <Outputs>
+        <Output value="bool" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <DSRevitNodesUI.ElementsOfCategory guid="8efb38b6-731f-4d95-92ae-587bf786a405" type="DSRevitNodesUI.ElementsOfCategory" nickname="All Elements of Category" x="-177.455510362402" y="624.338740453181" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </DSRevitNodesUI.ElementsOfCategory>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="fa3d66ab-c94a-4bc7-9bd6-43080f58753d" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.GetItemAtIndex" x="-197.93258336201" y="446.102068146938" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="c6136149-0bff-461e-83eb-deaa2612260a" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-387" y="586" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="1;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="76086202-b33b-4470-b705-c5904f39ce1e" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Object.Class" x="842.068185961326" y="1232.70530423938" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true">
+      <PortInfo index="0" default="False" />
+      <ID value="e4e8406d-3b77-4822-897b-3f9c08e1cd45" />
+      <Name value="Object.Class" />
+      <Description value="Gets the input object's class name. Can process lists." />
+      <Inputs>
+        <Input value="obj" />
+      </Inputs>
+      <Outputs>
+        <Output value="class(str)" />
+        <Output value="container" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="f76dd452-4f7e-4f15-940e-b8acd57f1df5" start_index="0" end="cf05b769-8007-476e-a986-2ad103fefd7d" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="cf05b769-8007-476e-a986-2ad103fefd7d" start_index="0" end="70035cff-8aec-4427-8fab-dec793ebbf3a" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="70035cff-8aec-4427-8fab-dec793ebbf3a" start_index="0" end="28dad534-2a01-4bdb-a7ab-d83d757d6c0b" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="dd0d2034-88cb-46be-8bd1-6208ddb7d489" start_index="0" end="70035cff-8aec-4427-8fab-dec793ebbf3a" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="53eb2b9b-3dbc-4700-ab36-bb6664c8490f" start_index="0" end="5b6176d3-d1a4-408d-90c3-ac3538cef2aa" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="ea768b04-9c67-4291-b078-156210942bd8" start_index="0" end="ead4b8cd-2aa5-4076-a74a-110641d67ea7" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="97ac3568-7310-4975-97eb-add532fa1bdb" start_index="0" end="3792b256-4355-4a4c-8cb4-33a944667910" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="f6841ce2-3cd4-4f25-b7b3-a34f2d126d01" start_index="0" end="ea768b04-9c67-4291-b078-156210942bd8" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="f6841ce2-3cd4-4f25-b7b3-a34f2d126d01" start_index="0" end="76086202-b33b-4470-b705-c5904f39ce1e" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="6252baba-d176-48b1-8f10-702ac4b8ce51" start_index="0" end="33150ccc-4651-4302-8374-d51180635091" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="1fbab83b-d29a-46a6-b1d6-699e676b3105" start_index="0" end="db1979ee-67fc-496b-993a-32f2e2d844d2" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="e80709dd-97c9-4f4c-bf07-3ba6479d9f9a" start_index="0" end="6252baba-d176-48b1-8f10-702ac4b8ce51" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="5b6176d3-d1a4-408d-90c3-ac3538cef2aa" start_index="0" end="fa3d66ab-c94a-4bc7-9bd6-43080f58753d" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="fa3d66ab-c94a-4bc7-9bd6-43080f58753d" start_index="0" end="90da6652-0c7f-4962-8b6c-a76118ed27dc" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="fa3d66ab-c94a-4bc7-9bd6-43080f58753d" start_index="0" end="8efb38b6-731f-4d95-92ae-587bf786a405" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c6136149-0bff-461e-83eb-deaa2612260a" start_index="0" end="fa3d66ab-c94a-4bc7-9bd6-43080f58753d" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

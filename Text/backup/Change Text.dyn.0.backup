@@ -1,0 +1,156 @@
+<Workspace Version="0.8.2.2392" X="38.2926434171162" Y="149.756712225987" zoom="0.784369328044827" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.DSModelElementsSelection guid="9cbe52fc-5751-479c-99d2-23afd902b69b" type="Dynamo.Nodes.DSModelElementsSelection" nickname="Select Model Elements" x="170.5" y="229.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <instance id="42f0d253-023b-4fc2-8556-e2eaa1a44b8a-00395b83" />
+      <instance id="42f0d253-023b-4fc2-8556-e2eaa1a44b8a-00395b88" />
+      <instance id="42f0d253-023b-4fc2-8556-e2eaa1a44b8a-00395b8d" />
+      <instance id="42f0d253-023b-4fc2-8556-e2eaa1a44b8a-00395b9c" />
+      <instance id="42f0d253-023b-4fc2-8556-e2eaa1a44b8a-00395ba1" />
+      <instance id="42f0d253-023b-4fc2-8556-e2eaa1a44b8a-00395ba6" />
+    </Dynamo.Nodes.DSModelElementsSelection>
+    <Dynamo.Nodes.DSFunction guid="e4cf3821-71bc-4e6f-900c-8a1a05040d6c" type="Dynamo.Nodes.DSFunction" nickname="Excel.ReadFromFile" x="797.311572700297" y="376.632047477745" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSOffice.dll" function="DSOffice.Excel.ReadFromFile@var,string,bool">
+      <PortInfo index="2" default="True" />
+    </Dynamo.Nodes.DSFunction>
+    <DSCore.File.FileObject guid="1c9ae226-8cde-4a23-90c2-c8033bb97a9c" type="DSCore.File.FileObject" nickname="File.FromPath" x="494.640949554896" y="384.940652818991" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+    <DSCore.File.Filename guid="1149b0e5-fd31-4765-b5a6-42d8c33d5fb3" type="DSCore.File.Filename" nickname="File Path" x="295.234421364985" y="380.192878338279" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <System.String>C:\Users\giovanni.brogioli\Documents\Dynamo\Scripts\Text\Text.xlsx</System.String>
+    </DSCore.File.Filename>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="cfdc5ef4-2890-4f59-9aa2-e476c7d7560b" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="461" y="519" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="&quot;Sheet1&quot;;" ShouldFocus="false" />
+    <Dynamo.Nodes.DSFunction guid="2d3e5c58-245c-4bcf-b959-c0ef6a73cd66" type="Dynamo.Nodes.DSFunction" nickname="Flatten" x="1040.6350148368" y="370.697329376855" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="BuiltIn" function="Flatten@var[]..[]" />
+    <DSIronPythonNode.PythonNode guid="5405c22f-8952-4c6b-870c-420c8a89b748" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="1161.91097922849" y="137.077151335311" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+items = UnwrapElement(IN[0])
+texts = IN[1]
+goodlist = []
+badlist = []
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+for i in range(0,len(items)):
+	try:
+		items[i].Text = texts[i]
+		goodlist.append(items[i])
+	except:
+		badlist.append(items[i])
+	
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = (goodlist,badlist)</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSFunction guid="c06a1dc5-2cf1-48a3-bad3-5b55af7604c2" type="Dynamo.Nodes.DSFunction" nickname="Element.Parameters" x="683.364985163204" y="-39.9851632047477" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="RevitNodes.dll" function="Revit.Elements.Element.Parameters" />
+    <Dynamo.Nodes.DSFunction guid="d75b568e-c16b-4e2b-a91f-519f75a3f0e2" type="Dynamo.Nodes.DSFunction" nickname="Element.SetParameterByName" x="1156.95548961424" y="520.252225519288" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="RevitNodes.dll" function="Revit.Elements.Element.SetParameterByName@string,var" />
+    <DSIronPythonNode.PythonNode guid="a2a57611-de3c-48ef-923e-26e4c4e599e5" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="1186.64816496395" y="-53.1556290381707" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="3">
+      <Script>#Copyright(c) 2015, Konrad K Sobon
+# @arch_laboratory, http://archi-lab.net
+
+import clr
+import sys
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
+sys.path.append(pyt_path)
+
+# Import Element wrapper extension methods
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+import System
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+paramName = IN[0]
+paramValues = IN[2]
+
+if isinstance(IN[1], list):
+	elements = []
+	for i in IN[1]:
+		elements.append(UnwrapElement(i))
+else:
+	elements = IN[1]
+
+def GetBuiltInParam(paramName):
+	builtInParams = System.Enum.GetValues(BuiltInParameter)
+	test = []
+	for i in builtInParams:
+		if i.ToString() == paramName:
+			test.append(i)
+			break
+		else:
+			continue
+	return test[0]
+
+try:
+	errorReport = None
+	# "Start" the transaction
+	TransactionManager.Instance.EnsureInTransaction(doc)
+	
+	bipName = GetBuiltInParam(paramName)
+	for i, j in zip(elements, paramValues):
+		param = i.get_Parameter(bipName)
+		param.Set(j)
+	
+	# "End" the transaction
+	TransactionManager.Instance.TransactionTaskDone()
+except:
+	# if error accurs anywhere in the process catch it
+	import traceback
+	errorReport = traceback.format_exc()
+
+#Assign your output to the OUT variable
+if errorReport == None:
+	OUT = 0
+else:
+	OUT = errorReport</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="80e803d5-5f6a-43b7-bdab-42b97e69ac84" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="902" y="112" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="1;" ShouldFocus="false" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="17343889-af05-427e-8848-3441d9e398ab" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="913.42617497244" y="-77.3745480875232" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="&quot;TEXT_STYLE_UNDERLINE&quot;;" ShouldFocus="false" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="9cbe52fc-5751-479c-99d2-23afd902b69b" start_index="0" end="5405c22f-8952-4c6b-870c-420c8a89b748" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9cbe52fc-5751-479c-99d2-23afd902b69b" start_index="0" end="c06a1dc5-2cf1-48a3-bad3-5b55af7604c2" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9cbe52fc-5751-479c-99d2-23afd902b69b" start_index="0" end="a2a57611-de3c-48ef-923e-26e4c4e599e5" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e4cf3821-71bc-4e6f-900c-8a1a05040d6c" start_index="0" end="2d3e5c58-245c-4bcf-b959-c0ef6a73cd66" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1c9ae226-8cde-4a23-90c2-c8033bb97a9c" start_index="0" end="e4cf3821-71bc-4e6f-900c-8a1a05040d6c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1149b0e5-fd31-4765-b5a6-42d8c33d5fb3" start_index="0" end="1c9ae226-8cde-4a23-90c2-c8033bb97a9c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="cfdc5ef4-2890-4f59-9aa2-e476c7d7560b" start_index="0" end="e4cf3821-71bc-4e6f-900c-8a1a05040d6c" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="2d3e5c58-245c-4bcf-b959-c0ef6a73cd66" start_index="0" end="5405c22f-8952-4c6b-870c-420c8a89b748" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="80e803d5-5f6a-43b7-bdab-42b97e69ac84" start_index="0" end="a2a57611-de3c-48ef-923e-26e4c4e599e5" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="17343889-af05-427e-8848-3441d9e398ab" start_index="0" end="a2a57611-de3c-48ef-923e-26e4c4e599e5" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

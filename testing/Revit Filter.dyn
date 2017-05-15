@@ -1,0 +1,126 @@
+<Workspace Version="1.0.0.1180" X="-929.725126951103" Y="-46.4264325142556" zoom="0.992747056990935" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="63083ba9-f004-49bf-9d02-b0de754e4caf" type="PythonNodeModels.PythonNode" nickname="Python Script" x="1500.84141652745" y="242.838585317887" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="4">
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+import clr
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+doc = DocumentManager.Instance.CurrentDBDocument
+clr.AddReference("RevitAPI")
+
+import Autodesk
+from Autodesk.Revit.DB import *
+import System
+from System.Collections.Generic import *
+
+dataEnteringNode = IN
+
+def GetBuiltInParam(paramName):
+	builtInParams = System.Enum.GetValues(BuiltInParameter)
+	test = []
+	for i in builtInParams:
+		if i.ToString() == paramName:
+			test.append(i)
+			break
+		else:
+			continue
+	return test[0]
+
+cats = IN[0]
+paramName = IN[1]
+pValue = IN [2]
+view = UnwrapElement(IN[3])
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+catList = []
+for i in cats:
+	catList.append(ElementId(i.Id))
+
+typedCatList = List[ElementId](catList)
+rules = []
+
+bip = GetBuiltInParam(paramName)
+
+rules.append(ParameterFilterRuleFactory.CreateLessRule(ElementId(bip), pValue, 0.001))
+
+try:
+	filter = ParameterFilterElement.Create(doc, "Thin Filter 2", typedCatList, rules)
+	view.AddFilter(filter.Id)
+	
+except:
+	pass
+
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = view
+</Script>
+    </PythonNodeModels.PythonNode>
+    <DSRevitNodesUI.Categories guid="fecfb4bd-ad31-432d-830f-9a4d9d0a65c7" type="DSRevitNodesUI.Categories" nickname="Categories" x="224.860456793389" y="212.243535479224" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false" index="517:Walls" />
+    <CoreNodeModels.CreateList guid="37c00043-807b-45b5-ab63-65103c26a76e" type="CoreNodeModels.CreateList" nickname="List.Create" x="461.590435361935" y="212.670663942916" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1" />
+    <DSRevitNodesUI.ElementsOfCategory guid="39b4d993-f083-404f-acb0-dfc6ec4b392a" type="DSRevitNodesUI.ElementsOfCategory" nickname="All Elements of Category" x="311.473942829098" y="392.99765666937" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="5f88b3d3-cb81-4776-b7a8-c9923ea08300" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="596.362802260996" y="311.943402311248" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="IN[0];" ShouldFocus="false" />
+    <archilabUI.ItemSelector guid="2c917a3e-e2bc-448d-8614-a89a9a8be21a" type="archilabUI.ItemSelector" nickname="Get BuiltInParameter Name" x="800.726864996391" y="308.472617650117" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" index="61:Width | WALL_ATTR_WIDTH_PARAM | double | ReadOnly">
+      <familyid value="2330" />
+      <index value="61" />
+    </archilabUI.ItemSelector>
+    <DSRevitNodesUI.Views guid="7eb60d8c-d73e-4825-bd61-f9d31c48883a" type="DSRevitNodesUI.Views" nickname="Views" x="1192.74623430162" y="506.858554440344" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false" index="7:Level 3" />
+    <CoreNodeModels.Watch guid="b3afd7c5-a46e-40ed-98ec-6aa0a13003cb" type="CoreNodeModels.Watch" nickname="Watch" x="1708.50881901645" y="244.715965943047" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="959f237b-5fc8-458e-8a75-38a850609ba2" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1314.22569362493" y="356.466194783003" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="0.5;" ShouldFocus="false" />
+    <CoreNodeModels.Watch guid="804fca40-7cc0-4f09-b3bd-440880f4b23c" type="CoreNodeModels.Watch" nickname="Watch" x="1280.37871263162" y="638.044048621579" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" />
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="1f78726b-6c92-4e8f-bcc5-f7a5467f0492" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Get All Views" x="804.590917188616" y="372.821473384048" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <ID value="b4f3c852-454e-4648-b8d6-2c8bfe20fdb7" />
+      <Name value="Get All Views" />
+      <Description value="This node will query all views in the model and return them based on category" />
+      <Inputs />
+      <Outputs>
+        <Output value="Renderings" />
+        <Output value="Pressure Loss Reports" />
+        <Output value="Panel Schedules" />
+        <Output value="Walkthroughs" />
+        <Output value="Elevations" />
+        <Output value="Drawing Sheets" />
+        <Output value="Drafting Views" />
+        <Output value="Undefined Views" />
+        <Output value="Details" />
+        <Output value="Loads Reports" />
+        <Output value="Cost Reports" />
+        <Output value="Legends" />
+        <Output value="3D Views" />
+        <Output value="Column Schedules" />
+        <Output value="Internal Views" />
+        <Output value="Sections" />
+        <Output value="Ceiling Plans" />
+        <Output value="Floor Plans" />
+        <Output value="Schedules" />
+        <Output value="Area Plans" />
+        <Output value="Engineering Plans" />
+        <Output value="Reports" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="63083ba9-f004-49bf-9d02-b0de754e4caf" start_index="0" end="b3afd7c5-a46e-40ed-98ec-6aa0a13003cb" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="fecfb4bd-ad31-432d-830f-9a4d9d0a65c7" start_index="0" end="37c00043-807b-45b5-ab63-65103c26a76e" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="fecfb4bd-ad31-432d-830f-9a4d9d0a65c7" start_index="0" end="39b4d993-f083-404f-acb0-dfc6ec4b392a" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="37c00043-807b-45b5-ab63-65103c26a76e" start_index="0" end="63083ba9-f004-49bf-9d02-b0de754e4caf" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="39b4d993-f083-404f-acb0-dfc6ec4b392a" start_index="0" end="5f88b3d3-cb81-4776-b7a8-c9923ea08300" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="5f88b3d3-cb81-4776-b7a8-c9923ea08300" start_index="0" end="2c917a3e-e2bc-448d-8614-a89a9a8be21a" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="2c917a3e-e2bc-448d-8614-a89a9a8be21a" start_index="0" end="63083ba9-f004-49bf-9d02-b0de754e4caf" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="959f237b-5fc8-458e-8a75-38a850609ba2" start_index="0" end="63083ba9-f004-49bf-9d02-b0de754e4caf" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="1f78726b-6c92-4e8f-bcc5-f7a5467f0492" start_index="20" end="804fca40-7cc0-4f09-b3bd-440880f4b23c" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="1f78726b-6c92-4e8f-bcc5-f7a5467f0492" start_index="20" end="63083ba9-f004-49bf-9d02-b0de754e4caf" end_index="3" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-25.0732498168945" eyeY="21.06711769104" eyeZ="15.8571634292603" lookX="25.0732498168945" lookY="-21.06711769104" lookZ="-15.8571634292603" upX="0.330231368541718" upY="0.920504868030548" upZ="-0.208849370479584" />
+  </Cameras>
+</Workspace>

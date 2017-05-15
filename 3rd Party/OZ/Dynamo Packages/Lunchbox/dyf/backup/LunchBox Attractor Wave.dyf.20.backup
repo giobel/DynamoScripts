@@ -1,0 +1,70 @@
+<Workspace Version="0.7.1.17276" X="173" Y="108" zoom="1" Description="Generates a wave attractor effect using lists of attractors and targets." Category="LunchBox.Generate.Attractor" Name="LunchBox Attractor Wave" ID="80bff10b-b588-4db1-9171-661dacfdb25e">
+  <Elements>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="7afc1587-2fa9-4e4d-b0d9-53bb90763f42" nickname="Input" x="-5" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Attractors" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="d21dc824-8ecd-41af-8406-326248ea43c1" nickname="Input" x="-6" y="100" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Targets" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="4bbbb78a-68c7-4365-b750-28d76c2d4f54" nickname="Input" x="-3" y="214" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Frequency" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="bcc1c950-6f2f-46ab-88cd-88dd9b21f6a9" nickname="Input" x="-7" y="313" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Min" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="965f81b1-1f2b-4e9e-97d7-402ee55ccc8a" nickname="Output" x="868.097502805836" y="50" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Values" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="83bf6330-4d87-45d8-95a6-2c80fcd833bb" nickname="Math.RemapRange" x="493.699148385087" y="175.242785367592" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.Math.RemapRange@double[],double,double">
+      <PortInfo index="1" default="True" />
+      <PortInfo index="2" default="True" />
+    </Dynamo.Nodes.DSFunction>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="ec0a5310-86ea-4fbd-bc53-92ba85cd7d99" nickname="Python Script" x="265.507070240361" y="58.268346913356" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="3">
+      <Script>#Copyright(c) 2014, Nathan Miller
+# The Proving Ground, http://theprovingground.org
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+import math
+
+#The input to this node will be stored in the IN[0] variable.
+list = IN[0]
+tar = IN[1]
+t = IN[2]
+
+distList = []
+
+att = []
+if hasattr(list, "__iter__"):
+    for i in range(0,len(list)):
+		att.append(list[i])
+else:
+    att.append(list)
+
+for i in range(0,len(tar)):
+	myTarget = tar[i]
+	distance = 0
+	vector = Point.ByCoordinates(0,0,0)
+	for j in range(0,len(att)):
+		distance = distance + (10 * math.sin(att[j].DistanceTo(myTarget) * t))
+	avg = distance/len(att)
+	distList.append(avg)
+
+#Assign your output to the OUT variable
+OUT = distList</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="2f5bffbd-41a5-4f61-93c7-29b672b96787" nickname="Input" x="-5" y="371" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Max" />
+    </Dynamo.Nodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="7afc1587-2fa9-4e4d-b0d9-53bb90763f42" start_index="0" end="ec0a5310-86ea-4fbd-bc53-92ba85cd7d99" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d21dc824-8ecd-41af-8406-326248ea43c1" start_index="0" end="ec0a5310-86ea-4fbd-bc53-92ba85cd7d99" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4bbbb78a-68c7-4365-b750-28d76c2d4f54" start_index="0" end="ec0a5310-86ea-4fbd-bc53-92ba85cd7d99" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="bcc1c950-6f2f-46ab-88cd-88dd9b21f6a9" start_index="0" end="83bf6330-4d87-45d8-95a6-2c80fcd833bb" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="83bf6330-4d87-45d8-95a6-2c80fcd833bb" start_index="0" end="965f81b1-1f2b-4e9e-97d7-402ee55ccc8a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ec0a5310-86ea-4fbd-bc53-92ba85cd7d99" start_index="0" end="83bf6330-4d87-45d8-95a6-2c80fcd833bb" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="2f5bffbd-41a5-4f61-93c7-29b672b96787" start_index="0" end="83bf6330-4d87-45d8-95a6-2c80fcd833bb" end_index="2" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

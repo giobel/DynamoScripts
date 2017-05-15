@@ -1,0 +1,39 @@
+<Workspace Version="0.8.2.2371" X="196.898923029158" Y="250.564275161987" zoom="1.33823125" Name="Get Family List for this project" Description="" ID="e5cd405d-5509-4725-97b3-147d1ebbd4cc" Category="Bakery.Families">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="312b83e3-39fc-4f7c-9133-96be44e83618" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="207.669367682155" y="10.5768598476531" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="0">
+      <Script>#Made by Marc Tavenier @marctavenier
+import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference('RevitServices')
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+elementlist = []
+doc = DocumentManager.Instance.CurrentDBDocument
+
+collector = FilteredElementCollector(doc).OfClass(Family)
+elementlist = collector.ToElements()
+
+#Assign your output to the OUT variable
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Output guid="7cc01adf-6b9c-4c0b-b7f7-6bcfc64d91a4" type="Dynamo.Nodes.Output" nickname="Output" x="395.845252829061" y="12.582349836771" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="Elements" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="312b83e3-39fc-4f7c-9133-96be44e83618" start_index="0" end="7cc01adf-6b9c-4c0b-b7f7-6bcfc64d91a4" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

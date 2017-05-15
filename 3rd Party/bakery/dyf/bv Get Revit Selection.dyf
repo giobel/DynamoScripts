@@ -1,0 +1,97 @@
+<Workspace Version="0.8.2.2392" X="0" Y="0" zoom="1" Name="bv Get Revit Selection" Description="forked from SteamNodes package" ID="b8a102d3-fe49-4249-972e-96db072eb216" Category="Bakery.Forks">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="72e99e76-36ea-4f04-aeb5-5aa313db44f8" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="186" y="22" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>#python nodes in dynamo 0.7
+#proposed by Julien Benoit @jbenoit44 
+#http://aecuandme.wordpress.com/
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+# Import geometry conversion extension methods
+clr.ImportExtensions(Revit.GeometryConversion)
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+from System.Collections.Generic import *
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+uidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+
+
+OUT=uidoc.Selection.Elements</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSFunction guid="5e177b3d-7bab-4ff8-8c1a-f4ee812f6376" type="Dynamo.Nodes.DSFunction" nickname="List.Empty" x="10" y="10" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.Empty" />
+    <Dynamo.Nodes.Output guid="68e01360-2dfd-498f-8193-54b4cf970fc1" type="Dynamo.Nodes.Output" nickname="Output" x="410" y="22" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="Internal" />
+    </Dynamo.Nodes.Output>
+    <DSIronPythonNode.PythonNode guid="149bfb22-7b61-440d-8155-802ad08ef471" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="186" y="106" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>#python nodes in dynamo 0.7
+#proposed by Julien Benoit @jbenoit44 
+#http://aecuandme.wordpress.com/
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+# Import geometry conversion extension methods
+clr.ImportExtensions(Revit.GeometryConversion)
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+from System.Collections.Generic import *
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+uidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+
+sel=[]
+elt=[]
+
+sel=uidoc.Selection.Elements
+
+for i in sel:
+	elt.append(i.ToDSType(False))
+
+OUT=elt</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSFunction guid="5c5fcbbf-c605-4603-8625-fa5e79adb0a9" type="Dynamo.Nodes.DSFunction" nickname="List.Empty" x="10" y="118" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.Empty" />
+    <Dynamo.Nodes.Output guid="34365ef2-de93-4da6-9b1a-8c805533fbdb" type="Dynamo.Nodes.Output" nickname="Output" x="410" y="106" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="Element" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="72e99e76-36ea-4f04-aeb5-5aa313db44f8" start_index="0" end="68e01360-2dfd-498f-8193-54b4cf970fc1" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="5e177b3d-7bab-4ff8-8c1a-f4ee812f6376" start_index="0" end="72e99e76-36ea-4f04-aeb5-5aa313db44f8" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="149bfb22-7b61-440d-8155-802ad08ef471" start_index="0" end="34365ef2-de93-4da6-9b1a-8c805533fbdb" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="5c5fcbbf-c605-4603-8625-fa5e79adb0a9" start_index="0" end="149bfb22-7b61-440d-8155-802ad08ef471" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

@@ -1,0 +1,79 @@
+<Workspace Version="0.8.2.2392" X="299.907181715759" Y="228.411376470714" zoom="0.40538795198124" Name="Filter.GetUnusedv8" Description="Returns all unused filters in the project so that they can be used. Use in conjunction with 'Tool.Eraser' from the SteamNodes package or 'Delete.Elements' from Grimshaw package." ID="c59627cd-e090-4297-a956-88430d59bfa0" Category="BVN.Selection.Actions">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Symbol guid="da452220-2e47-4323-ab1b-76beb7facb26" type="Dynamo.Nodes.Symbol" nickname="Input" x="-167.208024022794" y="113.599588696001" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="//Boolean toggle to refresh Python script&#xD;&#xA;Toggle : bool" />
+    </Dynamo.Nodes.Symbol>
+    <DSIronPythonNode.PythonNode guid="f316bf6b-4038-4cd6-a32c-c05423303412" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="492.858631530074" y="139.268847523057" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+clr.AddReference("System.Core")
+import System.Linq
+clr.ImportExtensions(System.Linq)
+
+clr.AddReference("RevitAPI")
+import Autodesk.Revit
+from Autodesk.Revit.Exceptions import InvalidOperationException
+from Autodesk.Revit.DB import *
+
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+# Import DocumentManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+def GetFilterIds(view):
+  filterIds = None
+  try:
+    filterIds = view.GetFilters()
+  except InvalidOperationException, e:
+    filterIds = None
+  return filterIds
+
+def GetUsedFilterIds(doc):
+  views = FilteredElementCollector(doc).OfClass(View).ToElements()
+  usedFilterIds = []
+  for view in views:
+    viewFilterIds = []
+    try:
+      viewFilterIds = view.GetFilters()
+    except InvalidOperationException, e:
+      pass # this exception happens when a view doesn't support filters
+    usedFilterIds.extend(viewFilterIds)
+  return usedFilterIds
+
+def GetUnusedFilters(doc):
+  usedFilterIds = GetUsedFilterIds(doc).ToList[ElementId]()
+  unusedFilters = FilteredElementCollector(doc).OfClass(ParameterFilterElement).Excluding(usedFilterIds).ToElements()
+  return list(f.ToDSType(True) for f in unusedFilters)
+
+#The inputs to this node will be stored as a list in the IN variables.
+
+doc = DocumentManager.Instance.CurrentDBDocument
+
+#Assign your output to the OUT variable.
+OUT = GetUnusedFilters(doc)</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Output guid="40a5de8d-0c03-40e5-ac44-1567ccb7f2fc" type="Dynamo.Nodes.Output" nickname="Output" x="721.93215482837" y="150.950418190534" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="element" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="da452220-2e47-4323-ab1b-76beb7facb26" start_index="0" end="f316bf6b-4038-4cd6-a32c-c05423303412" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f316bf6b-4038-4cd6-a32c-c05423303412" start_index="0" end="40a5de8d-0c03-40e5-ac44-1567ccb7f2fc" end_index="0" portType="0" />
+  </Connectors>
+  <Notes>
+    <Dynamo.Models.NoteModel guid="76559c5d-33b6-417d-b4e4-3b95f115e772" text="Copyright(c) 2016, Paul Wintour&#xD;&#xA;BVN, http://www.bvn.com.au/&#xD;&#xA;Licence: http://creativecommons.org/licenses/by-sa/4.0/" x="-140.130079048212" y="-85.5565025546045" />
+  </Notes>
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

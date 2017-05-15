@@ -1,0 +1,54 @@
+<Workspace Version="0.8.1.1942" X="359" Y="445" zoom="1" Name="Element List check for Inplace Families" ID="0a64a93a-3787-4094-9254-1e87980188f0" Description="pythonic" Category="Bakery.Families">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.DSFunction guid="14fdcf09-26a9-48e9-88f8-7cf37b4dcc50" type="Dynamo.Nodes.DSFunction" nickname="Flatten" x="312.857068419739" y="10.4482688233001" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="" function="Flatten@var[]..[]" />
+    <DSIronPythonNode.PythonNode guid="e8b154ac-596f-42ba-b286-5f1992ee612f" type="DSIronPythonNode.PythonNode" nickname="inplace" x="142.025707835872" y="10.4669122523251" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="1">
+      <Script>#Copyright(c) 2014, Jason Andersen, andersen.ja@gmail.com
+
+# Default imports
+import clr
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+doc =  DocumentManager.Instance.CurrentDBDocument
+app =  DocumentManager.Instance.CurrentUIApplication.Application
+
+#The input to this node will be stored in the IN[0] variable.
+elementz = IN[0]
+        
+elements = []
+for e in elementz:
+    elements.append(UnwrapElement(e))
+    
+names = []
+for item in elements:
+    names.append(item.Symbol.Family.IsInPlace)
+    
+#Assign your output to the OUT variable
+OUT = names</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Output guid="6887efeb-b069-4869-bc38-c717b0f5fc75" type="Dynamo.Nodes.Output" nickname="Output" x="470.659296555306" y="10.932295358382" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="FamilyInPlace" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Symbol guid="537eebcb-5952-45d5-8b34-b1253c79e3b3" type="Dynamo.Nodes.Symbol" nickname="Input" x="10" y="10" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Elements" />
+    </Dynamo.Nodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="14fdcf09-26a9-48e9-88f8-7cf37b4dcc50" start_index="0" end="6887efeb-b069-4869-bc38-c717b0f5fc75" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e8b154ac-596f-42ba-b286-5f1992ee612f" start_index="0" end="14fdcf09-26a9-48e9-88f8-7cf37b4dcc50" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="537eebcb-5952-45d5-8b34-b1253c79e3b3" start_index="0" end="e8b154ac-596f-42ba-b286-5f1992ee612f" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+</Workspace>

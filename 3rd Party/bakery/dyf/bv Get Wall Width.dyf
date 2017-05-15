@@ -1,0 +1,74 @@
+<Workspace Version="1.0.0.1180" X="-816.975" Y="-122.8925" zoom="1.1575" Name="bv Get Wall Width" Description="from steam nodes" ID="ae5781cc-8929-48ff-bc49-cece7340ee5f" Category="Bakery.Forks">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="fe3f7334-9e19-49f7-8267-286398bab6f5" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="823.5" y="444" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="Wall/s" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="82f50aa2-3e08-447d-8175-53aa3c333097" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1000.5" y="448.218333333333" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="Flatten({item});" ShouldFocus="false" />
+    <PythonNodeModels.PythonNode guid="c6361dd9-c16a-40d7-8614-30afb587696b" type="PythonNodeModels.PythonNode" nickname="Python Script" x="1308.5" y="444" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <Script>#python nodes in dynamo 0.7
+#proposed by Julien Benoit @jbenoit44 
+#http://aecuandme.wordpress.com/
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+# Import geometry conversion extension methods
+clr.ImportExtensions(Revit.GeometryConversion)
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+from System.Collections.Generic import *
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+uidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+
+elt = []
+for i in IN[0]:
+	elt.append(UnwrapElement(i))
+list=[]
+metersToFeet = 0.3048
+feetToMeters = 1 / metersToFeet 
+
+# Start Transaction
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+for i in elt:
+	a=i.Width*metersToFeet
+	list.append(a)
+
+# End Transaction
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT=list</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="13336264-19f4-4880-ab7f-cf67ceceae19" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1770.5" y="444" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="Width" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="a3468054-b7a0-42e9-8744-30b863e8e5dd" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1406" y="498" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="x*1000;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="c8d11f0b-edc4-4879-8291-81a0a194746d" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1689" y="579" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="" ShouldFocus="false" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="fe3f7334-9e19-49f7-8267-286398bab6f5" start_index="0" end="82f50aa2-3e08-447d-8175-53aa3c333097" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="82f50aa2-3e08-447d-8175-53aa3c333097" start_index="0" end="c6361dd9-c16a-40d7-8614-30afb587696b" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c6361dd9-c16a-40d7-8614-30afb587696b" start_index="0" end="a3468054-b7a0-42e9-8744-30b863e8e5dd" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="a3468054-b7a0-42e9-8744-30b863e8e5dd" start_index="0" end="13336264-19f4-4880-ab7f-cf67ceceae19" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="34379.0918417202" eyeY="18605.8448462103" eyeZ="114864.521191593" lookX="-1676.16214901303" lookY="-4175.04616773589" lookZ="5255.47672643032" upX="0.231054177575801" upY="-0.649448034396701" upZ="-0.724452335927396" />
+  </Cameras>
+</Workspace>

@@ -1,0 +1,127 @@
+<Workspace Version="0.8.2.2371" X="818" Y="287" zoom="1" Name="Create Plan View for Room v1" Description="originally from Brian Myers. Doesn't work yet." ID="854e67f0-432f-4ef0-a178-54f71c71d90c" Category="Bakery.Views">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSCoreNodesUI.BoolSelector guid="aba3603a-d22a-4526-b5a5-302221c39bf9" type="DSCoreNodesUI.BoolSelector" nickname="Boolean" x="250" y="186.299293754888" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <System.Boolean>True</System.Boolean>
+    </DSCoreNodesUI.BoolSelector>
+    <DSIronPythonNode.PythonNode guid="ecec90e8-86e9-4774-a03f-de584e4c2d49" type="DSIronPythonNode.PythonNode" nickname="Create Plan Views" x="347.366803731404" y="-5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="4">
+      <Script>
+#Copyright(c) 2015, Konrad K Sobon
+# @arch_laboratory, http://archi-lab.net
+
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+rooms = UnwrapElement(IN[0])
+namePrefix = IN[1]
+bboxOffset = IN[2]
+runMe = IN[3]
+
+def OffsetBBox(bbox, offset):
+	bboxMinX = bbox.Min.X - offset
+	bboxMinY = bbox.Min.Y - offset
+	bboxMinZ = bbox.Min.Z - offset
+	bboxMaxX = bbox.Max.X + offset
+	bboxMaxY = bbox.Max.Y + offset
+	bboxMaxZ = bbox.Max.Z + offset
+	newBbox = BoundingBoxXYZ()
+	newBbox.Min = XYZ(bboxMinX, bboxMinY, bboxMinZ)
+	newBbox.Max = XYZ(bboxMaxX, bboxMaxY, bboxMaxZ)
+	return newBbox
+
+if runMe:
+	viewTypes = FilteredElementCollector(doc).OfClass(ViewFamilyType)
+	for i in viewTypes:
+		if i.ViewFamily == ViewFamily.FloorPlan:
+			viewTypeId = i.Id
+			break
+		else:
+			continue
+	existingPlans = FilteredElementCollector(doc).OfClass(View).ToElements()
+	existingPlanNames, existingPlanElements = [], []
+	for i in existingPlans:
+		if not i.IsTemplate:
+			if i.ViewType == ViewType.FloorPlan:
+				existingPlanNames.append(i.ToDSType(True).Name)
+				existingPlanElements.append(i)
+				
+	# Start Transaction
+	doc = DocumentManager.Instance.CurrentDBDocument
+	TransactionManager.Instance.EnsureInTransaction(doc)
+	
+	floorPlans = []
+	for i in rooms:
+		levelId = i.LevelId
+		bbox = i.BoundingBox[doc.ActiveView]
+		newBbox = OffsetBBox(bbox, bboxOffset)
+		viewName = namePrefix + "-" + i.get_Parameter("Number").AsString() + "-" + i.get_Parameter("Name").AsString()
+		if viewName in existingPlanNames:
+			view = existingPlanElements[existingPlanNames.index(viewName)]
+			view.CropBox = newBbox
+			view.CropBoxActive = True
+			view.CropBoxVisible = False
+			floorPlans.append(view)
+		else:
+			view = ViewPlan.Create(doc, viewTypeId, levelId)
+			view.ViewName = viewName
+			view.CropBox = newBbox
+			view.CropBoxActive = True
+			view.CropBoxVisible = False
+			floorPlans.append(view)
+
+	# End Transaction
+	TransactionManager.Instance.TransactionTaskDone()
+else:
+	floorPlans = "Run Me set to False"
+
+#Assign your output to the OUT variable
+OUT = floorPlans</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol guid="a2785810-5762-4c73-8f4e-890d267c6fdf" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="roomList" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="e29e7eee-75f7-4153-9694-c284c33cda5d" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="150" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="name prefix" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="ce4d672b-f94a-4ddc-aa4e-c0f1620631a3" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="300" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="offset" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="c4cc8dac-bf0a-4f4e-b54d-033e957b9e3f" type="Dynamo.Nodes.Output" nickname="Output" x="544.366803731404" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="views" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="aba3603a-d22a-4526-b5a5-302221c39bf9" start_index="0" end="ecec90e8-86e9-4774-a03f-de584e4c2d49" end_index="3" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ecec90e8-86e9-4774-a03f-de584e4c2d49" start_index="0" end="c4cc8dac-bf0a-4f4e-b54d-033e957b9e3f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a2785810-5762-4c73-8f4e-890d267c6fdf" start_index="0" end="ecec90e8-86e9-4774-a03f-de584e4c2d49" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e29e7eee-75f7-4153-9694-c284c33cda5d" start_index="0" end="ecec90e8-86e9-4774-a03f-de584e4c2d49" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ce4d672b-f94a-4ddc-aa4e-c0f1620631a3" start_index="0" end="ecec90e8-86e9-4774-a03f-de584e4c2d49" end_index="2" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+</Workspace>

@@ -1,0 +1,62 @@
+<Workspace Version="0.8.2.2371" X="-914.379560074612" Y="183.884229015118" zoom="1.02988563947099" Name="Set Design Option by View Parameter" Description="uses a view parameter and sets the design option using that value" ID="bb993c0c-d9f0-40f6-a5fc-674ad7dc6c15" Category="Bakery.Views">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Watch guid="39be1464-e805-4f85-a98f-d64f968353f6" type="Dynamo.Nodes.Watch" nickname="Watch" x="250" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+    <Dynamo.Nodes.DSFunction guid="8240788c-e2fa-4f77-94cb-bc8219642ee9" type="Dynamo.Nodes.DSFunction" nickname="Element.GetParameterValueByName" x="590.28977010883" y="286.766338658194" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="RevitNodes.dll" function="Revit.Elements.Element.GetParameterValueByName@string" />
+    <Dynamo.Nodes.Function guid="630bf0fb-880e-4fd7-a2d3-7a8e3bf5c63d" type="Dynamo.Nodes.Function" nickname="Get Design Option Element by Set Name and Option Name" x="622.04188694661" y="454.74652333588" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="8f0a68c8-963b-4c0a-bc7b-a2e34200601e" />
+      <Name value="Get Design Option Element by Set Name and Option Name" />
+      <Description value="" />
+      <Inputs>
+        <Input value="DesignOptionSetName" />
+        <Input value="DesignOptionName" />
+      </Inputs>
+      <Outputs>
+        <Output value="item" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="0e312491-3285-415f-824c-e6e702c430e0" type="Dynamo.Nodes.Function" nickname="View.SetDesignOption" x="1176.86259570171" y="382.141417550143" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="5245ba27-f960-49f4-973d-a2e3a12cb556" />
+      <Name value="View.SetDesignOption" />
+      <Description value="Sets the view to a given design option. PLEASE NOTE: This node is kind of hacky. It does not use the design option settings in the visibility / graphic overrides. Instead it sets the view property &quot;Visible in Option&quot; to *one* specific design option - which also means that the symbolic representation of this view is only visible in views that display the given design options." />
+      <Inputs>
+        <Input value="View(s)" />
+        <Input value="DesignOptions(s)" />
+      </Inputs>
+      <Outputs>
+        <Output value="View(s)" />
+        <Output value="Success" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Watch guid="dc75c36a-7ef4-4642-afbd-cdda452215e0" type="Dynamo.Nodes.Watch" nickname="Watch" x="1430.73950078051" y="520.366276408409" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+    <Dynamo.Nodes.Symbol guid="16aac8d4-6528-493b-b9ce-1ece702fdfd2" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="viewIn" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="078d9281-b9ac-44c1-827a-50ae9cc04c79" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="150" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="parameterToUse" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="eca25a4f-b677-4d94-8802-a72a83def201" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="300" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="DesignOptionSetName" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="e6035520-c35c-4736-b65a-827e39afcdf1" type="Dynamo.Nodes.Output" nickname="Output" x="1597.73950078051" y="150" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="DidItWork" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="39be1464-e805-4f85-a98f-d64f968353f6" start_index="0" end="8240788c-e2fa-4f77-94cb-bc8219642ee9" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="39be1464-e805-4f85-a98f-d64f968353f6" start_index="0" end="0e312491-3285-415f-824c-e6e702c430e0" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="8240788c-e2fa-4f77-94cb-bc8219642ee9" start_index="0" end="630bf0fb-880e-4fd7-a2d3-7a8e3bf5c63d" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="630bf0fb-880e-4fd7-a2d3-7a8e3bf5c63d" start_index="0" end="0e312491-3285-415f-824c-e6e702c430e0" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0e312491-3285-415f-824c-e6e702c430e0" start_index="1" end="dc75c36a-7ef4-4642-afbd-cdda452215e0" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="dc75c36a-7ef4-4642-afbd-cdda452215e0" start_index="0" end="e6035520-c35c-4736-b65a-827e39afcdf1" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="16aac8d4-6528-493b-b9ce-1ece702fdfd2" start_index="0" end="39be1464-e805-4f85-a98f-d64f968353f6" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="078d9281-b9ac-44c1-827a-50ae9cc04c79" start_index="0" end="8240788c-e2fa-4f77-94cb-bc8219642ee9" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="eca25a4f-b677-4d94-8802-a72a83def201" start_index="0" end="630bf0fb-880e-4fd7-a2d3-7a8e3bf5c63d" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

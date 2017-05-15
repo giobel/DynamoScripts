@@ -1,0 +1,340 @@
+<Workspace Version="0.8.2.2392" X="784.643912229607" Y="-262.239379156425" zoom="0.896282454308407" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="CurveElement.BY" resolvedName="Revit.Elements.CurveElement" assemblyName="RevitNodes.dll" />
+    <ClassMap partialName="Curve.p" resolvedName="Autodesk.DesignScript.Geometry.Curve" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Curve" resolvedName="Autodesk.DesignScript.Geometry.Curve" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Autodesk.Curve" resolvedName="Autodesk.DesignScript.Geometry.Curve" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Autodesk.DesignScript.Geometry.Curve" resolvedName="Autodesk.DesignScript.Geometry.Curve" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Vector" resolvedName="Autodesk.DesignScript.Geometry.Vector" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Vector.ZAxis" resolvedName="Autodesk.DesignScript.Geometry.Vector" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Curve.off" resolvedName="Autodesk.DesignScript.Geometry.Curve" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Curves" resolvedName="Geometry.Curves" assemblyName="LunchBox.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Nodes.DSModelElementsSelection guid="09dd38c2-2431-44ca-9110-698753addf47" type="Dynamo.Nodes.DSModelElementsSelection" nickname="Select Model Elements" x="-632.287947736385" y="-457.177867115621" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" />
+    <Dynamo.Nodes.DSFunction guid="33c06cbf-84b9-401a-8959-3900d6897123" type="Dynamo.Nodes.DSFunction" nickname="Element.Geometry" x="386.74369371262" y="-471.166375910848" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="RevitNodes.dll" function="Revit.Elements.Element.Geometry" />
+    <Dynamo.Nodes.DSFunction guid="7dc9ff71-a6b7-4060-b654-3a0d52be2f9d" type="Dynamo.Nodes.DSFunction" nickname="Flatten" x="966.989533390557" y="-577.22554894075" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="BuiltIn" function="Flatten@var[]..[]" />
+    <Dynamo.Nodes.DSFunction guid="7bdcfe66-4c4d-4f3e-b761-e18b101dc7ea" type="Dynamo.Nodes.DSFunction" nickname="Curve.PointAtParameter" x="951.873092098184" y="-450.437843926762" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Curve.PointAtParameter@double">
+      <PortInfo index="1" default="True" />
+    </Dynamo.Nodes.DSFunction>
+    <Dynamo.Nodes.DSFunction guid="554488e3-b548-4113-ba78-dc70b7d3bdf8" type="Dynamo.Nodes.DSFunction" nickname="Flatten" x="1180.39654704411" y="-439.260422304407" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="BuiltIn" function="Flatten@var[]..[]" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="e118ac43-06c0-4ce2-8ad5-dd961d509ec7" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="814.337843723285" y="-386.334847995454" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="0.5;" ShouldFocus="false" />
+    <DSIronPythonNode.PythonNode guid="507f54f7-85f7-48c2-a504-322d907dbd78" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="1492.12933226798" y="-515.67557244497" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="3">
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variables.
+geo = UnwrapElement(IN[0])
+pts = UnwrapElement(IN[1])
+scaleF = IN[2]
+BPlane = []
+Scalate = []
+
+for i in range(0,len(geo)):
+	BPlane = Plane.ByOriginNormal(pts[i],Vector.ZAxis())
+	Scalate.append(Geometry.Scale(geo[i],BPlane,scaleF[i],scaleF[i],scaleF[i]))
+
+#Assign your output to the OUT variable.
+OUT = Scalate
+
+</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="f9d13433-1a7b-4f95-86f9-2cf1a93b3676" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="656.3932242413" y="-242.353369686168" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="a.Length;" ShouldFocus="false" />
+    <Dynamo.Nodes.DSFunction guid="e6882c7c-09ad-4048-b79f-00ddb97249e7" type="Dynamo.Nodes.DSFunction" nickname="Flatten" x="1339.15824146017" y="-239.823056240708" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="BuiltIn" function="Flatten@var[]..[]" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="28688c7a-c7ce-43f6-9c32-e0e65f23b632" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1163.59481435444" y="-248.044091215738" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="a/b;" ShouldFocus="false" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="af7c755a-f6c9-44b1-98c5-cec1116ae246" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="895.025166895161" y="-190.825055565018" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="a-4000;" ShouldFocus="false" />
+    <DSIronPythonNode.PythonNode guid="3b9cf24e-6605-41c2-9e48-37b7ba40cee4" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="2649.86695212026" y="-750.099874477773" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>
+import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference('RevitNodes')
+import Revit
+clr.ImportExtensions(Revit.GeometryConversion)
+clr.ImportExtensions(Revit.Elements)
+
+clr.AddReference('RevitServices')
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+
+#Converting input from Dynamo to Revit
+
+lineList = UnwrapElement(IN[0])
+
+line = []
+
+for ln in lineList:
+	line.append(ln.GeometryCurve)
+
+
+
+
+#Create the dimension in a transaction
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+for l in line:
+	ref = ReferenceArray()
+	ref.Append(l.GetEndPointReference(0))
+	ref.Append(l.GetEndPointReference(1))
+	dim = doc.Create.NewDimension(doc.ActiveView, l, ref)
+
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = dim</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="327deba4-ff8a-47a9-a6b2-3a15dc2fa500" type="Dynamo.Nodes.Function" nickname="Active View" x="2096.35455902972" y="-525.799218339776" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <PortInfo index="0" default="True" />
+      <ID value="0f52caaa-1871-4d80-8cae-5022cceae3b2" />
+      <Name value="Active View" />
+      <Description value="" />
+      <Inputs>
+        <Input value="refresh" />
+      </Inputs>
+      <Outputs>
+        <Output value="view" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSIronPythonNode.PythonNode guid="94020676-d667-4eab-9cc8-5488b083ec08" type="DSIronPythonNode.PythonNode" nickname="Py-Detail Line from Curve" x="2301.00491902034" y="-671.912057555879" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.GeometryConversion)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+curves = UnwrapElement(IN[0])
+view = UnwrapElement(IN[1])
+elementlist = []
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+if doc.IsFamilyDocument: 
+	doc_create = doc.FamilyCreate
+else: 
+	doc_create = doc.Create
+for curve in curves:
+	detcurve = doc_create.NewDetailCurve(view, curve.ToRevitType())
+	elementlist.append(detcurve)
+TransactionManager.Instance.TransactionTaskDone()
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSFunction guid="86ff8d27-35a0-4867-9dba-ae5af629d9e0" type="Dynamo.Nodes.DSFunction" nickname="Curve.Simplify" x="1876.37104165735" y="-650.418729752609" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Curve.Simplify@double" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="f5781833-4354-4b93-990f-75231577264e" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1743.43352107016" y="-516.325603615082" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="1;" ShouldFocus="false" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="7c71d21d-7b70-415c-b9c0-8ae1a9d9e8fc" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1979" y="-482" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="1;" ShouldFocus="false" />
+    <Dynamo.Nodes.DSFunction guid="7d6c7f23-81bb-4d9a-a8f5-6b6ca8b389ef" type="Dynamo.Nodes.DSFunction" nickname="Element.Geometry" x="-330.916903789543" y="-421.729491262212" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="RevitNodes.dll" function="Revit.Elements.Element.Geometry" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="91e70b3f-7f1b-4860-a7a9-04d1e99a5d12" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-8.3057633442204" y="-330.650172686587" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="a.Length&gt;500;" ShouldFocus="false" />
+    <Dynamo.Nodes.DSFunction guid="4b085612-d813-4ac0-9184-aa5e45239855" type="Dynamo.Nodes.DSFunction" nickname="List.FilterByBoolMask" x="134.587899872691" y="-541.812448724361" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.FilterByBoolMask@var[]..[],var[]..[]" />
+    <Dynamo.Nodes.DSFunction guid="ffc749c5-024e-45fb-b946-4a2e45af9bf3" type="Dynamo.Nodes.DSFunction" nickname="Flatten" x="-224.77751024383" y="-265.039577852224" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="BuiltIn" function="Flatten@var[]..[]" />
+    <Dynamo.Nodes.DSModelElementsSelection guid="3c478590-1640-4e23-abdb-ed3ed8c14af5" type="Dynamo.Nodes.DSModelElementsSelection" nickname="Select Model Elements" x="-692.906576951319" y="104.646442677568" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" />
+    <Dynamo.Nodes.DSFunction guid="127b5cae-dfe0-4489-8150-43f174e1c9e7" type="Dynamo.Nodes.DSFunction" nickname="Wall.ByCurveAndLevels" x="-122.3240687742" y="54.6378814215281" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="RevitNodes.dll" function="Revit.Elements.Wall.ByCurveAndLevels@Autodesk.DesignScript.Geometry.Curve,Revit.Elements.Level,Revit.Elements.Level,Revit.Elements.WallType" />
+    <Dynamo.Nodes.DSFunction guid="26723e47-7e79-4921-b979-52b55f91790f" type="Dynamo.Nodes.DSFunction" nickname="Element.Geometry" x="-345.473286825334" y="68.1618070302168" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="RevitNodes.dll" function="Revit.Elements.Element.Geometry" />
+    <DSRevitNodesUI.Levels guid="7e24ef3f-5ebc-42f2-81e0-3831b643e440" type="DSRevitNodesUI.Levels" nickname="Levels" x="-491.336717210506" y="200.038333131879" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" index="0:Level 1" />
+    <DSRevitNodesUI.WallTypes guid="15c211f9-ce46-475c-afa8-be15afca781e" type="DSRevitNodesUI.WallTypes" nickname="Wall Types" x="-438.386293851505" y="331.914859233542" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" index="2:Wall 1" />
+    <DSRevitNodesUI.Levels guid="90e6fe29-38ba-45b0-b09f-1768ae333929" type="DSRevitNodesUI.Levels" nickname="Levels" x="-679.048611447718" y="-32.1319354350603" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" index="1:Level 2" />
+    <Dynamo.Nodes.DSModelElementsSelection guid="7962c50a-fef3-416a-a9af-8262d008379e" type="Dynamo.Nodes.DSModelElementsSelection" nickname="Select Model Elements" x="-593.560951294649" y="468.507561801224" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <instance id="858f4783-f32b-4638-8a88-e1bf0e83c5fc-00000ba5" />
+    </Dynamo.Nodes.DSModelElementsSelection>
+    <Dynamo.Nodes.DSModelElementsSelection guid="0941d523-7b0d-4a28-a794-a1e866c2eaf7" type="Dynamo.Nodes.DSModelElementsSelection" nickname="Select Model Elements" x="-572.365936769183" y="750.579142765751" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <instance id="858f4783-f32b-4638-8a88-e1bf0e83c5fc-00000ba2" />
+      <instance id="858f4783-f32b-4638-8a88-e1bf0e83c5fc-00000ba3" />
+    </Dynamo.Nodes.DSModelElementsSelection>
+    <Dynamo.Nodes.DSFunction guid="0a2e00e7-adfc-44e2-8aaf-a6266e5bb72f" type="Dynamo.Nodes.DSFunction" nickname="Element.Geometry" x="-232.904476622453" y="483.386218493771" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="RevitNodes.dll" function="Revit.Elements.Element.Geometry" />
+    <Dynamo.Nodes.DSFunction guid="6accbe2f-1006-4c2a-aefa-a82b6f52cbf2" type="Dynamo.Nodes.DSFunction" nickname="Grid.Curve" x="-201.324051749512" y="643.989318590085" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="RevitNodes.dll" function="Revit.Elements.Grid.Curve" />
+    <Dynamo.Nodes.DSFunction guid="7362143a-ced3-4fe9-ad9c-3898530afd74" type="Dynamo.Nodes.DSFunction" nickname="Flatten" x="9.34708433112678" y="464.887182823514" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="BuiltIn" function="Flatten@var[]..[]" />
+    <Dynamo.Nodes.DSFunction guid="1a088c0c-2bc4-437c-ab81-bce5fa83c799" type="Dynamo.Nodes.DSFunction" nickname="Geometry.Intersect" x="330.852361699067" y="541.318654855464" isVisible="true" isUpstreamVisible="true" lacing="CrossProduct" isSelectedInput="False" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Geometry.Intersect@Autodesk.DesignScript.Geometry.Geometry" />
+    <Dynamo.Nodes.DSFunction guid="a6eaf787-55a9-4dd3-9747-efa8a2b23594" type="Dynamo.Nodes.DSFunction" nickname="Flatten" x="603.719974499825" y="562.897135744048" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="BuiltIn" function="Flatten@var[]..[]" />
+    <DSIronPythonNode.PythonNode guid="006a074d-d1f9-4b8b-aec8-8c5a08cada17" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="1605.05224723487" y="625.69310620827" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>
+import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference('RevitNodes')
+import Revit
+clr.ImportExtensions(Revit.GeometryConversion)
+clr.ImportExtensions(Revit.Elements)
+
+clr.AddReference('RevitServices')
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+
+#Converting input from Dynamo to Revit
+
+lineList = UnwrapElement(IN[0])
+
+line = []
+
+for ln in lineList:
+	line.append(ln.GeometryCurve)
+
+
+
+
+#Create the dimension in a transaction
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+for l in line:
+	ref = ReferenceArray()
+	ref.Append(l.GetEndPointReference(0))
+	ref.Append(l.GetEndPointReference(1))
+	dim = doc.Create.NewDimension(doc.ActiveView, l, ref)
+
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = dim,ref</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSFunction guid="a78ed904-981b-4df0-b8d9-fa4a6d848afb" type="Dynamo.Nodes.DSFunction" nickname="Line.ByStartPointEndPoint" x="979.50387075817" y="566.586876807512" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Line.ByStartPointEndPoint@Autodesk.DesignScript.Geometry.Point,Autodesk.DesignScript.Geometry.Point" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="06b1a42c-3461-45af-9d03-ac39116f7fa8" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="779.758896031172" y="598.769201024496" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="a[0];&#xA;b[1];" ShouldFocus="false" />
+    <DSIronPythonNode.PythonNode guid="a0aaedc1-1997-45ae-a8da-431cd7cb2cdb" type="DSIronPythonNode.PythonNode" nickname="Py-Detail Line from Curve" x="1333.46853288768" y="667.779015487645" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.GeometryConversion)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+curves = UnwrapElement(IN[0])
+view = UnwrapElement(IN[1])
+elementlist = []
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+if doc.IsFamilyDocument: 
+	doc_create = doc.FamilyCreate
+else: 
+	doc_create = doc.Create
+for curve in curves:
+	detcurve = doc_create.NewDetailCurve(view, curve.ToRevitType())
+	elementlist.append(detcurve)
+TransactionManager.Instance.TransactionTaskDone()
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="cf6a1ab1-f14c-4b62-acf6-766e4abdd4cc" type="Dynamo.Nodes.Function" nickname="Active View" x="1128.81817289706" y="813.008804238641" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <PortInfo index="0" default="True" />
+      <ID value="0f52caaa-1871-4d80-8cae-5022cceae3b2" />
+      <Name value="Active View" />
+      <Description value="" />
+      <Inputs>
+        <Input value="refresh" />
+      </Inputs>
+      <Outputs>
+        <Output value="view" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="ca2e9258-63d1-4d06-b5e4-232e8e04e9da" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1011.46361386734" y="857.691073043525" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="1;" ShouldFocus="false" />
+    <DSCoreNodesUI.CreateList guid="f935374a-83bd-451d-8bc8-dddb5cb33994" type="DSCoreNodesUI.CreateList" nickname="List.Create" x="1229.36882957087" y="553.578045463503" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1" />
+    <DSIronPythonNode.PythonNode guid="f5e7c578-ac69-468e-90a4-4a0d26c3ff93" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="87.0648540011969" y="784.851589238395" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference('RevitNodes')
+import Revit
+clr.ImportExtensions(Revit.GeometryConversion)
+clr.ImportExtensions(Revit.Elements)
+
+clr.AddReference('RevitServices')
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+
+#Converting input from Dynamo to Revit
+line = IN[0].ToRevitType()
+grids = UnwrapElement(IN[1])
+
+#Getting refrences from grid
+gridRef = ReferenceArray()
+opt = Options()
+opt.ComputeReferences = True
+opt.IncludeNonVisibleObjects = True
+opt.View = doc.ActiveView
+for grid in grids:
+	for obj in grid.get_Geometry(opt):
+		if isinstance(obj, Line):
+			gline = obj
+			gridRef.Append(gline.Reference)
+
+#Create the dimension in a transaction
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+dim = doc.Create.NewDimension(doc.ActiveView, line, gridRef)
+
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = dim</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="bbc9d135-4806-4f5b-9f27-1abd365244f0" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-93" y="753" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="a[0];" ShouldFocus="false" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="09dd38c2-2431-44ca-9110-698753addf47" start_index="0" end="7d6c7f23-81bb-4d9a-a8f5-6b6ca8b389ef" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="09dd38c2-2431-44ca-9110-698753addf47" start_index="0" end="4b085612-d813-4ac0-9184-aa5e45239855" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="33c06cbf-84b9-401a-8959-3900d6897123" start_index="0" end="f9d13433-1a7b-4f95-86f9-2cf1a93b3676" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="33c06cbf-84b9-401a-8959-3900d6897123" start_index="0" end="7bdcfe66-4c4d-4f3e-b761-e18b101dc7ea" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="33c06cbf-84b9-401a-8959-3900d6897123" start_index="0" end="7dc9ff71-a6b7-4060-b654-3a0d52be2f9d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="7dc9ff71-a6b7-4060-b654-3a0d52be2f9d" start_index="0" end="507f54f7-85f7-48c2-a504-322d907dbd78" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="7bdcfe66-4c4d-4f3e-b761-e18b101dc7ea" start_index="0" end="554488e3-b548-4113-ba78-dc70b7d3bdf8" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="554488e3-b548-4113-ba78-dc70b7d3bdf8" start_index="0" end="507f54f7-85f7-48c2-a504-322d907dbd78" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e118ac43-06c0-4ce2-8ad5-dd961d509ec7" start_index="0" end="7bdcfe66-4c4d-4f3e-b761-e18b101dc7ea" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="507f54f7-85f7-48c2-a504-322d907dbd78" start_index="0" end="86ff8d27-35a0-4867-9dba-ae5af629d9e0" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f9d13433-1a7b-4f95-86f9-2cf1a93b3676" start_index="0" end="af7c755a-f6c9-44b1-98c5-cec1116ae246" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f9d13433-1a7b-4f95-86f9-2cf1a93b3676" start_index="0" end="28688c7a-c7ce-43f6-9c32-e0e65f23b632" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e6882c7c-09ad-4048-b79f-00ddb97249e7" start_index="0" end="507f54f7-85f7-48c2-a504-322d907dbd78" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="28688c7a-c7ce-43f6-9c32-e0e65f23b632" start_index="0" end="e6882c7c-09ad-4048-b79f-00ddb97249e7" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="af7c755a-f6c9-44b1-98c5-cec1116ae246" start_index="0" end="28688c7a-c7ce-43f6-9c32-e0e65f23b632" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="327deba4-ff8a-47a9-a6b2-3a15dc2fa500" start_index="0" end="94020676-d667-4eab-9cc8-5488b083ec08" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="94020676-d667-4eab-9cc8-5488b083ec08" start_index="0" end="3b9cf24e-6605-41c2-9e48-37b7ba40cee4" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="86ff8d27-35a0-4867-9dba-ae5af629d9e0" start_index="0" end="94020676-d667-4eab-9cc8-5488b083ec08" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f5781833-4354-4b93-990f-75231577264e" start_index="0" end="86ff8d27-35a0-4867-9dba-ae5af629d9e0" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="7c71d21d-7b70-415c-b9c0-8ae1a9d9e8fc" start_index="0" end="327deba4-ff8a-47a9-a6b2-3a15dc2fa500" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="7d6c7f23-81bb-4d9a-a8f5-6b6ca8b389ef" start_index="0" end="ffc749c5-024e-45fb-b946-4a2e45af9bf3" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="91e70b3f-7f1b-4860-a7a9-04d1e99a5d12" start_index="0" end="4b085612-d813-4ac0-9184-aa5e45239855" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4b085612-d813-4ac0-9184-aa5e45239855" start_index="0" end="33c06cbf-84b9-401a-8959-3900d6897123" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ffc749c5-024e-45fb-b946-4a2e45af9bf3" start_index="0" end="91e70b3f-7f1b-4860-a7a9-04d1e99a5d12" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3c478590-1640-4e23-abdb-ed3ed8c14af5" start_index="0" end="26723e47-7e79-4921-b979-52b55f91790f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="7e24ef3f-5ebc-42f2-81e0-3831b643e440" start_index="0" end="127b5cae-dfe0-4489-8150-43f174e1c9e7" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="15c211f9-ce46-475c-afa8-be15afca781e" start_index="0" end="127b5cae-dfe0-4489-8150-43f174e1c9e7" end_index="3" portType="0" />
+    <Dynamo.Models.ConnectorModel start="90e6fe29-38ba-45b0-b09f-1768ae333929" start_index="0" end="127b5cae-dfe0-4489-8150-43f174e1c9e7" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="7962c50a-fef3-416a-a9af-8262d008379e" start_index="0" end="0a2e00e7-adfc-44e2-8aaf-a6266e5bb72f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0941d523-7b0d-4a28-a794-a1e866c2eaf7" start_index="0" end="6accbe2f-1006-4c2a-aefa-a82b6f52cbf2" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0941d523-7b0d-4a28-a794-a1e866c2eaf7" start_index="0" end="f5e7c578-ac69-468e-90a4-4a0d26c3ff93" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0a2e00e7-adfc-44e2-8aaf-a6266e5bb72f" start_index="0" end="7362143a-ced3-4fe9-ad9c-3898530afd74" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="7362143a-ced3-4fe9-ad9c-3898530afd74" start_index="0" end="bbc9d135-4806-4f5b-9f27-1abd365244f0" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1a088c0c-2bc4-437c-ab81-bce5fa83c799" start_index="0" end="a6eaf787-55a9-4dd3-9747-efa8a2b23594" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a6eaf787-55a9-4dd3-9747-efa8a2b23594" start_index="0" end="06b1a42c-3461-45af-9d03-ac39116f7fa8" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a6eaf787-55a9-4dd3-9747-efa8a2b23594" start_index="0" end="06b1a42c-3461-45af-9d03-ac39116f7fa8" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a78ed904-981b-4df0-b8d9-fa4a6d848afb" start_index="0" end="f935374a-83bd-451d-8bc8-dddb5cb33994" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="06b1a42c-3461-45af-9d03-ac39116f7fa8" start_index="0" end="a78ed904-981b-4df0-b8d9-fa4a6d848afb" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="06b1a42c-3461-45af-9d03-ac39116f7fa8" start_index="1" end="a78ed904-981b-4df0-b8d9-fa4a6d848afb" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="cf6a1ab1-f14c-4b62-acf6-766e4abdd4cc" start_index="0" end="a0aaedc1-1997-45ae-a8da-431cd7cb2cdb" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ca2e9258-63d1-4d06-b5e4-232e8e04e9da" start_index="0" end="cf6a1ab1-f14c-4b62-acf6-766e4abdd4cc" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f935374a-83bd-451d-8bc8-dddb5cb33994" start_index="0" end="a0aaedc1-1997-45ae-a8da-431cd7cb2cdb" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="bbc9d135-4806-4f5b-9f27-1abd365244f0" start_index="0" end="f5e7c578-ac69-468e-90a4-4a0d26c3ff93" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="4382.0869140625" eyeY="4053.39599609375" eyeZ="1187.90844726563" lookX="-56.868896484375" lookY="-3512.65991210938" lookZ="-2171.73559570313" />
+  </Cameras>
+</Workspace>

@@ -1,0 +1,119 @@
+<Workspace Version="0.8.2.2371" X="355.216021068298" Y="210.058467429693" zoom="1.74331992875497" Name="Override Projection Lineweight in View" Description="" ID="cf1e3080-c55b-4385-8d4f-383215682e57" Category="Bakery.Views">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Symbol guid="169550a4-4f27-4c5b-98f7-7747fa1a1e59" type="Dynamo.Nodes.Symbol" nickname="Input" x="12.5879576286233" y="6.7650529642209" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="Element(s)" />
+    </Dynamo.Nodes.Symbol>
+    <DSIronPythonNode.PythonNode guid="df628797-0cd4-4a53-a5a2-07dcb3428700" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="189" y="43" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="4">
+      <Script>#Created by DPS Design, dpsdesign.org
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+from System.Collections.Generic import *
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+listlength = IN[3]
+
+#unwrap all elements to use with API
+elements = []
+for i in IN[0]:
+	elements.append(UnwrapElement(i))
+
+viewlist = []
+for j in IN[2]:
+	viewlist.append(UnwrapElement(j))
+#create graphic overrides properties
+gSettings = Autodesk.Revit.DB.OverrideGraphicSettings()
+
+#set Projection Line weight
+gSettings.SetProjectionLineWeight(IN[1])
+
+# "Start" the transaction
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+result = []
+#apply lineweight override to elements in an input list
+for k in listlength:
+	try:
+		id = elements[k].Id
+		viewlist[k].SetElementOverrides(id, gSettings)
+		result.append("success")
+	except:
+		result.append("failure")
+	
+
+# "End" the transaction
+TransactionManager.Instance.TransactionTaskDone()
+
+#Assign your output to the OUT variable
+OUT = elements, result</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol guid="9b0b0715-b2c8-4e89-aa5f-1562b3478489" type="Dynamo.Nodes.Symbol" nickname="Input" x="-69.5796970801662" y="47.0637520919366" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="Lineweight" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="af808b23-f7f5-4e47-9509-f3008453f4c6" type="Dynamo.Nodes.Output" nickname="Output" x="510.389217086243" y="123.401763397411" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="done?" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Symbol guid="468448a5-26ba-4f42-a924-a291e6782237" type="Dynamo.Nodes.Symbol" nickname="Input" x="-39.2144477924406" y="161.254765056643" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="View(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.DSFunction guid="0c997916-fda6-48b1-94d3-635fd958b28a" type="Dynamo.Nodes.DSFunction" nickname="Count" x="-29.7729834700386" y="305.535638071231" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="BuiltIn" function="Count@var[]..[]" />
+    <Dynamo.Nodes.Function guid="b169efcb-0c0b-4f29-8ec6-cbe5635a2d13" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="-167.696333964712" y="267.410484275956" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="TurnIntoList" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="55ffee4f-4dcb-438c-9140-c9f8998aa788" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="90.5397085679184" y="402.027399355279" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="0..(x-1);" ShouldFocus="false" />
+    <Dynamo.Nodes.DSFunction guid="07e235fb-2bde-4e94-8006-d78c76732c03" type="Dynamo.Nodes.DSFunction" nickname="List.GetItemAtIndex" x="370.433428930571" y="207.616242205638" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="f4f7018b-397a-4d36-8eb4-856ab5ed889a" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="248" y="254" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="1;" ShouldFocus="false" />
+    <Dynamo.Nodes.Output guid="9b140994-8a8c-4027-8e48-49ac45d5b6ec" type="Dynamo.Nodes.Output" nickname="Output" x="515.233700598336" y="383.965513625434" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="viewsOut" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="169550a4-4f27-4c5b-98f7-7747fa1a1e59" start_index="0" end="df628797-0cd4-4a53-a5a2-07dcb3428700" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="169550a4-4f27-4c5b-98f7-7747fa1a1e59" start_index="0" end="b169efcb-0c0b-4f29-8ec6-cbe5635a2d13" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="df628797-0cd4-4a53-a5a2-07dcb3428700" start_index="0" end="07e235fb-2bde-4e94-8006-d78c76732c03" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9b0b0715-b2c8-4e89-aa5f-1562b3478489" start_index="0" end="df628797-0cd4-4a53-a5a2-07dcb3428700" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="468448a5-26ba-4f42-a924-a291e6782237" start_index="0" end="df628797-0cd4-4a53-a5a2-07dcb3428700" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="468448a5-26ba-4f42-a924-a291e6782237" start_index="0" end="9b140994-8a8c-4027-8e48-49ac45d5b6ec" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0c997916-fda6-48b1-94d3-635fd958b28a" start_index="0" end="55ffee4f-4dcb-438c-9140-c9f8998aa788" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="b169efcb-0c0b-4f29-8ec6-cbe5635a2d13" start_index="0" end="0c997916-fda6-48b1-94d3-635fd958b28a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="55ffee4f-4dcb-438c-9140-c9f8998aa788" start_index="0" end="df628797-0cd4-4a53-a5a2-07dcb3428700" end_index="3" portType="0" />
+    <Dynamo.Models.ConnectorModel start="07e235fb-2bde-4e94-8006-d78c76732c03" start_index="0" end="af808b23-f7f5-4e47-9509-f3008453f4c6" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f4f7018b-397a-4d36-8eb4-856ab5ed889a" start_index="0" end="07e235fb-2bde-4e94-8006-d78c76732c03" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

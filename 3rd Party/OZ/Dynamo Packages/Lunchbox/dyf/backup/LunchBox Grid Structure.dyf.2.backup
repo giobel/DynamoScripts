@@ -1,0 +1,84 @@
+<Workspace Version="0.7.1.29946" X="163.887807689752" Y="192.313724925182" zoom="1.3231529419852" Description="Creates a grid wireframe on a surface." Category="LunchBox.Geometry.Structure" Name="LunchBox Grid Structure" ID="6bff8f02-b1df-4bdb-b4e2-eb76f3ec6e0a">
+  <Elements>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="76a23d36-9311-48f5-86d6-46cdba27d382" nickname="Input" x="-3.77885264911117" y="7.55770529822232" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Surface" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="8ad32c20-e750-465f-8ded-a5393c7f20cb" nickname="Input" x="-4.60386953680018" y="93.2576377474663" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="U" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="6664b291-1f5b-42de-a80a-c4ff10f2f2a6" nickname="Output" x="682.427638389815" y="5.12517990801996" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Centerlines A" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="81be0679-eb5e-402a-882e-5634f07b5d64" nickname="Output" x="680.266063554792" y="125.815438515264" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Centerlines B" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="0628ae5e-fae5-4834-986e-f6ecfc3da210" nickname="Input" x="-6.33655794733346" y="166.967244038711" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="V" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="88b09c9a-a1ef-41cb-807d-ba3dd5d1eb32" nickname="List.GetItemAtIndex" x="457.560956264178" y="123.600437000415" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="fb563521-d2e5-4add-a960-f05b0849c07f" nickname="Number" x="367.744591716786" y="187.106957387461" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Double value="1" />
+    </Dynamo.Nodes.DoubleInput>
+    <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="6057171f-ab43-4540-b7b0-3fa2eb44ccbf" nickname="Number" x="365.226923091982" y="67.3518046576025" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Double value="0" />
+    </Dynamo.Nodes.DoubleInput>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="9aa4083c-42d6-43bf-941e-9c666e952527" nickname="List.GetItemAtIndex" x="458.672231661491" y="4.75252027608622" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="3d19a4fc-53f9-4fdf-8635-56f5aafe807c" nickname="Python Script" x="173.797225513032" y="33.9604748741458" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="3">
+      <Script>#Copyright(c) 2014, Nathan Miller
+# The Proving Ground, http://theprovingground.org
+
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+#The input to this node will be stored in the IN[0] variable.
+srf = IN[0]
+
+udiv = IN[1]
+vdiv = IN[2]
+
+ustep = 1.0/udiv
+vstep = 1.0/vdiv
+
+lnsA = []
+lnsB = []
+lns = []
+for i in range(0,int(udiv)+1):
+	for j in range(0,int(vdiv)+1):
+		lnB = []
+		lnA = []
+		
+		ptA = srf.PointAtParameter(i*ustep, j*vstep)
+		if i&lt;udiv:
+			ptB = srf.PointAtParameter((i+1)*ustep, j*vstep)
+			lnA.append(ptA)
+			lnA.append(ptB)
+			
+			ln = Line.ByBestFitThroughPoints(lnA)
+			lnsA.append(ln)
+		if j&lt;vdiv:
+			ptB = srf.PointAtParameter(i*ustep, (j+1)*vstep)
+			lnB.append(ptA)
+			lnB.append(ptB)
+			ln = Line.ByBestFitThroughPoints(lnB)
+			lnsB.append(ln)
+
+lns.append(lnsA)
+lns.append(lnsB)
+#Assign your output to the OUT variable
+OUT = lns</Script>
+    </DSIronPythonNode.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="76a23d36-9311-48f5-86d6-46cdba27d382" start_index="0" end="3d19a4fc-53f9-4fdf-8635-56f5aafe807c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="8ad32c20-e750-465f-8ded-a5393c7f20cb" start_index="0" end="3d19a4fc-53f9-4fdf-8635-56f5aafe807c" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0628ae5e-fae5-4834-986e-f6ecfc3da210" start_index="0" end="3d19a4fc-53f9-4fdf-8635-56f5aafe807c" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="88b09c9a-a1ef-41cb-807d-ba3dd5d1eb32" start_index="0" end="81be0679-eb5e-402a-882e-5634f07b5d64" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="fb563521-d2e5-4add-a960-f05b0849c07f" start_index="0" end="88b09c9a-a1ef-41cb-807d-ba3dd5d1eb32" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6057171f-ab43-4540-b7b0-3fa2eb44ccbf" start_index="0" end="9aa4083c-42d6-43bf-941e-9c666e952527" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9aa4083c-42d6-43bf-941e-9c666e952527" start_index="0" end="6664b291-1f5b-42de-a80a-c4ff10f2f2a6" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3d19a4fc-53f9-4fdf-8635-56f5aafe807c" start_index="0" end="88b09c9a-a1ef-41cb-807d-ba3dd5d1eb32" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3d19a4fc-53f9-4fdf-8635-56f5aafe807c" start_index="0" end="9aa4083c-42d6-43bf-941e-9c666e952527" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

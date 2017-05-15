@@ -1,0 +1,44 @@
+<Workspace Version="0.8.2.2392" X="-35.290742961794" Y="-62.9813863087066" zoom="0.954042924882813" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="d492b49e-5676-4455-9aae-097bf0616063" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="582" y="229.451829132717" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+stairs = UnwrapElement(IN[0])
+supportIds = []
+
+for stair in stairs:
+    supportIds.append(stair.GetStairsSupports())
+
+substair = []
+
+for i in range(0,len(supportIds)):
+    sub = []
+    substair.append(sub)
+    for j in range(0,len(supportIds[i])):
+        sub.append(stairs[i].Document.GetElement(supportIds[i][j]))
+
+
+
+OUT = substair</Script>
+    </DSIronPythonNode.PythonNode>
+    <DSRevitNodesUI.Categories guid="822b8a6f-643d-4ec0-8b2e-ab81d13b1114" type="DSRevitNodesUI.Categories" nickname="Categories" x="89" y="240.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" index="764:Stairs" />
+    <DSRevitNodesUI.ElementsOfCategory guid="34d5d58c-581a-4846-a7ac-1876ee983b15" type="DSRevitNodesUI.ElementsOfCategory" nickname="All Elements of Category" x="338" y="249.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="822b8a6f-643d-4ec0-8b2e-ab81d13b1114" start_index="0" end="34d5d58c-581a-4846-a7ac-1876ee983b15" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="34d5d58c-581a-4846-a7ac-1876ee983b15" start_index="0" end="d492b49e-5676-4455-9aae-097bf0616063" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

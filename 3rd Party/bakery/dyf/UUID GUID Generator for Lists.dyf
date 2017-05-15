@@ -1,0 +1,40 @@
+<Workspace Version="0.8.2.2371" X="-399.435121021003" Y="-169.547279900621" zoom="1.545620359375" Name="UUID GUID Generator for Lists" Description="just makes a new GUID for every item in a list, has no relationship to item or element itself" ID="429fdf6e-5355-4e74-b839-f7369b028801" Category="Bakery.Standalone">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="9be78dc0-6514-4659-9318-b9196c6f4720" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="449" y="298" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+from System import Guid
+inputlist = IN[0]
+uuidlist = list()
+uuidstrs = list()
+for i in inputlist:
+	temp = Guid.NewGuid()
+	asString = temp.ToString()
+	uuidlist.append(temp)
+	uuidstrs.append(asString)
+
+OUT = uuidlist, uuidstrs</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol guid="d75fd0a3-83fc-4217-8595-65fb51cff69c" type="Dynamo.Nodes.Symbol" nickname="Input" x="226" y="410" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="list" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="88e989ec-748f-449b-b66c-aa4caf454290" type="Dynamo.Nodes.Output" nickname="Output" x="780.468713993207" y="206.419122841483" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="uuids" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="8d3bc1af-a7d0-4cd9-8cb5-49515a334b07" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="595.819364429349" y="272.467533914856" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="x[0];&#xA;x[1];" ShouldFocus="false" />
+    <Dynamo.Nodes.Output guid="57c85a9a-c83f-406b-a1d3-da56b12fc3bc" type="Dynamo.Nodes.Output" nickname="Output" x="749.143421663368" y="357.787395941128" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="uuidsAsStrings" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="9be78dc0-6514-4659-9318-b9196c6f4720" start_index="0" end="8d3bc1af-a7d0-4cd9-8cb5-49515a334b07" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d75fd0a3-83fc-4217-8595-65fb51cff69c" start_index="0" end="9be78dc0-6514-4659-9318-b9196c6f4720" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="8d3bc1af-a7d0-4cd9-8cb5-49515a334b07" start_index="0" end="88e989ec-748f-449b-b66c-aa4caf454290" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="8d3bc1af-a7d0-4cd9-8cb5-49515a334b07" start_index="1" end="57c85a9a-c83f-406b-a1d3-da56b12fc3bc" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+</Workspace>

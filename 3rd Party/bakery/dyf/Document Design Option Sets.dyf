@@ -1,0 +1,49 @@
+<Workspace Version="0.8.2.2371" X="17.0325" Y="175.875" zoom="0.8425" Name="Document Design Option Sets" Description="taken originally from Clockwork" ID="16db6bbd-5924-4c30-932f-107229b0fe99" Category="Bakery.DocInfo">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Symbol guid="e4678ca5-2ff4-48ed-b9f0-a288cbad6b92" type="Dynamo.Nodes.Symbol" nickname="Input" x="10" y="10" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="DesignOption(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Function guid="1013f6c1-faf8-4114-89d1-97fad9666c4d" type="Dynamo.Nodes.Function" nickname="Turn Into List" x="265" y="83.3428513103806" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="var[]" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSIronPythonNode.PythonNode guid="fcbfd075-9e18-40f9-835b-988fd4cd73ec" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="478.777567869119" y="81.9197241572753" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+desopts = UnwrapElement(IN[0])
+elementlist = list()
+for item in desopts:
+	elementlist.append(doc.GetElement(item.get_Parameter(BuiltInParameter.OPTION_SET_ID).AsElementId()))
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Output guid="afeeac66-9ffd-47d5-aa97-fa5d86ba547a" type="Dynamo.Nodes.Output" nickname="Output" x="925.702143588763" y="10" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="DesignOptionSet(s)" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="e4678ca5-2ff4-48ed-b9f0-a288cbad6b92" start_index="0" end="1013f6c1-faf8-4114-89d1-97fad9666c4d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1013f6c1-faf8-4114-89d1-97fad9666c4d" start_index="0" end="fcbfd075-9e18-40f9-835b-988fd4cd73ec" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="fcbfd075-9e18-40f9-835b-988fd4cd73ec" start_index="0" end="afeeac66-9ffd-47d5-aa97-fa5d86ba547a" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

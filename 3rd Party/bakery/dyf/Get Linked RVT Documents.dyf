@@ -1,0 +1,100 @@
+<Workspace Version="0.8.2.2371" X="203.181676539239" Y="101.501378981973" zoom="0.784369328044827" Name="Get Linked RVT Documents" Description="" ID="98458ceb-6e1f-49f2-ab12-e054d5034efc" Category="Bakery.Links">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="2ed3349c-5a86-4cbe-9646-a87f2a2034f0" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="143.577213466722" y="3.38154888971292" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>#Copyright(c) 2015, Konrad K Sobon
+# @arch_laboratory, http://archi-lab.net
+
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+from System.Collections.Generic import *
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+from Autodesk.Revit.DB.Analysis import *
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+collector = Autodesk.Revit.DB.FilteredElementCollector(doc)
+linkInstances = collector.OfClass(Autodesk.Revit.DB.RevitLinkInstance)
+
+linkDoc, linkName, linkInstId = [], [], []
+for i in linkInstances:
+	linkDoc.append(i.GetLinkDocument())
+	linkName.append(i.Name)
+	linkInstId.append(i.Id)
+
+OUT = linkDoc, linkName, linkInstances, linkInstId</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSFunction guid="35e89556-5e62-4b5e-8362-5e45aaf86efa" type="Dynamo.Nodes.DSFunction" nickname="List.Empty" x="10" y="29.349478859106" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.Empty" />
+    <Dynamo.Nodes.DoubleInput guid="a1cbd67c-4e76-4bb8-a08e-8f16878076f6" type="Dynamo.Nodes.DoubleInput" nickname="Number" x="340.392430267577" y="54.511405730937" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <System.Double value="0" />
+    </Dynamo.Nodes.DoubleInput>
+    <Dynamo.Nodes.DSFunction guid="4ce2fe84-df45-4ccc-8494-23e04a9ac389" type="Dynamo.Nodes.DSFunction" nickname="List.GetItemAtIndex" x="439.433320679165" y="28.278949572729" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.DoubleInput guid="da41bc73-e55e-4547-a1b9-151b7779969e" type="Dynamo.Nodes.DoubleInput" nickname="Number" x="344.914977098819" y="169.793626500689" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <System.Double value="1" />
+    </Dynamo.Nodes.DoubleInput>
+    <Dynamo.Nodes.DSFunction guid="c638917c-951c-408a-81c1-c4b6852baaf2" type="Dynamo.Nodes.DSFunction" nickname="List.GetItemAtIndex" x="443.955867510407" y="143.561170342481" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.DoubleInput guid="62fc7c4d-129b-49b2-b5f5-5343d1c61b14" type="Dynamo.Nodes.DoubleInput" nickname="Number" x="345.683525237284" y="284.307299131976" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <System.Double value="2" />
+    </Dynamo.Nodes.DoubleInput>
+    <Dynamo.Nodes.DSFunction guid="f749831b-b014-44af-9b99-0b476346e8f8" type="Dynamo.Nodes.DSFunction" nickname="List.GetItemAtIndex" x="444.724415648873" y="258.074842973768" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.Output guid="d160b6c6-f166-42b9-82aa-0667299d7517" type="Dynamo.Nodes.Output" nickname="Output" x="1115.48313354096" y="10" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="Link Doc" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="e156871b-107e-4467-bace-3d8146d9b633" type="Dynamo.Nodes.Output" nickname="Output" x="1104.22151199543" y="127.238919140278" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="Link Name" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="d8deffcb-3d1f-4d86-92b6-eb953d4358be" type="Dynamo.Nodes.Output" nickname="Output" x="763.138957468526" y="297.771014057908" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="Link Instance" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.DoubleInput guid="61a6f659-ff6d-4861-9c48-75bde0a6155d" type="Dynamo.Nodes.DoubleInput" nickname="Number" x="371.764095413751" y="467.918910106664" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <System.Double value="3" />
+    </Dynamo.Nodes.DoubleInput>
+    <Dynamo.Nodes.DSFunction guid="cdd82404-96d3-483a-8441-46a7980d12f7" type="Dynamo.Nodes.DSFunction" nickname="List.GetItemAtIndex" x="470.80498582534" y="441.686453948456" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.Output guid="33cc6fc7-6688-4560-94ee-90e4eff35495" type="Dynamo.Nodes.Output" nickname="Output" x="789.219527644993" y="481.382625032596" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="Link Instance Id" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="2ed3349c-5a86-4cbe-9646-a87f2a2034f0" start_index="0" end="4ce2fe84-df45-4ccc-8494-23e04a9ac389" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="2ed3349c-5a86-4cbe-9646-a87f2a2034f0" start_index="0" end="c638917c-951c-408a-81c1-c4b6852baaf2" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="2ed3349c-5a86-4cbe-9646-a87f2a2034f0" start_index="0" end="f749831b-b014-44af-9b99-0b476346e8f8" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="2ed3349c-5a86-4cbe-9646-a87f2a2034f0" start_index="0" end="cdd82404-96d3-483a-8441-46a7980d12f7" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="35e89556-5e62-4b5e-8362-5e45aaf86efa" start_index="0" end="2ed3349c-5a86-4cbe-9646-a87f2a2034f0" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a1cbd67c-4e76-4bb8-a08e-8f16878076f6" start_index="0" end="4ce2fe84-df45-4ccc-8494-23e04a9ac389" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4ce2fe84-df45-4ccc-8494-23e04a9ac389" start_index="0" end="d160b6c6-f166-42b9-82aa-0667299d7517" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="da41bc73-e55e-4547-a1b9-151b7779969e" start_index="0" end="c638917c-951c-408a-81c1-c4b6852baaf2" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c638917c-951c-408a-81c1-c4b6852baaf2" start_index="0" end="e156871b-107e-4467-bace-3d8146d9b633" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="62fc7c4d-129b-49b2-b5f5-5343d1c61b14" start_index="0" end="f749831b-b014-44af-9b99-0b476346e8f8" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f749831b-b014-44af-9b99-0b476346e8f8" start_index="0" end="d8deffcb-3d1f-4d86-92b6-eb953d4358be" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="61a6f659-ff6d-4861-9c48-75bde0a6155d" start_index="0" end="cdd82404-96d3-483a-8441-46a7980d12f7" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="cdd82404-96d3-483a-8441-46a7980d12f7" start_index="0" end="33cc6fc7-6688-4560-94ee-90e4eff35495" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

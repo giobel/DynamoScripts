@@ -1,0 +1,73 @@
+<Workspace Version="0.8.2.2392" X="-634.153323673233" Y="-305.07746695957" zoom="1.41803684721607" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Function guid="6175fd80-c92e-4fce-b7b4-a3b3e95caf4a" type="Dynamo.Nodes.Function" nickname="Element.JoinGeometry" x="838.854585717563" y="97.0851129861192" isVisible="true" isUpstreamVisible="true" lacing="CrossProduct" isSelectedInput="False">
+      <ID value="38d2b003-a570-4fc4-9836-4e10befcd4fc" />
+      <Name value="Element.JoinGeometry" />
+      <Description value="Joins two model elements (if possible). Only works inside the project environment." />
+      <Inputs>
+        <Input value="element1" />
+        <Input value="element2" />
+      </Inputs>
+      <Outputs>
+        <Output value="bool" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.DSModelElementsSelection guid="a3f3c436-e7ba-4a8d-b0a3-1ee04bcdaede" type="Dynamo.Nodes.DSModelElementsSelection" nickname="Select Model Elements" x="-29" y="52.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <instance id="8ccce7b4-6a25-4b22-a663-b9052e0693eb-000f86d6" />
+      <instance id="8ccce7b4-6a25-4b22-a663-b9052e0693eb-000f870a" />
+      <instance id="8ccce7b4-6a25-4b22-a663-b9052e0693eb-000f8729" />
+    </Dynamo.Nodes.DSModelElementsSelection>
+    <Dynamo.Nodes.DSModelElementSelection guid="8bcce13b-7076-44bd-b768-5c7a7bced350" type="Dynamo.Nodes.DSModelElementSelection" nickname="Select Model Element" x="116" y="285.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <instance id="8ccce7b4-6a25-4b22-a663-b9052e0693eb-000f8673" />
+    </Dynamo.Nodes.DSModelElementSelection>
+    <Dynamo.Nodes.Function guid="01af1099-5d75-4505-97a9-b55a812cb278" type="Dynamo.Nodes.Function" nickname="Cycle Entries of one List by List of Lengths" x="341" y="62.5" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="ac9a0ac6-10f8-4831-a297-7689a0472c84" />
+      <Name value="Cycle Entries of one List by List of Lengths" />
+      <Description value="" />
+      <Inputs>
+        <Input value="listToCycle" />
+        <Input value="listOfLengths" />
+      </Inputs>
+      <Outputs>
+        <Output value="listWithLengths" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="8f06a26d-1226-4e2b-92a3-da626edd16c2" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="185" y="172" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="1;" ShouldFocus="false" />
+    <Dynamo.Nodes.DSFunction guid="5c36b3b6-19a8-4172-995e-7034ca274132" type="Dynamo.Nodes.DSFunction" nickname="Flatten" x="692.601668929116" y="45.6879833391333" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="BuiltIn" function="Flatten@var[]..[]" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="9d9e152d-e1c7-4e71-98e7-538486af406f" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-110.710063260843" y="437.954993906454" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="def Intersection(J:Function,num1:int,l1:var[],l2:var[])&#xA;{n=0;&#xA;m=0;&#xA;return = [Imperative]&#xA;{&#xA; while(n&lt;num1)&#xA; {&#xA; while(m&lt;List.GetItemAtIndex(l1,n))&#xA; {&#xA; J.DoEvaluation(List.GetItemAtIndex(l2,n)).DoEvalutation(List.GetItemAtIndex(l2,m)&#xA; m=m+1;&#xA; }&#xA; return = m;&#xA; n=n+1;&#xA; }&#xA; return=n;&#xA; }};" ShouldFocus="false" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="bc19ada4-86bd-4c3a-9c6b-4eadb7c9b1a8" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1029" y="338" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="" ShouldFocus="false" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="d1319910-9fb4-45f7-84c8-cc222961abf6" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="512.418159650452" y="337.790920174774" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="{5,10};" ShouldFocus="false" />
+    <DSIronPythonNode.PythonNode guid="95d988e3-49e3-4f47-89c2-c622b2d1f3ff" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="816.821469594607" y="311.359201302953" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variables.
+dataEnteringNode = IN
+
+a = IN[0]
+
+c = len(a)
+
+b=[]
+
+for i in range(0,c):
+	b.append(a[i]+i)
+
+#Assign your output to the OUT variable.
+OUT = b</Script>
+    </DSIronPythonNode.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="a3f3c436-e7ba-4a8d-b0a3-1ee04bcdaede" start_index="0" end="01af1099-5d75-4505-97a9-b55a812cb278" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="01af1099-5d75-4505-97a9-b55a812cb278" start_index="0" end="5c36b3b6-19a8-4172-995e-7034ca274132" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="8f06a26d-1226-4e2b-92a3-da626edd16c2" start_index="0" end="01af1099-5d75-4505-97a9-b55a812cb278" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d1319910-9fb4-45f7-84c8-cc222961abf6" start_index="0" end="95d988e3-49e3-4f47-89c2-c622b2d1f3ff" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

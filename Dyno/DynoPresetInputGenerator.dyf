@@ -1,0 +1,60 @@
+<Workspace Version="1.1.0.2094" X="-163" Y="23" zoom="1" Name="DynoPresetInputGenerator" Description="" ID="04d05b20-7a53-46b6-a21e-2e980e491fcc" Category="Dyno">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="b22a1f28-70ec-4e57-922b-1c760ab82cc3" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="520.5" y="210.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="Input Name" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="2c40e213-e3b6-4c94-afdc-2f4fb1bf68f2" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="514.5" y="299.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="Input Value" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="f431d561-a561-4889-ad3e-f98b8b697340" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="524.5" y="364.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="Desc" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <PythonNodeModels.PythonNode guid="83949d68-af67-41c6-a3fc-d8e6f1a285bf" type="PythonNodeModels.PythonNode" nickname="Python Script" x="727.5" y="261.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="3">
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variables.
+dataEnteringNode = IN
+
+InputName=IN[0]
+InputValue=IN[1]
+Desc=IN[2]
+
+#writes input type to the preset string
+
+if type(InputName) == str :
+	b = "string"
+
+elif type(InputName) == int :
+	b = "number"
+
+elif type(InputName) == float :
+	b = "number"
+	
+elif type(InputName) == bool :
+	b = "bool"
+
+PresetInput = '"' + str(InputName) + '" : {"type" : "' + str(b) +'", "value" : "'+ str(InputValue) +'", "desc" : "'+ str(Desc)+'"}'
+
+
+#Assign your output to the OUT variable.
+OUT = PresetInput</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="93fd5b5b-ec1d-483e-afd4-ccba47818b99" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="938.5" y="271.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="Input definition" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="b22a1f28-70ec-4e57-922b-1c760ab82cc3" start_index="0" end="83949d68-af67-41c6-a3fc-d8e6f1a285bf" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="2c40e213-e3b6-4c94-afdc-2f4fb1bf68f2" start_index="0" end="83949d68-af67-41c6-a3fc-d8e6f1a285bf" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="f431d561-a561-4889-ad3e-f98b8b697340" start_index="0" end="83949d68-af67-41c6-a3fc-d8e6f1a285bf" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="83949d68-af67-41c6-a3fc-d8e6f1a285bf" start_index="0" end="93fd5b5b-ec1d-483e-afd4-ccba47818b99" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

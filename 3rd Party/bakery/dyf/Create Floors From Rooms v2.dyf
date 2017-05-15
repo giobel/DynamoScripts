@@ -1,0 +1,230 @@
+<Workspace Version="0.8.2.2371" X="388.527203225765" Y="211.852022312478" zoom="0.591207024767037" Name="Create Floors From Rooms v2" Description="" ID="4a735d8b-010b-40f2-b0f9-dc7d521cb8b8" Category="Bakery.Make">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="FloorType" resolvedName="Revit.Elements.FloorType" assemblyName="RevitNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Nodes.Watch guid="917e3aa1-8233-4511-b87a-cafc4ac0cca3" type="Dynamo.Nodes.Watch" nickname="Watch" x="-296.850231979012" y="716.780338790206" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+    <Dynamo.Nodes.DSFunction guid="dc115a07-f4e7-486a-b382-d239e44f8d54" type="Dynamo.Nodes.DSFunction" nickname="Element.GetParameterValueByName" x="1021.04733520891" y="1269.53177390678" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="RevitNodes.dll" function="Revit.Elements.Element.GetParameterValueByName@string" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="d87a7214-5fce-4efc-ac28-e63046346b42" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="811.607312699664" y="1326.39082709082" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="&quot;Number&quot;;" ShouldFocus="false" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="52dca1e6-3283-4ff3-bf83-16dbb6310b08" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1035.40371009038" y="940.642530467306" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="&quot;Comments&quot;;" ShouldFocus="false" />
+    <Dynamo.Nodes.DSFunction guid="ab02c9cd-0df3-4a5b-91d9-1b23e616068f" type="Dynamo.Nodes.DSFunction" nickname="Floor.ByOutlineTypeAndLevel" x="899.581147719863" y="202.06900369141" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="RevitNodes.dll" function="Revit.Elements.Floor.ByOutlineTypeAndLevel@Autodesk.DesignScript.Geometry.Curve[],Revit.Elements.FloorType,Revit.Elements.Level" />
+    <Dynamo.Nodes.Function guid="b946b165-7514-4115-b2b5-9970629ad2ca" type="Dynamo.Nodes.Function" nickname="Set List of Values to List of Elements for One Parameter" x="1312.85960258516" y="854.305570173414" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="a3431d3e-7aa0-4789-ba3c-76466695e6f9" />
+      <Name value="Set List of Values to List of Elements for One Parameter" />
+      <Description value="as described" />
+      <Inputs>
+        <Input value="elementList" />
+        <Input value="parameterNameAsString" />
+        <Input value="valuesToSet" />
+      </Inputs>
+      <Outputs>
+        <Output value="elementsOut" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="3e00f370-4d66-45d9-b223-2de14784e0d5" type="Dynamo.Nodes.Symbol" nickname="Input" x="-559.409830766053" y="699.944465906485" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="roomList" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="e72c62ea-1eff-4e06-b9eb-6fa3b5716f11" type="Dynamo.Nodes.Symbol" nickname="Input" x="511.582794142109" y="263.349719533071" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="floorType : FloorType" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="d76fcd33-fb24-4ca3-ad5d-a1c8797c1a83" type="Dynamo.Nodes.Output" nickname="Output" x="1281.3111053567" y="203.312720132952" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="floorsMade" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Watch guid="6ab021da-4896-4cc2-be51-9783bf12c9e5" type="Dynamo.Nodes.Watch" nickname="Watch" x="216.567358608638" y="-210.426090904074" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+    <Dynamo.Nodes.Output guid="ec7ae641-ded7-4dbe-bab2-43bc79d4505b" type="Dynamo.Nodes.Output" nickname="Output" x="1927.17431841226" y="-284.287756696168" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="failed to find boundary" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="896fc186-35ec-417d-9961-af3a2a2ea1cd" type="Dynamo.Nodes.Output" nickname="Output" x="405.358983416009" y="-303.60960501146" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="curvesUsed" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Function guid="d29f8749-0252-4627-b19c-a90f9402290a" type="Dynamo.Nodes.Function" nickname="Get Boundary Curves from Room List" x="-151.950561661422" y="-298.699072426899" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="3d6f2a39-355a-43ca-aa8c-cf03e23b70ea" />
+      <Name value="Get Boundary Curves from Room List" />
+      <Description value="" />
+      <Inputs>
+        <Input value="rooms" />
+      </Inputs>
+      <Outputs>
+        <Output value="failed" />
+        <Output value="boundaryCurves" />
+        <Output value="allCurves" />
+        <Output value="failureIndices" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Output guid="0068c846-ea02-4012-8e9f-157e3fe0471c" type="Dynamo.Nodes.Output" nickname="Output" x="950.794252899335" y="-54.9242858720383" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="levelsUsed" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="198c6da7-6adc-4e70-b502-5c3553ba2085" type="Dynamo.Nodes.Output" nickname="Output" x="1800.16235777699" y="900.193120671011" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="parametersSet" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.DSFunction guid="7c562d4c-54d6-4df5-9296-d46ef28005a6" type="Dynamo.Nodes.DSFunction" nickname="List.RemoveItemAtIndex" x="82.9414334318323" y="337.379534333686" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.RemoveItemAtIndex@var[]..[],int[]" />
+    <Dynamo.Nodes.Output guid="af921328-e672-4155-9d3d-0f1a9fc07d90" type="Dynamo.Nodes.Output" nickname="Output" x="1382.25352797109" y="1311.11374829706" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="parameterFromRoomElement" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Function guid="40e5a255-df97-495b-bf8c-9953317683a1" type="Dynamo.Nodes.Function" nickname="Polycurve to Nearest Revit Level by Elevation" x="474.404876764002" y="-50.3751722587625" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="984c00c2-42d0-4a6c-bab4-ca7a9a2c544b" />
+      <Name value="Polycurve to Nearest Revit Level by Elevation" />
+      <Description value="" />
+      <Inputs>
+        <Input value="polycurves" />
+      </Inputs>
+      <Outputs>
+        <Output value="var[]" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="d20a1b9e-20f5-4f18-aca8-c98cfccba6cb" type="Dynamo.Nodes.Function" nickname="Get Indices of Null Values" x="1112.17512999438" y="424.973767221782" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="7c252180-4f63-4ae3-8ed6-c16dfed93518" />
+      <Name value="Get Indices of Null Values" />
+      <Description value="needs to be hidden" />
+      <Inputs>
+        <Input value="list" />
+      </Inputs>
+      <Outputs>
+        <Output value="indices" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.DSFunction guid="8803ba26-3c04-4e28-abf7-c37d24a173cd" type="Dynamo.Nodes.DSFunction" nickname="List.GetItemAtIndex" x="1327.1246540238" y="567.040724734518" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.Function guid="bc1719e8-baca-4a88-8f5d-dd879d2d204a" type="Dynamo.Nodes.Function" nickname="Create Floors From Rooms v1" x="2548.91167690536" y="1296.46731510889" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="55129f24-2c86-47e3-9be1-2f08e865c468" />
+      <Name value="Create Floors From Rooms v1" />
+      <Description value="this version uses only the outermost boundary, does not detect cutout or openings (yet)" />
+      <Inputs>
+        <Input value="roomList" />
+        <Input value="floorTypeToUse" />
+        <Input value="writeInfoToThisInstanceParameter" />
+      </Inputs>
+      <Outputs>
+        <Output value="floors made" />
+        <Output value="allOutlines" />
+        <Output value="roomLevels" />
+        <Output value="allLevels" />
+        <Output value="baseFace" />
+        <Output value="roomsIn" />
+        <Output value="idStringUnused" />
+        <Output value="outlines Used" />
+        <Output value="levels Used" />
+        <Output value="parameter set" />
+        <Output value="parameters used" />
+        <Output value="all failures" />
+        <Output value="geometryFailure" />
+        <Output value="floorsMadeCount" />
+        <Output value="roomParametersCount" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSCoreNodesUI.CreateList guid="26ca2a23-d216-4277-9b0a-ed82858ae739" type="DSCoreNodesUI.CreateList" nickname="List.Create" x="2171.06978901736" y="837.948831630983" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2" />
+    <Dynamo.Nodes.DSFunction guid="97f8648c-6642-40d2-be38-2c453745d23d" type="Dynamo.Nodes.DSFunction" nickname="Flatten" x="2393.20379133646" y="918.569967011744" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="BuiltIn" function="Flatten@var[]..[]" />
+    <Dynamo.Nodes.Output guid="4e9df668-391a-4517-92bc-3c2186fa484f" type="Dynamo.Nodes.Output" nickname="Output" x="2616.21011283534" y="913.257475483838" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="rooms passed to geometry method" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="42d1a95f-1131-4779-9549-4a320a13a878" type="Dynamo.Nodes.Output" nickname="Output" x="3188.84357058679" y="1474.97213991271" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="v1 still failed" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="ab527629-22f3-47fb-96aa-63273785f994" type="Dynamo.Nodes.Output" nickname="Output" x="3101.91830996377" y="1247.57240358896" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="v1 succeeded with geometry method" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="cf046f74-d02f-4aaf-ad14-9a95b165be18" type="Dynamo.Nodes.Output" nickname="Output" x="3186.34127028433" y="1742.01273156519" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="v1 floors made" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="fbc89833-ac5a-4303-ba87-5bb6976c57fd" type="Dynamo.Nodes.Output" nickname="Output" x="3153.14809908929" y="1875.13325950935" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="v1 parameters used" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.DSFunction guid="3d3d5cf1-068c-4b65-b38c-382ccf2f26ee" type="Dynamo.Nodes.DSFunction" nickname="List.RemoveItemAtIndex" x="1585.39356851044" y="623.296884830042" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.RemoveItemAtIndex@var[]..[],int[]" />
+    <Dynamo.Nodes.Output guid="ed509d3e-87c3-4bab-af5d-3035b77e2d8b" type="Dynamo.Nodes.Output" nickname="Output" x="1912.27970358595" y="598.264243339942" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="floorsMadeNoNulls" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.DSFunction guid="9bf968ad-425c-45ab-8721-002d813d196d" type="Dynamo.Nodes.DSFunction" nickname="List.RemoveItemAtIndex" x="712.205772352947" y="1192.45605698394" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.RemoveItemAtIndex@var[]..[],int[]" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="917e3aa1-8233-4511-b87a-cafc4ac0cca3" start_index="0" end="d29f8749-0252-4627-b19c-a90f9402290a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="917e3aa1-8233-4511-b87a-cafc4ac0cca3" start_index="0" end="7c562d4c-54d6-4df5-9296-d46ef28005a6" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="dc115a07-f4e7-486a-b382-d239e44f8d54" start_index="0" end="b946b165-7514-4115-b2b5-9970629ad2ca" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="dc115a07-f4e7-486a-b382-d239e44f8d54" start_index="0" end="af921328-e672-4155-9d3d-0f1a9fc07d90" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d87a7214-5fce-4efc-ac28-e63046346b42" start_index="0" end="dc115a07-f4e7-486a-b382-d239e44f8d54" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="52dca1e6-3283-4ff3-bf83-16dbb6310b08" start_index="0" end="b946b165-7514-4115-b2b5-9970629ad2ca" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="52dca1e6-3283-4ff3-bf83-16dbb6310b08" start_index="0" end="bc1719e8-baca-4a88-8f5d-dd879d2d204a" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ab02c9cd-0df3-4a5b-91d9-1b23e616068f" start_index="0" end="b946b165-7514-4115-b2b5-9970629ad2ca" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ab02c9cd-0df3-4a5b-91d9-1b23e616068f" start_index="0" end="d20a1b9e-20f5-4f18-aca8-c98cfccba6cb" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ab02c9cd-0df3-4a5b-91d9-1b23e616068f" start_index="0" end="d76fcd33-fb24-4ca3-ad5d-a1c8797c1a83" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ab02c9cd-0df3-4a5b-91d9-1b23e616068f" start_index="0" end="3d3d5cf1-068c-4b65-b38c-382ccf2f26ee" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="b946b165-7514-4115-b2b5-9970629ad2ca" start_index="0" end="198c6da7-6adc-4e70-b502-5c3553ba2085" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3e00f370-4d66-45d9-b223-2de14784e0d5" start_index="0" end="917e3aa1-8233-4511-b87a-cafc4ac0cca3" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e72c62ea-1eff-4e06-b9eb-6fa3b5716f11" start_index="0" end="ab02c9cd-0df3-4a5b-91d9-1b23e616068f" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e72c62ea-1eff-4e06-b9eb-6fa3b5716f11" start_index="0" end="bc1719e8-baca-4a88-8f5d-dd879d2d204a" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6ab021da-4896-4cc2-be51-9783bf12c9e5" start_index="0" end="ab02c9cd-0df3-4a5b-91d9-1b23e616068f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6ab021da-4896-4cc2-be51-9783bf12c9e5" start_index="0" end="896fc186-35ec-417d-9961-af3a2a2ea1cd" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6ab021da-4896-4cc2-be51-9783bf12c9e5" start_index="0" end="40e5a255-df97-495b-bf8c-9953317683a1" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d29f8749-0252-4627-b19c-a90f9402290a" start_index="0" end="ec7ae641-ded7-4dbe-bab2-43bc79d4505b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d29f8749-0252-4627-b19c-a90f9402290a" start_index="0" end="26ca2a23-d216-4277-9b0a-ed82858ae739" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d29f8749-0252-4627-b19c-a90f9402290a" start_index="1" end="6ab021da-4896-4cc2-be51-9783bf12c9e5" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d29f8749-0252-4627-b19c-a90f9402290a" start_index="3" end="7c562d4c-54d6-4df5-9296-d46ef28005a6" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="7c562d4c-54d6-4df5-9296-d46ef28005a6" start_index="0" end="8803ba26-3c04-4e28-abf7-c37d24a173cd" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="7c562d4c-54d6-4df5-9296-d46ef28005a6" start_index="0" end="9bf968ad-425c-45ab-8721-002d813d196d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="40e5a255-df97-495b-bf8c-9953317683a1" start_index="0" end="ab02c9cd-0df3-4a5b-91d9-1b23e616068f" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="40e5a255-df97-495b-bf8c-9953317683a1" start_index="0" end="0068c846-ea02-4012-8e9f-157e3fe0471c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d20a1b9e-20f5-4f18-aca8-c98cfccba6cb" start_index="0" end="8803ba26-3c04-4e28-abf7-c37d24a173cd" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d20a1b9e-20f5-4f18-aca8-c98cfccba6cb" start_index="0" end="3d3d5cf1-068c-4b65-b38c-382ccf2f26ee" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d20a1b9e-20f5-4f18-aca8-c98cfccba6cb" start_index="0" end="9bf968ad-425c-45ab-8721-002d813d196d" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="8803ba26-3c04-4e28-abf7-c37d24a173cd" start_index="0" end="26ca2a23-d216-4277-9b0a-ed82858ae739" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="bc1719e8-baca-4a88-8f5d-dd879d2d204a" start_index="0" end="ab527629-22f3-47fb-96aa-63273785f994" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="bc1719e8-baca-4a88-8f5d-dd879d2d204a" start_index="11" end="42d1a95f-1131-4779-9549-4a320a13a878" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="bc1719e8-baca-4a88-8f5d-dd879d2d204a" start_index="13" end="cf046f74-d02f-4aaf-ad14-9a95b165be18" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="bc1719e8-baca-4a88-8f5d-dd879d2d204a" start_index="14" end="fbc89833-ac5a-4303-ba87-5bb6976c57fd" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="26ca2a23-d216-4277-9b0a-ed82858ae739" start_index="0" end="97f8648c-6642-40d2-be38-2c453745d23d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="97f8648c-6642-40d2-be38-2c453745d23d" start_index="0" end="bc1719e8-baca-4a88-8f5d-dd879d2d204a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="97f8648c-6642-40d2-be38-2c453745d23d" start_index="0" end="4e9df668-391a-4517-92bc-3c2186fa484f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3d3d5cf1-068c-4b65-b38c-382ccf2f26ee" start_index="0" end="ed509d3e-87c3-4bab-af5d-3035b77e2d8b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9bf968ad-425c-45ab-8721-002d813d196d" start_index="0" end="dc115a07-f4e7-486a-b382-d239e44f8d54" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations>
+    <Dynamo.Models.AnnotationModel guid="8717b25a-706a-4963-ab8b-7272841e7653" annotationText="Get floor creation failures" left="1102.17512999438" top="394.973767221782" width="369.949524029422" height="291.066957512735" fontSize="14" InitialTop="424.973767221782" InitialHeight="236.600929208608" TextblockHeight="20" backgrouund="#FFFF7BAC">
+      <Models ModelGuid="d20a1b9e-20f5-4f18-aca8-c98cfccba6cb" />
+      <Models ModelGuid="8803ba26-3c04-4e28-abf7-c37d24a173cd" />
+    </Dynamo.Models.AnnotationModel>
+    <Dynamo.Models.AnnotationModel guid="454d805b-2282-41e6-ac6d-115df16470a4" annotationText="Get Levels from Curves" left="464.404876764002" top="-84.9242858720384" width="594.389376135332" height="127.549113613276" fontSize="14" InitialTop="-54.9242858720383" InitialHeight="127.549113613276" TextblockHeight="20" backgrouund="#FFC1D676">
+      <Models ModelGuid="0068c846-ea02-4012-8e9f-157e3fe0471c" />
+      <Models ModelGuid="40e5a255-df97-495b-bf8c-9953317683a1" />
+    </Dynamo.Models.AnnotationModel>
+    <Dynamo.Models.AnnotationModel guid="5320f128-a638-4eb9-b589-2ee409c1cd28" annotationText="Try Making Floors" left="501.582794142109" top="172.06900369141" width="891.728311214588" height="175" fontSize="14" InitialTop="202.06900369141" InitialHeight="175" TextblockHeight="20" backgrouund="#FF48B9FF">
+      <Models ModelGuid="ab02c9cd-0df3-4a5b-91d9-1b23e616068f" />
+      <Models ModelGuid="e72c62ea-1eff-4e06-b9eb-6fa3b5716f11" />
+      <Models ModelGuid="d76fcd33-fb24-4ca3-ad5d-a1c8797c1a83" />
+    </Dynamo.Models.AnnotationModel>
+    <Dynamo.Models.AnnotationModel guid="79112f39-d2cb-4290-a183-7a11c134c573" annotationText="Boundary Curves Try" left="-161.950561661422" top="-333.60960501146" width="680.309545077431" height="205.183514107387" fontSize="14" InitialTop="-303.60960501146" InitialHeight="205.183514107387" TextblockHeight="20" backgrouund="#FFE8F7AD">
+      <Models ModelGuid="6ab021da-4896-4cc2-be51-9783bf12c9e5" />
+      <Models ModelGuid="896fc186-35ec-417d-9961-af3a2a2ea1cd" />
+      <Models ModelGuid="d29f8749-0252-4627-b19c-a90f9402290a" />
+    </Dynamo.Models.AnnotationModel>
+    <Dynamo.Models.AnnotationModel guid="1b10d1c0-f6b5-4b21-a8cc-442239aee248" annotationText="ROOM LIST - curve failures removed" left="72.9414334318323" top="293.379534333686" width="184" height="163" fontSize="14" InitialTop="337.379534333686" InitialHeight="149" TextblockHeight="34" backgrouund="#FFFFAA45">
+      <Models ModelGuid="7c562d4c-54d6-4df5-9296-d46ef28005a6" />
+    </Dynamo.Models.AnnotationModel>
+    <Dynamo.Models.AnnotationModel guid="1f57732d-c503-4822-bf55-ace2a524beff" annotationText="FLOORS made clean list" left="1575.39356851044" top="568.264243339942" width="492.886135075511" height="174.0326414901" fontSize="14" InitialTop="598.264243339942" InitialHeight="174.0326414901" TextblockHeight="20" backgrouund="#FFBB87C6">
+      <Models ModelGuid="3d3d5cf1-068c-4b65-b38c-382ccf2f26ee" />
+      <Models ModelGuid="ed509d3e-87c3-4bab-af5d-3035b77e2d8b" />
+    </Dynamo.Models.AnnotationModel>
+    <Dynamo.Models.AnnotationModel guid="d77aef59-edaa-41d7-9042-8e134eb9ff2c" annotationText="ROOM get parameters" left="702.205772352947" top="1162.45605698394" width="896.047755618142" height="231.934770106882" fontSize="14" InitialTop="1192.45605698394" InitialHeight="231.934770106882" TextblockHeight="20" backgrouund="#FFFFAA45">
+      <Models ModelGuid="dc115a07-f4e7-486a-b382-d239e44f8d54" />
+      <Models ModelGuid="d87a7214-5fce-4efc-ac28-e63046346b42" />
+      <Models ModelGuid="af921328-e672-4155-9d3d-0f1a9fc07d90" />
+      <Models ModelGuid="9bf968ad-425c-45ab-8721-002d813d196d" />
+    </Dynamo.Models.AnnotationModel>
+    <Dynamo.Models.AnnotationModel guid="4d79e0d1-6d95-4e61-a4dc-aa15a963cfd7" annotationText="FLOOR set parameters" left="1025.40371009038" top="824.305570173414" width="905.758647686609" height="184.336960293891" fontSize="14" InitialTop="854.305570173414" InitialHeight="184.336960293891" TextblockHeight="20" backgrouund="#FFBB87C6">
+      <Models ModelGuid="52dca1e6-3283-4ff3-bf83-16dbb6310b08" />
+      <Models ModelGuid="b946b165-7514-4115-b2b5-9970629ad2ca" />
+      <Models ModelGuid="198c6da7-6adc-4e70-b502-5c3553ba2085" />
+    </Dynamo.Models.AnnotationModel>
+    <Dynamo.Models.AnnotationModel guid="5d51d63c-0ad7-444e-993b-b31e73157e7d" annotationText="FAILURE ROOMS -passed on" left="2161.06978901736" top="807.948831630983" width="701.140323817977" height="203.621135380762" fontSize="14" InitialTop="837.948831630983" InitialHeight="203.621135380762" TextblockHeight="20" backgrouund="#FF71C6A8">
+      <Models ModelGuid="26ca2a23-d216-4277-9b0a-ed82858ae739" />
+      <Models ModelGuid="97f8648c-6642-40d2-be38-2c453745d23d" />
+      <Models ModelGuid="4e9df668-391a-4517-92bc-3c2186fa484f" />
+    </Dynamo.Models.AnnotationModel>
+    <Dynamo.Models.AnnotationModel guid="68f4acfb-0f52-4acf-90a2-238df3fd2d4c" annotationText="v1 info" left="2538.91167690536" top="1217.57240358896" width="817.006633058412" height="725.560855920394" fontSize="14" InitialTop="1247.57240358896" InitialHeight="725.560855920394" TextblockHeight="20" backgrouund="#FF848484">
+      <Models ModelGuid="bc1719e8-baca-4a88-8f5d-dd879d2d204a" />
+      <Models ModelGuid="42d1a95f-1131-4779-9549-4a320a13a878" />
+      <Models ModelGuid="ab527629-22f3-47fb-96aa-63273785f994" />
+      <Models ModelGuid="cf046f74-d02f-4aaf-ad14-9a95b165be18" />
+      <Models ModelGuid="fbc89833-ac5a-4303-ba87-5bb6976c57fd" />
+    </Dynamo.Models.AnnotationModel>
+  </Annotations>
+  <Presets />
+</Workspace>

@@ -1,0 +1,108 @@
+<Workspace Version="0.8.2.2392" X="162.218980872627" Y="374.692068822567" zoom="0.662759780568406" Name="CutGeometry" Description="" ID="42831130-4419-4f15-b8fa-088f3a7b807b" Category="Hot Gear.Geometry Cut">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="List" resolvedName="DSCore.List" assemblyName="DSCoreNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="9fcc2862-df87-4dab-8af2-80911dac1e2c" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1188.27821730908" y="22.8141054734424" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="a=Flatten({item});&#xA;List.Combinations(a,2,false);" ShouldFocus="false" />
+    <Dynamo.Nodes.DSVarArgFunction guid="ec633050-db40-49fd-b6f0-f25f90bc2cda" type="Dynamo.Nodes.DSVarArgFunction" nickname="List.Join" x="1001.95800780316" y="18.1447679977571" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.Join@var[]..[]" inputcount="2" />
+    <Dynamo.Nodes.DSFunction guid="1f376c14-31e0-409e-9cd2-801057f0730b" type="Dynamo.Nodes.DSFunction" nickname="List.FilterByBoolMask" x="717.540881388387" y="33.3902028478053" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.FilterByBoolMask@var[]..[],var[]..[]" />
+    <DSIronPythonNode.PythonNode guid="34524b93-a436-45bf-bebc-d7976f1405d9" type="DSIronPythonNode.PythonNode" nickname="CanCut?" x="406.840659623245" y="99.4290551388763" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+from System.Collections.Generic import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+doc = DocumentManager.Instance.CurrentDBDocument
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+element = UnwrapElement(IN[0])
+
+end = []
+sublist = []
+
+for CBCWV in element:
+	result = Autodesk.Revit.DB.InstanceVoidCutUtils.CanBeCutWithVoid(CBCWV)
+	sublist.append(result)
+		
+end.extend(sublist)
+
+TransactionManager.Instance.TransactionTaskDone()
+OUT = end</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol guid="9fcb1c70-c91b-4417-ad31-c02b4851f3c6" type="Dynamo.Nodes.Symbol" nickname="Input" x="7.15610081480133" y="14.5298795401173" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="ElementList : var[]..[]" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="6f781277-df9e-488b-a788-377f17097713" type="Dynamo.Nodes.Output" nickname="Output" x="1767.33447404755" y="35.6378094876353" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="OUT" />
+    </Dynamo.Nodes.Output>
+    <DSIronPythonNode.PythonNode guid="63147b35-2d95-406d-ac7a-9a15b79210fa" type="DSIronPythonNode.PythonNode" nickname="Cut Python Script" x="1554.72412047898" y="21.0265157779561" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+from System.Collections.Generic import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+doc = DocumentManager.Instance.CurrentDBDocument
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+element = UnwrapElement(IN[0])
+list = len(element)
+count = 0
+sublist = []
+
+while (count &lt; list):
+	try:
+		result = Autodesk.Revit.DB.InstanceVoidCutUtils.AddInstanceVoidCut(doc, element[count][0], element[count][1])
+		count
+		count = count + 1
+		sublist.append("Seccess")
+	except:
+		count
+		count = count +1
+
+TransactionManager.Instance.TransactionTaskDone()
+OUT = sublist</Script>
+    </DSIronPythonNode.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="9fcc2862-df87-4dab-8af2-80911dac1e2c" start_index="1" end="63147b35-2d95-406d-ac7a-9a15b79210fa" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ec633050-db40-49fd-b6f0-f25f90bc2cda" start_index="0" end="9fcc2862-df87-4dab-8af2-80911dac1e2c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1f376c14-31e0-409e-9cd2-801057f0730b" start_index="0" end="ec633050-db40-49fd-b6f0-f25f90bc2cda" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1f376c14-31e0-409e-9cd2-801057f0730b" start_index="1" end="ec633050-db40-49fd-b6f0-f25f90bc2cda" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="34524b93-a436-45bf-bebc-d7976f1405d9" start_index="0" end="1f376c14-31e0-409e-9cd2-801057f0730b" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9fcb1c70-c91b-4417-ad31-c02b4851f3c6" start_index="0" end="34524b93-a436-45bf-bebc-d7976f1405d9" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9fcb1c70-c91b-4417-ad31-c02b4851f3c6" start_index="0" end="1f376c14-31e0-409e-9cd2-801057f0730b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="63147b35-2d95-406d-ac7a-9a15b79210fa" start_index="0" end="6f781277-df9e-488b-a788-377f17097713" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

@@ -1,0 +1,72 @@
+<Workspace Version="0.7.1.29946" X="75.5003805757842" Y="158.812650180218" zoom="1.21372127144309" Description="Randomly splits a list of objects into two separate lists." Category="LunchBox.Math.Random" Name="LunchBox Random Split List" ID="e67c1160-7948-48cb-a843-bfd4b20c4c3c">
+  <Elements>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="c730f080-d46e-49a8-b351-03f8ecaca611" nickname="List.GetItemAtIndex" x="633.210082430262" y="205.002340429688" isVisible="true" isUpstreamVisible="true" lacing="Disabled" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="8263628e-2ed8-48c0-8c87-bd6884dbef45" nickname="Number" x="507.755536975716" y="242.275067702415" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Double value="1" />
+    </Dynamo.Nodes.DoubleInput>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="43b6a594-b264-4326-80a1-8fee2e32229c" nickname="List.GetItemAtIndex" x="632.300991521171" y="52.2750677024149" isVisible="true" isUpstreamVisible="true" lacing="Disabled" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="5a0b4b6c-f7ee-412f-b893-2b09e12f42ef" nickname="Number" x="516.846446066625" y="39.5477949751421" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Double value="0" />
+    </Dynamo.Nodes.DoubleInput>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="29f3d365-d459-4545-af94-760eb983eb9f" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="List" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="f1e71d85-e7bb-4e3e-ab8c-4ae6cabaa887" nickname="Input" x="0" y="150" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Ratio" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="033ef952-5333-463b-a876-b3da0b671ff5" nickname="Input" x="0" y="300" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Seed" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="97a6e5b7-02fe-4edb-9501-238a4c368f97" nickname="Output" x="850.210082430262" y="39.5477949751421" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="ListA" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="eb2933a1-a21f-4fd1-a862-23373a461faf" nickname="Output" x="850.210082430262" y="189.547794975142" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="ListB" />
+    </Dynamo.Nodes.Output>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="4acf547e-46e1-4b13-85ce-4e10740c65be" nickname="Python Script" x="323.777685695826" y="128.356108424443" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="3">
+      <Script>#Copyright(c) 2014, Nathan Miller
+# The Proving Ground, http://theprovingground.org
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+import System
+
+#The input to this node will be stored in the IN[0] variable.
+dataEnteringNode = IN[0]
+
+list = IN[0]
+split = IN[1]
+seed = IN[2]
+
+master = []
+listA = []
+listB = []
+
+rand = System.Random(seed)
+
+for i in range(0,len(list)):
+	num = rand.NextDouble()
+	if num &lt;= split:
+		listA.append(list[i])
+	else:
+		listB.append(list[i])
+		
+master.append(listA)
+master.append(listB)
+#Assign your output to the OUT variable
+OUT = master</Script>
+    </DSIronPythonNode.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="c730f080-d46e-49a8-b351-03f8ecaca611" start_index="0" end="eb2933a1-a21f-4fd1-a862-23373a461faf" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="8263628e-2ed8-48c0-8c87-bd6884dbef45" start_index="0" end="c730f080-d46e-49a8-b351-03f8ecaca611" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="43b6a594-b264-4326-80a1-8fee2e32229c" start_index="0" end="97a6e5b7-02fe-4edb-9501-238a4c368f97" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="5a0b4b6c-f7ee-412f-b893-2b09e12f42ef" start_index="0" end="43b6a594-b264-4326-80a1-8fee2e32229c" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="29f3d365-d459-4545-af94-760eb983eb9f" start_index="0" end="4acf547e-46e1-4b13-85ce-4e10740c65be" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f1e71d85-e7bb-4e3e-ab8c-4ae6cabaa887" start_index="0" end="4acf547e-46e1-4b13-85ce-4e10740c65be" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="033ef952-5333-463b-a876-b3da0b671ff5" start_index="0" end="4acf547e-46e1-4b13-85ce-4e10740c65be" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4acf547e-46e1-4b13-85ce-4e10740c65be" start_index="0" end="43b6a594-b264-4326-80a1-8fee2e32229c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4acf547e-46e1-4b13-85ce-4e10740c65be" start_index="0" end="c730f080-d46e-49a8-b351-03f8ecaca611" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

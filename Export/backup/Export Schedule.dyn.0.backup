@@ -1,0 +1,39 @@
+<Workspace Version="1.0.0.1180" X="-504.824231241936" Y="-131.71864807499" zoom="1.07925372895183" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="42e8f3f8-90ad-4d65-badc-959b775908ae" type="PythonNodeModels.PythonNode" nickname="Python Script" x="1252.6706231454" y="490.652818991098" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="3">
+      <Script>import clr
+
+clr.AddReference("RevitAPI")
+from Autodesk.Revit.DB import *
+
+#The inputs to this node will be stored as a list in the IN variables.
+schedule = UnwrapElement(IN[0])
+path = IN[1]
+name = IN[2]
+
+try:
+	exp_opt = ViewScheduleExportOptions()
+	schedule.Export(path,name,exp_opt)
+	OUT = " Success "
+except: OUT = " Ooops "</Script>
+    </PythonNodeModels.PythonNode>
+    <CoreNodeModels.Input.Directory guid="ae2fe9e8-38cc-43c1-9c99-f1cf8eacddc1" type="CoreNodeModels.Input.Directory" nickname="Directory Path" x="929.821958456973" y="539.317507418398" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>C:\Users\giovanni.brogioli\Desktop</System.String>
+      <HintPath>C:\Users\giovanni.brogioli\Desktop</HintPath>
+    </CoreNodeModels.Input.Directory>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="20a56323-59c1-437d-a06e-652c5d3871e2" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="932" y="638" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;Schedule.xls&quot;;" ShouldFocus="false" />
+    <DSRevitNodesUI.Views guid="c9914032-968f-4432-87e4-79f22e49ea85" type="DSRevitNodesUI.Views" nickname="Views" x="933.129429221503" y="402.879971573946" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false" index="7:Wall Schedule" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="ae2fe9e8-38cc-43c1-9c99-f1cf8eacddc1" start_index="0" end="42e8f3f8-90ad-4d65-badc-959b775908ae" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="20a56323-59c1-437d-a06e-652c5d3871e2" start_index="0" end="42e8f3f8-90ad-4d65-badc-959b775908ae" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c9914032-968f-4432-87e4-79f22e49ea85" start_index="0" end="42e8f3f8-90ad-4d65-badc-959b775908ae" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

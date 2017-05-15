@@ -1,0 +1,63 @@
+<Workspace Version="0.8.2.2371" X="0" Y="0" zoom="1" Name="bv Select in Revit" Description="" ID="3286003c-5608-4d5b-b1ef-ccc6450706e9" Category="Bakery.Forks">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Symbol guid="955f1cc4-9e23-4d10-975f-ecbde82ed8b0" type="Dynamo.Nodes.Symbol" nickname="Input" x="10" y="12" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="Element(s)" />
+    </Dynamo.Nodes.Symbol>
+    <DSIronPythonNode.PythonNode guid="4b1a800b-c855-4b9f-94f9-911f57397ac9" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="175" y="10" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script># Default imports
+import clr
+clr.AddReference('RevitAPI')
+clr.AddReference('RevitAPIUI')
+from Autodesk.Revit.DB import *
+import Autodesk
+import sys
+import clr
+path = r'C:\Autodesk\Dynamo\Core'
+exec_path = r'C:\Autodesk\Dynamo\Core\dll'
+sys.path.append(path)
+sys.path.append(exec_path)
+clr.AddReference('LibGNet')
+from Autodesk.LibG import *
+
+def addToSet(doc, set, element):
+	try:
+		el = doc.GetElement(element)
+	except:
+		el = element
+		
+	set.Add(el)
+
+#The input to this node will be stored in the IN[0] variable.
+elements = IN[0]
+uidoc = __revit__.ActiveUIDocument
+doc = uidoc.Document
+set = Autodesk.Revit.UI.Selection.SelElementSet.Create()
+
+
+try:
+	for el in elements:
+		addToSet(doc, set, el)
+except:
+	addToSet(doc, set, elements)
+	
+uidoc.Selection.Elements = set
+
+#Assign your output to the OUT variable
+OUT = uidoc.Selection</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Output guid="b17feaab-e04e-4767-98d2-eae69ace975c" type="Dynamo.Nodes.Output" nickname="Output" x="362" y="12" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="Selection" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="955f1cc4-9e23-4d10-975f-ecbde82ed8b0" start_index="0" end="4b1a800b-c855-4b9f-94f9-911f57397ac9" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4b1a800b-c855-4b9f-94f9-911f57397ac9" start_index="0" end="b17feaab-e04e-4767-98d2-eae69ace975c" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

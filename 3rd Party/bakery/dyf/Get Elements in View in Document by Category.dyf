@@ -1,0 +1,80 @@
+<Workspace Version="0.8.2.2392" X="94.6975000000002" Y="177.4275" zoom="1.1575" Name="Get Elements in View in Document by Category" Description="" ID="736a9115-b1b7-4a79-a288-d2a8159b8245" Category="Bakery.Collect">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Symbol guid="d750a3f6-1828-4e61-8bec-a4e34f73a268" type="Dynamo.Nodes.Symbol" nickname="Input" x="10" y="14.0423883781179" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="Categories" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Function guid="e0f9239b-10b8-4fda-8672-44dd699c44de" type="Dynamo.Nodes.Function" nickname="Turn Into List" x="216.477015289277" y="111.678214049881" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="var[]" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSIronPythonNode.PythonNode guid="6f9cd3d5-9c42-47eb-9805-58490ca2edb0" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="421.477015289277" y="140.678214049881" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="3">
+      <Script>import System
+import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+
+cats = IN[0]
+views = UnwrapElement(IN[1])
+doc = IN[2]
+
+elementlist = list()
+# This could be more elegant if only I knew how to implement a Multicategory filter in Python....
+for cat in cats:
+	catlist = list()
+	for view in views:
+		collector = FilteredElementCollector(doc)
+		filter = ElementOwnerViewFilter(view.Id)
+		bic = System.Enum.ToObject(BuiltInCategory, cat.Id)
+		catlist.append(collector.WherePasses(filter).OfCategory(bic).ToElements())
+	elementlist.append(catlist)
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol guid="0cb911bc-fe6e-4159-8497-c959f067e024" type="Dynamo.Nodes.Symbol" nickname="Input" x="17.4770152892772" y="196.678214049881" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="View(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Function guid="3869dcc4-4920-4b73-90c7-971a6463ad54" type="Dynamo.Nodes.Function" nickname="Turn Into List" x="216.477015289277" y="195.678214049881" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="var[]" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Output guid="63930fa3-ed56-4e38-a982-0417b1bcd3c2" type="Dynamo.Nodes.Output" nickname="Output" x="917.849850154924" y="10" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="Elements" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Symbol guid="9c007cc9-74b1-41ed-95f2-c014722b5ae9" type="Dynamo.Nodes.Symbol" nickname="Input" x="59.6565874730022" y="311.984881209503" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="document" />
+    </Dynamo.Nodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="d750a3f6-1828-4e61-8bec-a4e34f73a268" start_index="0" end="e0f9239b-10b8-4fda-8672-44dd699c44de" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e0f9239b-10b8-4fda-8672-44dd699c44de" start_index="0" end="6f9cd3d5-9c42-47eb-9805-58490ca2edb0" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6f9cd3d5-9c42-47eb-9805-58490ca2edb0" start_index="0" end="63930fa3-ed56-4e38-a982-0417b1bcd3c2" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0cb911bc-fe6e-4159-8497-c959f067e024" start_index="0" end="3869dcc4-4920-4b73-90c7-971a6463ad54" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3869dcc4-4920-4b73-90c7-971a6463ad54" start_index="0" end="6f9cd3d5-9c42-47eb-9805-58490ca2edb0" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9c007cc9-74b1-41ed-95f2-c014722b5ae9" start_index="0" end="6f9cd3d5-9c42-47eb-9805-58490ca2edb0" end_index="2" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

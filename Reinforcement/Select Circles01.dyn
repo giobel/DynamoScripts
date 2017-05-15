@@ -1,0 +1,439 @@
+<Workspace Version="0.8.2.2392" X="-536.894018225512" Y="400.557221859427" zoom="0.509746892317276" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="Circle" resolvedName="Autodesk.DesignScript.Geometry.Circle" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Plane" resolvedName="Autodesk.DesignScript.Geometry.Plane" assemblyName="ProtoGeometry.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Nodes.DSFunction guid="17a2671f-c0bd-432c-b0dc-a835b925c35c" type="Dynamo.Nodes.DSFunction" nickname="Element.Curves" x="632.21116887146" y="-287.06950251854" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="RevitNodes.dll" function="Revit.Elements.Element.Curves" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="2144d499-457b-40f9-8a24-cea8202d6f75" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="903.569573871757" y="178.410951781687" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="2;" ShouldFocus="false" />
+    <Dynamo.Nodes.Function guid="61122197-630e-44da-8936-914897342a3f" type="Dynamo.Nodes.Function" nickname="CurveLoop.Simplify" x="1519.91814149678" y="82.0292220739827" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="b255f316-935c-41a1-abe7-386417b84b6f" />
+      <Name value="CurveLoop.Simplify" />
+      <Description value="Attempts to simplify an open or a closed curve loop by connecting straight separate line segments into a single line." />
+      <Inputs>
+        <Input value="curveLoop" />
+      </Inputs>
+      <Outputs>
+        <Output value="curve loop" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSIronPythonNode.PythonNode guid="c703e98c-a2ff-4169-bf01-533be720bbfa" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="2117.85036591714" y="73.3520047807475" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>import clr
+ 
+clr.AddReference("RevitAPI")
+from Autodesk.Revit.DB import *
+ 
+clr.AddReference("RevitServices")
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+ 
+doc =  DocumentManager.Instance.CurrentDBDocument
+ 
+roomsList =  UnwrapElement(IN[0])
+filledRegionName = IN[1]
+ 
+for fr in FilteredElementCollector(doc).OfClass(FilledRegionType):
+    if Element.Name.GetValue(fr) == filledRegionName:
+        filledRegion = fr
+        break     
+ 
+viewId = doc.ActiveView.Id
+ 
+TransactionManager.Instance.EnsureInTransaction(doc)
+ 
+regions = []
+for room in roomsList:  
+    if 1 &gt; 0:
+        roomBoundaries = room.GetBoundarySegments(SpatialElementBoundaryOptions())            
+        curveLoopList = []
+        roomCurves = CurveLoop()
+        for roomBoundary in roomBoundaries:
+            for boundarySegment in roomBoundary:
+                roomCurves.Append(boundarySegment.Curve)
+        curveLoopList.Add(roomCurves)
+
+        region = FilledRegion.Create(doc,filledRegion.Id,viewId, curveLoopList)
+        regions.append(region)    
+     
+TransactionManager.Instance.TransactionTaskDone()
+ 
+OUT = regions</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="745d9199-017a-4421-8475-55ef26799940" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1584.59831820362" y="296.004800486679" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="&quot;Filled region 1&quot;;" ShouldFocus="false" />
+    <DSIronPythonNode.PythonNode guid="67547209-b41d-4bc4-8e0e-0a3d0681e183" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="2236.05500068126" y="380.074463384014" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>import clr
+clr.AddReference("ProtoGeometry")
+from Autodesk.DesignScript.Geometry import *
+
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+ 
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+ 
+doc =  DocumentManager.Instance.CurrentDBDocument
+ 
+roomsList =  UnwrapElement(IN[0])
+filledRegionName = IN[1]
+ 
+for fr in FilteredElementCollector(doc).OfClass(FilledRegionType):
+    if Element.Name.GetValue(fr) == filledRegionName:
+        filledRegion = fr
+        break     
+ 
+activeViewId = doc.ActiveView.Id
+ 
+def lineFromCrv(crv):
+	start = crv.StartPoint
+	end = crv.EndPoint
+	a = XYZ(start.X,start.Y,start.Z)
+	b = XYZ(end.X,end.Y,end.Z)
+	return Autodesk.Revit.DB.Line.CreateBound(a,b)
+
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+ 
+regions = []
+
+for bound in IN[0]:
+	profileLoops = []
+	profileLoop = CurveLoop()
+	for crv in bound:
+		profileLoop.Append(lineFromCrv(crv))
+	profileLoops.Add(profileLoop)
+	region = FilledRegion.Create(doc,filledRegion.Id,activeViewId,profileLoops)
+	regions.Add(region)
+
+
+TransactionManager.Instance.TransactionTaskDone()
+ 
+OUT = regions</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSModelElementsSelection guid="e5003f01-15e7-43c7-ba32-7e15f443fec2" type="Dynamo.Nodes.DSModelElementsSelection" nickname="Select Model Elements" x="1217.79519548006" y="-636.729118993372" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" />
+    <Dynamo.Nodes.DSFunction guid="6be28d8f-d93c-47a4-8595-da41d6e0bdb5" type="Dynamo.Nodes.DSFunction" nickname="Curve.DivideEqually" x="1231.15486651245" y="78.4479262877916" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Curve.DivideEqually@int">
+      <PortInfo index="1" default="True" />
+    </Dynamo.Nodes.DSFunction>
+    <Dynamo.Nodes.DSFunction guid="8c9cddaa-8d35-4f0d-90b7-dbdf649bd7b3" type="Dynamo.Nodes.DSFunction" nickname="Flatten" x="906.469751151645" y="-441.000906843399" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="BuiltIn" function="Flatten@var[]..[]" />
+    <Dynamo.Nodes.DSFunction guid="43c742b6-89ce-4db5-bed7-e960cb0d4458" type="Dynamo.Nodes.DSFunction" nickname="List.Chop" x="1245.98328100935" y="-382.869108510663" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.Chop@var[]..[],int" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="bf79a85d-4245-4bd9-818f-a6bcb02ee198" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1079.01799837428" y="-281.402749819344" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="4;" ShouldFocus="false" />
+    <DSIronPythonNode.PythonNode guid="b186df50-ee27-441f-b7d6-6939c345edea" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="2534.21947170328" y="-57.9086387858465" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>import clr
+clr.AddReference("ProtoGeometry")
+from Autodesk.DesignScript.Geometry import *
+
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+ 
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+ 
+doc =  DocumentManager.Instance.CurrentDBDocument
+ 
+roomsList =  UnwrapElement(IN[0])
+filledRegionName = IN[1]
+ 
+for fr in FilteredElementCollector(doc).OfClass(FilledRegionType):
+    if Element.Name.GetValue(fr) == filledRegionName:
+        filledRegion = fr
+        break     
+ 
+activeViewId = doc.ActiveView.Id
+ 
+def lineFromCrv(crv):
+	start = crv.StartPoint
+	end = crv.EndPoint
+	a = XYZ(start.X,start.Y,start.Z)
+	b = XYZ(end.X,end.Y,end.Z)
+	return Autodesk.Revit.DB.Line.CreateBound(a,b)
+
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+ 
+regions = []
+
+for bound in IN[0]:
+	profileLoops = []
+	profileLoop = CurveLoop()
+	for crv in bound:
+		profileLoop.Append(lineFromCrv(crv))
+	profileLoops.Add(profileLoop)
+	region = FilledRegion.Create(doc,filledRegion.Id,activeViewId,profileLoops)
+	regions.Add(region)
+
+
+TransactionManager.Instance.TransactionTaskDone()
+ 
+OUT = regions</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSFunction guid="47259ade-0998-4c9f-bb8d-f301283a626f" type="Dynamo.Nodes.DSFunction" nickname="Surface.ByPatch" x="1569.00807154398" y="455.817869989925" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Surface.ByPatch@Autodesk.DesignScript.Geometry.Curve" />
+    <Dynamo.Nodes.DSFunction guid="70f0b0cb-0c95-4352-930e-dfbace6fa890" type="Dynamo.Nodes.DSFunction" nickname="PolyCurve.ByJoinedCurves" x="1315.44247431352" y="359.102981599503" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.PolyCurve.ByJoinedCurves@Autodesk.DesignScript.Geometry.Curve[]" />
+    <Dynamo.Nodes.DSFunction guid="06e276e6-0f1e-4f66-b861-18f74664257f" type="Dynamo.Nodes.DSFunction" nickname="Surface.PerimeterCurves" x="1895.76158036929" y="443.20540448118" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Surface.PerimeterCurves" />
+    <DSCoreNodesUI.CreateList guid="7739ac43-07df-4343-811f-1c73c39c15a3" type="DSCoreNodesUI.CreateList" nickname="List.Create" x="1894.47339258849" y="-9.82878246583326" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1" />
+    <Dynamo.Nodes.DSModelElementSelection guid="ff267a53-0bf0-4424-8cc5-c1e1db8b5fe6" type="Dynamo.Nodes.DSModelElementSelection" nickname="Select Model Element" x="2210.34584962872" y="-598.293847685473" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" />
+    <DSCoreNodesUI.CreateList guid="a1928fd3-946a-4882-8c01-beb5c8456d1e" type="DSCoreNodesUI.CreateList" nickname="List.Create" x="2024.18767423106" y="-480.346455758789" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="ee9b68bb-dc62-4f86-bb62-381cd0231226" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1325.87849257002" y="-91.147615003591" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="0;" ShouldFocus="false" />
+    <Dynamo.Nodes.DSFunction guid="754db2d0-6ab3-4d5d-ad15-ea0be6f2787b" type="Dynamo.Nodes.DSFunction" nickname="Element.Curves" x="2430.3142317169" y="-507.417172949727" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="RevitNodes.dll" function="Revit.Elements.Element.Curves" />
+    <Dynamo.Nodes.DSFunction guid="d4404644-38b0-415c-add1-3c9cf609bcba" type="Dynamo.Nodes.DSFunction" nickname="Curve.DivideEqually" x="1788.12483065653" y="-449.851252967606" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Curve.DivideEqually@int">
+      <PortInfo index="1" default="True" />
+    </Dynamo.Nodes.DSFunction>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="1211375b-5587-40e9-a744-94cd46e07fb3" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1682.67879539333" y="-250.893151833333" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="20;" ShouldFocus="false" />
+    <DSIronPythonNode.PythonNode guid="b6887d69-47f6-4347-9b4a-fb2a80d0eeb2" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="2199.89941480714" y="-405.644526925612" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>import clr
+clr.AddReference("ProtoGeometry")
+from Autodesk.DesignScript.Geometry import *
+
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+ 
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+ 
+doc =  DocumentManager.Instance.CurrentDBDocument
+ 
+roomsList =  UnwrapElement(IN[0])
+filledRegionName = IN[1]
+ 
+for fr in FilteredElementCollector(doc).OfClass(FilledRegionType):
+    if Element.Name.GetValue(fr) == filledRegionName:
+        filledRegion = fr
+        break     
+ 
+activeViewId = doc.ActiveView.Id
+ 
+def lineFromCrv(crv):
+	start = crv.StartPoint
+	end = crv.EndPoint
+	a = XYZ(start.X,start.Y,start.Z)
+	b = XYZ(end.X,end.Y,end.Z)
+	return Autodesk.Revit.DB.Line.CreateBound(a,b)
+
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+ 
+regions = []
+
+for bound in IN[0]:
+	profileLoops = []
+	profileLoop = CurveLoop()
+	for crv in bound:
+		profileLoop.Append(lineFromCrv(crv))
+	profileLoops.Add(profileLoop)
+	region = FilledRegion.Create(doc,filledRegion.Id,activeViewId,profileLoops)
+	regions.Add(region)
+
+
+TransactionManager.Instance.TransactionTaskDone()
+ 
+OUT = regions</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="3c7556e0-5625-4975-b2b1-c60cdd4283bd" type="Dynamo.Nodes.Function" nickname="RoomSeparator.FromCurve" x="2580.6855577636" y="-633.955517160766" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="c68c0799-65c3-42f4-b8ba-93a248013d35" />
+      <Name value="RoomSeparator.FromCurve" />
+      <Description value="Creates room separation lines from geometry curves. " />
+      <Inputs>
+        <Input value="curve" />
+        <Input value="sketchPlane" />
+        <Input value="view" />
+      </Inputs>
+      <Outputs>
+        <Output value="roomSeparator" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.DSFunction guid="f297f3ec-e4fb-4a4a-a1db-4e2f9d5ca8a6" type="Dynamo.Nodes.DSFunction" nickname="SketchPlane.ByPlane" x="2502.51035984814" y="-267.452230642378" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="RevitNodes.dll" function="Revit.Elements.SketchPlane.ByPlane@Autodesk.DesignScript.Geometry.Plane" />
+    <Dynamo.Nodes.Function guid="786ec4b9-8b48-441c-bc51-4cef1d62e635" type="Dynamo.Nodes.Function" nickname="View.Plane" x="1862.49230105741" y="-261.615874618864" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="d6dbde59-f3f7-47b5-9e1e-f30991f58ac1" />
+      <Name value="View.Plane" />
+      <Description value="Retrieves the plane of a given view" />
+      <Inputs>
+        <Input value="view" />
+      </Inputs>
+      <Outputs>
+        <Output value="plane" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="c86c4289-3fbe-4f7c-93fe-ce8e6f404500" type="Dynamo.Nodes.Function" nickname="Active View" x="1468.46344558112" y="-123.34127627994" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <PortInfo index="0" default="True" />
+      <ID value="0f52caaa-1871-4d80-8cae-5022cceae3b2" />
+      <Name value="Active View" />
+      <Description value="" />
+      <Inputs>
+        <Input value="refresh" />
+      </Inputs>
+      <Outputs>
+        <Output value="view" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSIronPythonNode.PythonNode guid="875a035e-9e3c-4bbf-aec7-2128fe5fae6f" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="2948.27339204664" y="-463.886639771366" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="3">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.GeometryConversion)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+curves = UnwrapElement(IN[0])
+sketchplane = UnwrapElement(IN[1])
+view = UnwrapElement(IN[2])
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+curvearray = CurveArray()
+for curve in curves:
+	curvearray.Append(curve.ToRevitType())
+doccreation = doc.Create
+separatorarray = doccreation.NewRoomBoundaryLines(sketchplane, curvearray, view)
+TransactionManager.Instance.TransactionTaskDone()
+
+elementlist = list()
+for item in separatorarray:
+	elementlist.append(item)
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <DSIronPythonNode.PythonNode guid="aa7d6734-9502-452e-aff5-e976dd81dcf7" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="1892.78038969774" y="-143.078109337987" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.GeometryConversion)
+
+items = UnwrapElement(IN[0])
+elementlist = list()
+olist = list()
+dlist = list()
+
+for item in items:
+	try:
+		olist.append(item.Origin.ToPoint())
+		dlist.append(item.ViewDirection.ToVector())
+	except:
+		elementlist.append(list())
+OUT = (olist,dlist)</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="475738aa-b4f8-4f0a-bb9d-528b73da0eb9" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="2079.95495949288" y="-186.377042127948" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="Plane.ByOriginNormal(seq[0],seq[1]);" ShouldFocus="false" />
+    <DSCoreNodesUI.CreateList guid="035e59a2-b909-4dce-b22a-994664771e3c" type="DSCoreNodesUI.CreateList" nickname="List.Create" x="1636.61981928141" y="-111.225724341578" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="6f7dff9f-3813-4385-a42c-6e658face088" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="2755.51089455135" y="-273.450042462294" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="a[0];" ShouldFocus="false" />
+    <Dynamo.Nodes.DSFunction guid="ff6a42e8-4faf-4510-bbab-941b17e77a90" type="Dynamo.Nodes.DSFunction" nickname="Flatten" x="2693.60666845681" y="-543.28661006748" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="BuiltIn" function="Flatten@var[]..[]" />
+    <DSIronPythonNode.PythonNode guid="9afcc2df-9fa3-47c5-a4fe-816811ea91de" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="3420.0896183974" y="-258.63473384295" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>import clr
+clr.AddReference("ProtoGeometry")
+from Autodesk.DesignScript.Geometry import *
+
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+ 
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+ 
+doc =  DocumentManager.Instance.CurrentDBDocument
+ 
+roomsList =  UnwrapElement(IN[0])
+filledRegionName = IN[1]
+ 
+for fr in FilteredElementCollector(doc).OfClass(FilledRegionType):
+    if Element.Name.GetValue(fr) == filledRegionName:
+        filledRegion = fr
+        break     
+ 
+activeViewId = doc.ActiveView.Id
+ 
+def lineFromCrv(crv):
+	start = crv.StartPoint
+	end = crv.EndPoint
+	a = XYZ(start.X,start.Y,start.Z)
+	b = XYZ(end.X,end.Y,end.Z)
+	return Autodesk.Revit.DB.Line.CreateBound(a,b)
+
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+ 
+regions = []
+
+for bound in IN[0]:
+	profileLoops = []
+	profileLoop = CurveLoop()
+	for crv in bound:
+		profileLoop.Append(lineFromCrv(crv))
+	profileLoops.Add(profileLoop)
+	region = FilledRegion.Create(doc,filledRegion.Id,activeViewId,profileLoops)
+	regions.Add(region)
+
+
+TransactionManager.Instance.TransactionTaskDone()
+ 
+OUT = regions</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSFunction guid="0dbbd825-567e-4901-b7cd-902a3bbc212d" type="Dynamo.Nodes.DSFunction" nickname="List.Chop" x="3182.57181102469" y="-354.197165696089" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.Chop@var[]..[],int" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="03b70cb3-ff53-49a9-91e6-d302dcf1cfbf" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="3181.83073629942" y="-227.714156776429" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="4;" ShouldFocus="false" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="17a2671f-c0bd-432c-b0dc-a835b925c35c" start_index="0" end="6be28d8f-d93c-47a4-8595-da41d6e0bdb5" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="17a2671f-c0bd-432c-b0dc-a835b925c35c" start_index="0" end="8c9cddaa-8d35-4f0d-90b7-dbdf649bd7b3" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="2144d499-457b-40f9-8a24-cea8202d6f75" start_index="0" end="6be28d8f-d93c-47a4-8595-da41d6e0bdb5" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="61122197-630e-44da-8936-914897342a3f" start_index="0" end="70f0b0cb-0c95-4352-930e-dfbace6fa890" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="745d9199-017a-4421-8475-55ef26799940" start_index="0" end="67547209-b41d-4bc4-8e0e-0a3d0681e183" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="745d9199-017a-4421-8475-55ef26799940" start_index="0" end="c703e98c-a2ff-4169-bf01-533be720bbfa" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="745d9199-017a-4421-8475-55ef26799940" start_index="0" end="b6887d69-47f6-4347-9b4a-fb2a80d0eeb2" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="745d9199-017a-4421-8475-55ef26799940" start_index="0" end="9afcc2df-9fa3-47c5-a4fe-816811ea91de" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e5003f01-15e7-43c7-ba32-7e15f443fec2" start_index="0" end="17a2671f-c0bd-432c-b0dc-a835b925c35c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e5003f01-15e7-43c7-ba32-7e15f443fec2" start_index="0" end="7739ac43-07df-4343-811f-1c73c39c15a3" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e5003f01-15e7-43c7-ba32-7e15f443fec2" start_index="0" end="754db2d0-6ab3-4d5d-ad15-ea0be6f2787b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="8c9cddaa-8d35-4f0d-90b7-dbdf649bd7b3" start_index="0" end="43c742b6-89ce-4db5-bed7-e960cb0d4458" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="43c742b6-89ce-4db5-bed7-e960cb0d4458" start_index="0" end="61122197-630e-44da-8936-914897342a3f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="bf79a85d-4245-4bd9-818f-a6bcb02ee198" start_index="0" end="43c742b6-89ce-4db5-bed7-e960cb0d4458" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="47259ade-0998-4c9f-bb8d-f301283a626f" start_index="0" end="06e276e6-0f1e-4f66-b861-18f74664257f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="70f0b0cb-0c95-4352-930e-dfbace6fa890" start_index="0" end="47259ade-0998-4c9f-bb8d-f301283a626f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="754db2d0-6ab3-4d5d-ad15-ea0be6f2787b" start_index="0" end="d4404644-38b0-415c-add1-3c9cf609bcba" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="754db2d0-6ab3-4d5d-ad15-ea0be6f2787b" start_index="0" end="ff6a42e8-4faf-4510-bbab-941b17e77a90" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d4404644-38b0-415c-add1-3c9cf609bcba" start_index="0" end="a1928fd3-946a-4882-8c01-beb5c8456d1e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d4404644-38b0-415c-add1-3c9cf609bcba" start_index="0" end="b6887d69-47f6-4347-9b4a-fb2a80d0eeb2" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1211375b-5587-40e9-a744-94cd46e07fb3" start_index="0" end="d4404644-38b0-415c-add1-3c9cf609bcba" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f297f3ec-e4fb-4a4a-a1db-4e2f9d5ca8a6" start_index="0" end="6f7dff9f-3813-4385-a42c-6e658face088" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c86c4289-3fbe-4f7c-93fe-ce8e6f404500" start_index="0" end="786ec4b9-8b48-441c-bc51-4cef1d62e635" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c86c4289-3fbe-4f7c-93fe-ce8e6f404500" start_index="0" end="875a035e-9e3c-4bbf-aec7-2128fe5fae6f" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c86c4289-3fbe-4f7c-93fe-ce8e6f404500" start_index="0" end="035e59a2-b909-4dce-b22a-994664771e3c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="875a035e-9e3c-4bbf-aec7-2128fe5fae6f" start_index="0" end="0dbbd825-567e-4901-b7cd-902a3bbc212d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="aa7d6734-9502-452e-aff5-e976dd81dcf7" start_index="0" end="475738aa-b4f8-4f0a-bb9d-528b73da0eb9" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="475738aa-b4f8-4f0a-bb9d-528b73da0eb9" start_index="0" end="f297f3ec-e4fb-4a4a-a1db-4e2f9d5ca8a6" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="035e59a2-b909-4dce-b22a-994664771e3c" start_index="0" end="aa7d6734-9502-452e-aff5-e976dd81dcf7" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6f7dff9f-3813-4385-a42c-6e658face088" start_index="0" end="875a035e-9e3c-4bbf-aec7-2128fe5fae6f" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ff6a42e8-4faf-4510-bbab-941b17e77a90" start_index="0" end="875a035e-9e3c-4bbf-aec7-2128fe5fae6f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0dbbd825-567e-4901-b7cd-902a3bbc212d" start_index="0" end="9afcc2df-9fa3-47c5-a4fe-816811ea91de" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="03b70cb3-ff53-49a9-91e6-d302dcf1cfbf" start_index="0" end="0dbbd825-567e-4901-b7cd-902a3bbc212d" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations>
+    <Dynamo.Models.AnnotationModel guid="dc6b2933-baf6-4de4-aaea-08ae2e2fbcf2" annotationText="&lt;Click here to edit the group title&gt;" left="2226.05500068126" top="336.074463384014" width="144" height="163" fontSize="14" InitialTop="380.074463384014" InitialHeight="149" TextblockHeight="34" backgrouund="#FFC1D676">
+      <Models ModelGuid="67547209-b41d-4bc4-8e0e-0a3d0681e183" />
+    </Dynamo.Models.AnnotationModel>
+  </Annotations>
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10751.7765258216" eyeY="8895.72707559001" eyeZ="6376.81326898567" lookX="-8893.2275756263" lookY="-8893.2275756263" lookZ="-8893.2275756263" />
+  </Cameras>
+  <SessionTraceData>
+    <NodeTraceData NodeId="f297f3ec-e4fb-4a4a-a1db-4e2f9d5ca8a6">
+      <CallsiteTraceData>PFNPQVAtRU5WOkVudmVsb3BlIHhtbG5zOnhzaT0iaHR0cDovL3d3dy53My5vcmcvMjAwMS9YTUxTY2hlbWEtaW5zdGFuY2UiIHhtbG5zOnhzZD0iaHR0cDovL3d3dy53My5vcmcvMjAwMS9YTUxTY2hlbWEiIHhtbG5zOlNPQVAtRU5DPSJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy9zb2FwL2VuY29kaW5nLyIgeG1sbnM6U09BUC1FTlY9Imh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3NvYXAvZW52ZWxvcGUvIiB4bWxuczpjbHI9Imh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vc29hcC9lbmNvZGluZy9jbHIvMS4wIiBTT0FQLUVOVjplbmNvZGluZ1N0eWxlPSJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy9zb2FwL2VuY29kaW5nLyI+DQo8U09BUC1FTlY6Qm9keT4NCjxhMTpDYWxsU2l0ZV94MDAyQl9UcmFjZVNlcmlhbGlzZXJIZWxwZXIgaWQ9InJlZi0xIiB4bWxuczphMT0iaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS9jbHIvbnNhc3NlbS9Qcm90b0NvcmUvUHJvdG9Db3JlJTJDJTIwVmVyc2lvbiUzRDAuOC4yLjIzOTIlMkMlMjBDdWx0dXJlJTNEbmV1dHJhbCUyQyUyMFB1YmxpY0tleVRva2VuJTNEbnVsbCI+DQo8TnVtYmVyT2ZFbGVtZW50cz4xPC9OdW1iZXJPZkVsZW1lbnRzPg0KPEJhc2UtMF9IYXNEYXRhPmZhbHNlPC9CYXNlLTBfSGFzRGF0YT4NCjxCYXNlLTBfSGFzTmVzdGVkRGF0YT50cnVlPC9CYXNlLTBfSGFzTmVzdGVkRGF0YT4NCjxCYXNlLTBfTmVzdGVkRGF0YUNvdW50PjE8L0Jhc2UtMF9OZXN0ZWREYXRhQ291bnQ+DQo8QmFzZS0wLTBfSGFzRGF0YT50cnVlPC9CYXNlLTAtMF9IYXNEYXRhPg0KPEJhc2UtMC0wX0RhdGEgaWQ9InJlZi0zIj5QRk5QUVZBdFJVNVdPa1Z1ZG1Wc2IzQmxJSGh0Ykc1ek9uaHphVDBpYUhSMGNEb3ZMM2QzZHk1M015NXZjbWN2TWpBd01TOVlUVXhUWTJobGJXRXRhVzV6ZEdGdVkyVWlJSGh0Ykc1ek9uaHpaRDBpYUhSMGNEb3ZMM2QzZHk1M015NXZjbWN2TWpBd01TOVlUVXhUWTJobGJXRWlJSGh0Ykc1ek9sTlBRVkF0UlU1RFBTSm9kSFJ3T2k4dmMyTm9aVzFoY3k1NGJXeHpiMkZ3TG05eVp5OXpiMkZ3TDJWdVkyOWthVzVuTHlJZ2VHMXNibk02VTA5QlVDMUZUbFk5SW1oMGRIQTZMeTl6WTJobGJXRnpMbmh0YkhOdllYQXViM0puTDNOdllYQXZaVzUyWld4dmNHVXZJaUI0Yld4dWN6cGpiSEk5SW1oMGRIQTZMeTl6WTJobGJXRnpMbTFwWTNKdmMyOW1kQzVqYjIwdmMyOWhjQzlsYm1OdlpHbHVaeTlqYkhJdk1TNHdJaUJUVDBGUUxVVk9WanBsYm1OdlpHbHVaMU4wZVd4bFBTSm9kSFJ3T2k4dmMyTm9aVzFoY3k1NGJXeHpiMkZ3TG05eVp5OXpiMkZ3TDJWdVkyOWthVzVuTHlJK0RRbzhVMDlCVUMxRlRsWTZRbTlrZVQ0TkNqeGhNVHBUWlhKcFlXeHBlbUZpYkdWSlpDQnBaRDBpY21WbUxURWlJSGh0Ykc1ek9tRXhQU0pvZEhSd09pOHZjMk5vWlcxaGN5NXRhV055YjNOdlpuUXVZMjl0TDJOc2NpOXVjMkZ6YzJWdEwxSmxkbWwwVTJWeWRtbGpaWE11VUdWeWMybHpkR1Z1WTJVdlVtVjJhWFJUWlhKMmFXTmxjeVV5UXlVeU1GWmxjbk5wYjI0bE0wUXdMamd1TWk0eU16a3lKVEpESlRJd1EzVnNkSFZ5WlNVelJHNWxkWFJ5WVd3bE1rTWxNakJRZFdKc2FXTkxaWGxVYjJ0bGJpVXpSRzUxYkd3aVBnMEtQSE4wY21sdVowbEVJR2xrUFNKeVpXWXRNeUkrWkdJeU9HTTFaV010WVRBNE5TMDBORFF4TFRrMU4ySXRaVGxsWkRKaVptVmlNV1l6TFRBd01EQXdaRFF5UEM5emRISnBibWRKUkQ0TkNqeHBiblJKUkQ0ek16azBQQzlwYm5SSlJENE5Dand2WVRFNlUyVnlhV0ZzYVhwaFlteGxTV1ErRFFvOEwxTlBRVkF0UlU1V09rSnZaSGsrRFFvOEwxTlBRVkF0UlU1V09rVnVkbVZzYjNCbFBnMEs8L0Jhc2UtMC0wX0RhdGE+DQo8QmFzZS0wLTBfSGFzTmVzdGVkRGF0YT5mYWxzZTwvQmFzZS0wLTBfSGFzTmVzdGVkRGF0YT4NCjwvYTE6Q2FsbFNpdGVfeDAwMkJfVHJhY2VTZXJpYWxpc2VySGVscGVyPg0KPC9TT0FQLUVOVjpCb2R5Pg0KPC9TT0FQLUVOVjpFbnZlbG9wZT4NCg==</CallsiteTraceData>
+      <CallsiteTraceData>PFNPQVAtRU5WOkVudmVsb3BlIHhtbG5zOnhzaT0iaHR0cDovL3d3dy53My5vcmcvMjAwMS9YTUxTY2hlbWEtaW5zdGFuY2UiIHhtbG5zOnhzZD0iaHR0cDovL3d3dy53My5vcmcvMjAwMS9YTUxTY2hlbWEiIHhtbG5zOlNPQVAtRU5DPSJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy9zb2FwL2VuY29kaW5nLyIgeG1sbnM6U09BUC1FTlY9Imh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3NvYXAvZW52ZWxvcGUvIiB4bWxuczpjbHI9Imh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vc29hcC9lbmNvZGluZy9jbHIvMS4wIiBTT0FQLUVOVjplbmNvZGluZ1N0eWxlPSJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy9zb2FwL2VuY29kaW5nLyI+DQo8U09BUC1FTlY6Qm9keT4NCjxhMTpDYWxsU2l0ZV94MDAyQl9UcmFjZVNlcmlhbGlzZXJIZWxwZXIgaWQ9InJlZi0xIiB4bWxuczphMT0iaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS9jbHIvbnNhc3NlbS9Qcm90b0NvcmUvUHJvdG9Db3JlJTJDJTIwVmVyc2lvbiUzRDAuOC4yLjIzOTIlMkMlMjBDdWx0dXJlJTNEbmV1dHJhbCUyQyUyMFB1YmxpY0tleVRva2VuJTNEbnVsbCI+DQo8TnVtYmVyT2ZFbGVtZW50cz4xPC9OdW1iZXJPZkVsZW1lbnRzPg0KPEJhc2UtMF9IYXNEYXRhPmZhbHNlPC9CYXNlLTBfSGFzRGF0YT4NCjxCYXNlLTBfSGFzTmVzdGVkRGF0YT50cnVlPC9CYXNlLTBfSGFzTmVzdGVkRGF0YT4NCjxCYXNlLTBfTmVzdGVkRGF0YUNvdW50PjE8L0Jhc2UtMF9OZXN0ZWREYXRhQ291bnQ+DQo8QmFzZS0wLTBfSGFzRGF0YT50cnVlPC9CYXNlLTAtMF9IYXNEYXRhPg0KPEJhc2UtMC0wX0RhdGEgaWQ9InJlZi0zIj5QRk5QUVZBdFJVNVdPa1Z1ZG1Wc2IzQmxJSGh0Ykc1ek9uaHphVDBpYUhSMGNEb3ZMM2QzZHk1M015NXZjbWN2TWpBd01TOVlUVXhUWTJobGJXRXRhVzV6ZEdGdVkyVWlJSGh0Ykc1ek9uaHpaRDBpYUhSMGNEb3ZMM2QzZHk1M015NXZjbWN2TWpBd01TOVlUVXhUWTJobGJXRWlJSGh0Ykc1ek9sTlBRVkF0UlU1RFBTSm9kSFJ3T2k4dmMyTm9aVzFoY3k1NGJXeHpiMkZ3TG05eVp5OXpiMkZ3TDJWdVkyOWthVzVuTHlJZ2VHMXNibk02VTA5QlVDMUZUbFk5SW1oMGRIQTZMeTl6WTJobGJXRnpMbmh0YkhOdllYQXViM0puTDNOdllYQXZaVzUyWld4dmNHVXZJaUI0Yld4dWN6cGpiSEk5SW1oMGRIQTZMeTl6WTJobGJXRnpMbTFwWTNKdmMyOW1kQzVqYjIwdmMyOWhjQzlsYm1OdlpHbHVaeTlqYkhJdk1TNHdJaUJUVDBGUUxVVk9WanBsYm1OdlpHbHVaMU4wZVd4bFBTSm9kSFJ3T2k4dmMyTm9aVzFoY3k1NGJXeHpiMkZ3TG05eVp5OXpiMkZ3TDJWdVkyOWthVzVuTHlJK0RRbzhVMDlCVUMxRlRsWTZRbTlrZVQ0TkNqeGhNVHBUWlhKcFlXeHBlbUZpYkdWSlpDQnBaRDBpY21WbUxURWlJSGh0Ykc1ek9tRXhQU0pvZEhSd09pOHZjMk5vWlcxaGN5NXRhV055YjNOdlpuUXVZMjl0TDJOc2NpOXVjMkZ6YzJWdEwxSmxkbWwwVTJWeWRtbGpaWE11VUdWeWMybHpkR1Z1WTJVdlVtVjJhWFJUWlhKMmFXTmxjeVV5UXlVeU1GWmxjbk5wYjI0bE0wUXdMamd1TWk0eU16a3lKVEpESlRJd1EzVnNkSFZ5WlNVelJHNWxkWFJ5WVd3bE1rTWxNakJRZFdKc2FXTkxaWGxVYjJ0bGJpVXpSRzUxYkd3aVBnMEtQSE4wY21sdVowbEVJR2xrUFNKeVpXWXRNeUkrWkdJeU9HTTFaV010WVRBNE5TMDBORFF4TFRrMU4ySXRaVGxsWkRKaVptVmlNV1l6TFRBd01EQXdaRFF5UEM5emRISnBibWRKUkQ0TkNqeHBiblJKUkQ0ek16azBQQzlwYm5SSlJENE5Dand2WVRFNlUyVnlhV0ZzYVhwaFlteGxTV1ErRFFvOEwxTlBRVkF0UlU1V09rSnZaSGsrRFFvOEwxTlBRVkF0UlU1V09rVnVkbVZzYjNCbFBnMEs8L0Jhc2UtMC0wX0RhdGE+DQo8QmFzZS0wLTBfSGFzTmVzdGVkRGF0YT5mYWxzZTwvQmFzZS0wLTBfSGFzTmVzdGVkRGF0YT4NCjwvYTE6Q2FsbFNpdGVfeDAwMkJfVHJhY2VTZXJpYWxpc2VySGVscGVyPg0KPC9TT0FQLUVOVjpCb2R5Pg0KPC9TT0FQLUVOVjpFbnZlbG9wZT4NCg==</CallsiteTraceData>
+    </NodeTraceData>
+  </SessionTraceData>
+</Workspace>

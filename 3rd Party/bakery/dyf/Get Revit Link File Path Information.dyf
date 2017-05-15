@@ -1,0 +1,57 @@
+<Workspace Version="0.8.2.2371" X="-224.935" Y="280.7525" zoom="1.1575" Name="Get Revit Link File Path Information" Description="for current doc" ID="2b4cc1d9-69e6-47da-b8a7-ee3630024f74" Category="Bakery.Links">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Function guid="eeccf5a9-1e00-44cd-97f7-c975aedae0c5" type="Dynamo.Nodes.Function" nickname="Get External File References and Details" x="250" y="48.3257647779014" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="True">
+      <ID value="689b29d8-0c94-4941-9f00-54f119a3068a" />
+      <Name value="Get External File References and Details" />
+      <Description value="including date modified" />
+      <Inputs />
+      <Outputs>
+        <Output value="externalReferenceIds" />
+        <Output value="externalReferenceObjects" />
+        <Output value="filePathObjects" />
+        <Output value="asElements" />
+        <Output value="typeNames" />
+        <Output value="path as human readable" />
+        <Output value="datesModified" />
+        <Output value="referenceType" />
+        <Output value="PathTypes" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="d80cffae-7245-4b9f-a4b7-890617e9b085" type="Dynamo.Nodes.Function" nickname="Flat List to List of Strings" x="535.595974044465" y="459.140234482888" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="82b8a446-c4a1-4d64-8736-01c0b01ae798" />
+      <Name value="Flat List to List of Strings" />
+      <Description value="using python methods" />
+      <Inputs>
+        <Input value="Original List" />
+      </Inputs>
+      <Outputs>
+        <Output value="List of Strings" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="b055970f-c5a7-4c18-988d-1c4717da85dd" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="547.704283151813" y="580.178099068474" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="&quot;RevitLink&quot;;" ShouldFocus="false" />
+    <Dynamo.Nodes.DSFunction guid="36a989f2-c356-499f-b3cf-1b5382e2b074" type="Dynamo.Nodes.DSFunction" nickname="==" x="786.097860423469" y="555.804674488651" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="Operators" function="==@var[]..[],var[]..[]" />
+    <Dynamo.Nodes.DSFunction guid="ba800985-037a-4f4e-b4c1-90534631e80e" type="Dynamo.Nodes.DSFunction" nickname="List.FilterByBoolMask" x="1048.57963631018" y="432.665075924517" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.FilterByBoolMask@var[]..[],var[]..[]" />
+    <Dynamo.Nodes.DSFunction guid="16f59d8e-0f39-4740-be30-17af6c831b00" type="Dynamo.Nodes.DSFunction" nickname="List.FilterByBoolMask" x="1085.20092087604" y="0" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.FilterByBoolMask@var[]..[],var[]..[]" />
+    <Dynamo.Nodes.Output guid="b66b187d-22a5-454b-a5ea-2e2981ff51ce" type="Dynamo.Nodes.Output" nickname="Output" x="1392.20092087604" y="417" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="PathToFile" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="4afdb5ee-43b9-42fb-a2f3-cab2772e0f89" type="Dynamo.Nodes.Output" nickname="Output" x="1412.20092087604" y="124" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="PathType" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="eeccf5a9-1e00-44cd-97f7-c975aedae0c5" start_index="5" end="ba800985-037a-4f4e-b4c1-90534631e80e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="eeccf5a9-1e00-44cd-97f7-c975aedae0c5" start_index="7" end="d80cffae-7245-4b9f-a4b7-890617e9b085" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="eeccf5a9-1e00-44cd-97f7-c975aedae0c5" start_index="8" end="16f59d8e-0f39-4740-be30-17af6c831b00" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d80cffae-7245-4b9f-a4b7-890617e9b085" start_index="0" end="36a989f2-c356-499f-b3cf-1b5382e2b074" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="b055970f-c5a7-4c18-988d-1c4717da85dd" start_index="0" end="36a989f2-c356-499f-b3cf-1b5382e2b074" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="36a989f2-c356-499f-b3cf-1b5382e2b074" start_index="0" end="ba800985-037a-4f4e-b4c1-90534631e80e" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="36a989f2-c356-499f-b3cf-1b5382e2b074" start_index="0" end="16f59d8e-0f39-4740-be30-17af6c831b00" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ba800985-037a-4f4e-b4c1-90534631e80e" start_index="0" end="b66b187d-22a5-454b-a5ea-2e2981ff51ce" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="16f59d8e-0f39-4740-be30-17af6c831b00" start_index="0" end="4afdb5ee-43b9-42fb-a2f3-cab2772e0f89" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+</Workspace>

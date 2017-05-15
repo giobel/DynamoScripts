@@ -1,0 +1,48 @@
+<Workspace Version="0.8.1.1942" X="0" Y="0" zoom="1" Name="Show Element Workset as Internal db name" ID="1d596ef7-88af-439e-9f36-d3c392abe6d4" Description="" Category="Bakery.Parameters">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Symbol guid="efaf0306-e08f-4b6e-8877-58e9fdf7faff" type="Dynamo.Nodes.Symbol" nickname="Input" x="10" y="10" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Element(s)" />
+    </Dynamo.Nodes.Symbol>
+    <DSIronPythonNode.PythonNode guid="f1f90459-d6e3-4a7f-9b54-a290a6b835ec" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="422.732589235007" y="64.340479483012" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+faminsts = UnwrapElement(IN[0])
+elementlist = list()
+for item in faminsts:
+	try:
+		elementlist.append(doc.GetWorksetTable().GetWorkset(item.WorksetId))
+	except:
+		elementlist.append(list())
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="1cc6a844-98ba-4cc4-860e-c7871f420dde" type="Dynamo.Nodes.Function" nickname="Turn Into List" x="260" y="64.127890975581" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="var[]" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Output guid="3d93eda9-d93a-42a4-803b-d489bae04492" type="Dynamo.Nodes.Output" nickname="Output" x="852.992110218278" y="10" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Workset(s)" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="efaf0306-e08f-4b6e-8877-58e9fdf7faff" start_index="0" end="1cc6a844-98ba-4cc4-860e-c7871f420dde" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f1f90459-d6e3-4a7f-9b54-a290a6b835ec" start_index="0" end="3d93eda9-d93a-42a4-803b-d489bae04492" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1cc6a844-98ba-4cc4-860e-c7871f420dde" start_index="0" end="f1f90459-d6e3-4a7f-9b54-a290a6b835ec" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+</Workspace>

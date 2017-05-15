@@ -1,0 +1,68 @@
+<Workspace Version="0.8.2.2371" X="142" Y="149" zoom="1" Name="bv List Chop by Lengths" Description="" ID="e0adece0-7e47-4a73-9ff3-3fd9b3602816" Category="Bakery.Forks">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Symbol guid="b442f5d2-c61e-4db6-9c40-e7d277248a42" type="Dynamo.Nodes.Symbol" nickname="Input" x="168.50027364287" y="10" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="list" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Function guid="e50d3490-9d7f-4279-97a6-81c6992c8e6c" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="131.863219275421" y="86.7606733702673" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="b51fca38-bedf-438b-8d4a-2b6049e6a36f" type="Dynamo.Nodes.Symbol" nickname="Input" x="10" y="126.312089017061" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="lengths" />
+    </Dynamo.Nodes.Symbol>
+    <DSIronPythonNode.PythonNode guid="a1c599f7-1b03-490c-9a59-0c6fb0aedfae" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="286.917318257235" y="33.0397185347014" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>import clr
+
+inputlist = IN[0]
+listlengths = IN[1]
+rowcounter = 0
+elementlist = list()
+for item in listlengths:
+	itemcounter = 0
+	itemlist = list()
+	while itemcounter &lt; item:
+		itemlist.append(inputlist[rowcounter])
+		rowcounter += 1
+		itemcounter += 1
+	elementlist.append(itemlist)
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="4fae164d-41ea-46d9-9f85-11fea97d737f" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="459.458199782361" y="123.041909669852" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Output guid="002e5946-45d9-4590-9dc7-b8ddd86c2f3d" type="Dynamo.Nodes.Output" nickname="Output" x="687.032656177356" y="122.831706316181" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="list" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="b442f5d2-c61e-4db6-9c40-e7d277248a42" start_index="0" end="a1c599f7-1b03-490c-9a59-0c6fb0aedfae" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e50d3490-9d7f-4279-97a6-81c6992c8e6c" start_index="0" end="a1c599f7-1b03-490c-9a59-0c6fb0aedfae" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="b51fca38-bedf-438b-8d4a-2b6049e6a36f" start_index="0" end="e50d3490-9d7f-4279-97a6-81c6992c8e6c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="b51fca38-bedf-438b-8d4a-2b6049e6a36f" start_index="0" end="4fae164d-41ea-46d9-9f85-11fea97d737f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a1c599f7-1b03-490c-9a59-0c6fb0aedfae" start_index="0" end="4fae164d-41ea-46d9-9f85-11fea97d737f" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4fae164d-41ea-46d9-9f85-11fea97d737f" start_index="0" end="002e5946-45d9-4590-9dc7-b8ddd86c2f3d" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="198211.895180238" eyeY="63701.8754726015" eyeZ="15599.6143622958" lookX="-198211.895180238" lookY="-63699.3759726379" lookZ="-15599.6143622958" />
+  </Cameras>
+</Workspace>

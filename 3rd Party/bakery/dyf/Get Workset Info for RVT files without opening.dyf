@@ -1,0 +1,82 @@
+<Workspace Version="0.8.2.2371" X="39.747573298652" Y="347.399626227559" zoom="0.822695359375" Name="Get Workset Info for RVT files without opening" Description="thanks to dimven for the assist." ID="d9198273-f0ae-4aa3-b1b2-41f8481c351b" Category="Bakery.Worksets">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSCoreNodesUI.CreateList guid="ae701fa5-7621-45bf-90d6-fc889df40003" type="DSCoreNodesUI.CreateList" nickname="List.Create" x="250" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1" />
+    <Dynamo.Nodes.DSFunction guid="4e72e7f5-cc1c-4412-a99b-45d1eb947f3d" type="Dynamo.Nodes.DSFunction" nickname="Flatten" x="466" y="10" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="BuiltIn" function="Flatten@var[]..[]" />
+    <DSIronPythonNode.PythonNode guid="488a02f4-48db-41c9-853a-04022ff2258e" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="676" y="27" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>#LSJ
+
+import clr
+import sys
+sys.path.append('C:\Program Files (x86)\IronPython 2.7\Lib')
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+# Import DocumentManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+from Autodesk.Revit.DB import *
+clr.ImportExtensions(Revit.Elements)
+
+import traceback
+#The inputs to this node will be stored as a list in the IN variable.
+#doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+paths = IN[0]
+outlist = []
+pathlist = []
+
+for p in paths:
+	modPath = ModelPathUtils.ConvertUserVisiblePathToModelPath(p)
+	try:
+		ws = WorksharingUtils.GetUserWorksetInfo(modPath)
+		ws = [w.Name for w in ws]
+	except:
+		ws = traceback.format_exc()
+	pathlist.append(p)
+	outlist.append(ws)
+
+OUT = pathlist, outlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol guid="13056184-2586-431d-9392-99d7c7842af7" type="Dynamo.Nodes.Symbol" nickname="Input" x="-1.18694362017806" y="-1.18694362017811" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="FilePaths" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="3f9d74ac-b516-4262-ba8f-4b75d4c0237c" type="Dynamo.Nodes.Output" nickname="Output" x="1170.54896142433" y="-110.385756676558" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="fileList" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.DSFunction guid="9400bc70-7020-47a7-82df-4ef05417f3a7" type="Dynamo.Nodes.DSFunction" nickname="List.GetItemAtIndex" x="983.379821958457" y="-82.7655786350148" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="6709182b-42fb-4bce-ae11-0d633eaac01f" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="820" y="52" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="0;" ShouldFocus="false" />
+    <Dynamo.Nodes.DSFunction guid="efb93bb9-7448-4af2-b6d1-bd266c52f03b" type="Dynamo.Nodes.DSFunction" nickname="List.GetItemAtIndex" x="927.679525222552" y="151.887240356083" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="9474cd4e-aaf9-4ebc-b7ea-fcbb5c368e08" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="764.299703264095" y="286.652818991098" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="1;" ShouldFocus="false" />
+    <Dynamo.Nodes.Output guid="99b54c21-271d-4abf-98bd-f26c5dba766b" type="Dynamo.Nodes.Output" nickname="Output" x="1114.84866468842" y="124.26706231454" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="worksetNameList" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="ae701fa5-7621-45bf-90d6-fc889df40003" start_index="0" end="4e72e7f5-cc1c-4412-a99b-45d1eb947f3d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4e72e7f5-cc1c-4412-a99b-45d1eb947f3d" start_index="0" end="488a02f4-48db-41c9-853a-04022ff2258e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="488a02f4-48db-41c9-853a-04022ff2258e" start_index="0" end="9400bc70-7020-47a7-82df-4ef05417f3a7" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="488a02f4-48db-41c9-853a-04022ff2258e" start_index="0" end="efb93bb9-7448-4af2-b6d1-bd266c52f03b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="13056184-2586-431d-9392-99d7c7842af7" start_index="0" end="ae701fa5-7621-45bf-90d6-fc889df40003" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9400bc70-7020-47a7-82df-4ef05417f3a7" start_index="0" end="3f9d74ac-b516-4262-ba8f-4b75d4c0237c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6709182b-42fb-4bce-ae11-0d633eaac01f" start_index="0" end="9400bc70-7020-47a7-82df-4ef05417f3a7" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="efb93bb9-7448-4af2-b6d1-bd266c52f03b" start_index="0" end="99b54c21-271d-4abf-98bd-f26c5dba766b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9474cd4e-aaf9-4ebc-b7ea-fcbb5c368e08" start_index="0" end="efb93bb9-7448-4af2-b6d1-bd266c52f03b" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

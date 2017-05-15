@@ -1,0 +1,50 @@
+<Workspace Version="0.9.1.4062" X="255" Y="246" zoom="1" Name="Select Elements including Nested by Category" Description="and report as list and number of items" ID="6b62dfa4-0e33-4a5f-a6ca-6cc6d316d69e" Category="Bakery.Collect">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSRevitNodesUI.ElementsOfCategory guid="126496a1-5bee-42e4-92cc-26f3fe539044" type="DSRevitNodesUI.ElementsOfCategory" nickname="All Elements of Category" x="724.205503821332" y="291.208201753606" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" />
+    <CoreNodeModels.CreateList guid="fd429a7a-8a75-4484-a2e1-d086d6a2706e" type="CoreNodeModels.CreateList" nickname="List.Create" x="930.689780395531" y="408.142791103053" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" inputcount="1" />
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="20d3025f-5ce7-4628-8f4a-8a01fe8faa25" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="SelectionSet.ByElements" x="1012.19354457621" y="161.805134871835" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false">
+      <ID value="abdd4174-8c8f-45ae-90a4-ffa3b369941b" />
+      <Name value="SelectionSet.ByElements" />
+      <Description value="Creates a selections set of the given elements. Note that if a selection set of the given name already exists in the model, its contents will be replaced. Also, if the selection set is already applied as a view filter, the view filter will have to be manually updated in the visibility / graphic overrides." />
+      <Inputs>
+        <Input value="Name" />
+        <Input value="elements" />
+      </Inputs>
+      <Outputs>
+        <Output value="selectionSet" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="5a09c6c4-f421-4ab9-8d5f-6c3232afe307" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.Count" x="1241.92004856289" y="460.355763723236" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" assembly="DSCoreNodes.dll" function="DSCore.List.Count@var[]..[]" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="5246fc0a-58a0-49c0-9b84-6b946b282293" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Flatten" x="1282.87139963755" y="687.63576218756" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" assembly="BuiltIn" function="Flatten@var[]..[]" />
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="e7bf23c7-79fd-4d86-81c3-dae7f11f2a8d" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1466.87139963755" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false">
+      <Symbol value="feedback" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="59b14ad6-2212-451f-817e-76066e171632" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1467.87139963755" y="150" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false">
+      <Symbol value="Number of Elements" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="cfc8722d-fe0d-4913-857f-62e9252b3f4c" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="388.5" y="374.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false">
+      <Symbol value="Category" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="e187499b-e6de-4ba6-8541-64bb3c1209ae" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1544" y="636" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false">
+      <Symbol value="Flat List of Elements" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="d76c7eaa-e572-4c26-b335-993d6ac68bb1" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="594.5" y="130.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false">
+      <Symbol value="Selection Set Name" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="126496a1-5bee-42e4-92cc-26f3fe539044" start_index="0" end="20d3025f-5ce7-4628-8f4a-8a01fe8faa25" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="126496a1-5bee-42e4-92cc-26f3fe539044" start_index="0" end="fd429a7a-8a75-4484-a2e1-d086d6a2706e" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="fd429a7a-8a75-4484-a2e1-d086d6a2706e" start_index="0" end="5246fc0a-58a0-49c0-9b84-6b946b282293" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="20d3025f-5ce7-4628-8f4a-8a01fe8faa25" start_index="0" end="e7bf23c7-79fd-4d86-81c3-dae7f11f2a8d" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="5a09c6c4-f421-4ab9-8d5f-6c3232afe307" start_index="0" end="59b14ad6-2212-451f-817e-76066e171632" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="5246fc0a-58a0-49c0-9b84-6b946b282293" start_index="0" end="5a09c6c4-f421-4ab9-8d5f-6c3232afe307" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="5246fc0a-58a0-49c0-9b84-6b946b282293" start_index="0" end="e187499b-e6de-4ba6-8541-64bb3c1209ae" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="cfc8722d-fe0d-4913-857f-62e9252b3f4c" start_index="0" end="126496a1-5bee-42e4-92cc-26f3fe539044" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="d76c7eaa-e572-4c26-b335-993d6ac68bb1" start_index="0" end="20d3025f-5ce7-4628-8f4a-8a01fe8faa25" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+</Workspace>

@@ -1,0 +1,82 @@
+<Workspace Version="0.9.2.4472" X="-26.4" Y="161.2" zoom="1" Name="List Groups" Description="" ID="97652781-e8fa-4a06-b886-0f57ce83bdc8" Category="Bakery.Elements">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="8989083d-32f4-466a-917e-fb8bfc16aadb" type="PythonNodeModels.PythonNode" nickname="Python Script" x="10" y="12" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" inputcount="0">
+      <Script>#Copyright(c) 2014, Nathan Miller
+# The Proving Ground, http://theprovingground.org
+
+import clr
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+#The input to this node will be stored in the IN[0] variable.
+
+doc =  DocumentManager.Instance.CurrentDBDocument
+app =  DocumentManager.Instance.CurrentUIApplication.Application
+
+
+collector = FilteredElementCollector(doc)
+#collector.OfCategory(Group)
+collector.OfClass(Group)
+ 
+famtypeitr = collector.GetElementIdIterator()
+famtypeitr.Reset()
+
+outlist = []
+groups = []
+locations = []
+failures = []
+
+for item in famtypeitr:
+	try:
+		groups.append((item))
+	except:
+		failures.append("failed")
+#Assign your output to the OUT variable
+OUT = groups</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="0ca5f3dc-8449-45fd-a20e-f9468de955ba" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="212" y="10" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false">
+      <Symbol value="Groups" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="31223327-ad12-47cd-83ea-949c119f76fa" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="563" y="167" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false">
+      <Symbol value="groupElements" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="bec6918d-2081-4878-97f9-a22f41d3b463" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="bv IDs to Elements" x="228" y="352.4" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false">
+      <ID value="b2a2941e-7151-4158-81ce-522d451de0ff" />
+      <Name value="bv IDs to Elements" />
+      <Description value="forked from CAAD_RWTH" />
+      <Inputs>
+        <Input value="ID(s)" />
+      </Inputs>
+      <Outputs>
+        <Output value="Element(s)" />
+        <Output value="unmatched" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="8989083d-32f4-466a-917e-fb8bfc16aadb" start_index="0" end="0ca5f3dc-8449-45fd-a20e-f9468de955ba" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="8989083d-32f4-466a-917e-fb8bfc16aadb" start_index="0" end="bec6918d-2081-4878-97f9-a22f41d3b463" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="bec6918d-2081-4878-97f9-a22f41d3b463" start_index="0" end="31223327-ad12-47cd-83ea-949c119f76fa" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

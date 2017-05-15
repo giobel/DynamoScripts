@@ -1,0 +1,102 @@
+<Workspace Version="0.7.2.2921" X="90.656906116528" Y="136.519297455365" zoom="0.729191723055118" Description="Get Schedule Calculated Values from name input" Category="SteamNodes.Schedule" Name="Schedule.GetCalculatedValues" ID="e03dcee7-84d1-4469-8b6c-6977caab385c">
+  <Elements>
+    <DSCore.Map type="DSCore.Map" guid="37e7d2d9-8808-49b5-b7fe-aacd407dd5b0" nickname="List.Map" x="1280" y="87" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="662f425e-b6e6-407f-91ec-563a76b90d8e" nickname="List.Deconstruct" x="956.33279595018" y="245.008989205672" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.Deconstruct@var[]..[]" />
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="d20e81ae-19b6-4d2d-b68f-9d0ae4264189" nickname="List.FilterByBoolMask" x="1035" y="116" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.FilterByBoolMask@var[]..[],var[]..[]" />
+    <DSCore.Map type="DSCore.Map" guid="a2251b00-54d8-448b-9895-6cff292a0f00" nickname="List.Map" x="1280" y="197" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <DSCore.Map type="DSCore.Map" guid="742c9a0b-24ee-4ed1-a7e3-e9e867d14dda" nickname="List.Map" x="801" y="142" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="9b862ba4-65cf-4b19-a1db-3118b1d03550" nickname="List.IsEmpty" x="584.208496244546" y="244.030597796912" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.IsEmpty@var[]..[]" />
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="1d068d93-f09d-43e0-92f7-d808bce669b8" nickname="Python Script" x="577" y="129" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="2">
+      <Script>#python nodes in dynamo 0.7
+#proposed by Julien Benoit @jbenoit44 
+#http://aecuandme.wordpress.com/
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+# Import geometry conversion extension methods
+clr.ImportExtensions(Revit.GeometryConversion)
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+from System.Collections.Generic import *
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+uidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+
+views = []
+for i in IN[0]:
+	views.append(UnwrapElement(i))
+
+values=[]
+name=IN[1]
+
+# Start Transaction
+TransactionManager.Instance.EnsureInTransaction(doc)
+for v in views:
+	value=[]
+	for i in range(100):
+		try:
+			b=SectionType.Body
+			a=v.GetCellText(b,0,i)
+		except:
+			0
+		if a == IN[1]:
+			try:
+				for n in range(2000):
+					c=SectionType.Body
+					d=v.GetCellText(b,n,i)
+					value.append(d)
+			except:
+				0		
+	values.append(value)
+	
+# End Transaction
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT=values</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.CodeBlockNodeModel type="Dynamo.Nodes.CodeBlockNodeModel" guid="6552721e-b319-4093-bb64-9d377d4e8a00" nickname="Code Block" x="268" y="133.218333333333" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="Flatten({Item});" ShouldFocus="false" />
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="629b1b6c-1331-43c0-9a05-562e80cb598a" nickname="Input" x="-1.37138144658343" y="128.909855978844" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="ViewSchedule(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="38d859b0-bc7d-42a7-ac97-48ce46c7c16a" nickname="Output" x="1514" y="100" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Header(s)" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="0667efaf-fd2d-4588-9e97-81ee103aed2d" nickname="Output" x="1514" y="184" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Value(s)" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="76dd45a7-669a-45c1-a506-b430c5c2b540" nickname="Input" x="0" y="219" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Calc. Val. Name (string)" />
+    </Dynamo.Nodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="37e7d2d9-8808-49b5-b7fe-aacd407dd5b0" start_index="0" end="38d859b0-bc7d-42a7-ac97-48ce46c7c16a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="662f425e-b6e6-407f-91ec-563a76b90d8e" start_index="0" end="37e7d2d9-8808-49b5-b7fe-aacd407dd5b0" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="662f425e-b6e6-407f-91ec-563a76b90d8e" start_index="1" end="a2251b00-54d8-448b-9895-6cff292a0f00" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d20e81ae-19b6-4d2d-b68f-9d0ae4264189" start_index="1" end="37e7d2d9-8808-49b5-b7fe-aacd407dd5b0" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d20e81ae-19b6-4d2d-b68f-9d0ae4264189" start_index="1" end="a2251b00-54d8-448b-9895-6cff292a0f00" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a2251b00-54d8-448b-9895-6cff292a0f00" start_index="0" end="0667efaf-fd2d-4588-9e97-81ee103aed2d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="742c9a0b-24ee-4ed1-a7e3-e9e867d14dda" start_index="0" end="d20e81ae-19b6-4d2d-b68f-9d0ae4264189" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9b862ba4-65cf-4b19-a1db-3118b1d03550" start_index="0" end="742c9a0b-24ee-4ed1-a7e3-e9e867d14dda" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1d068d93-f09d-43e0-92f7-d808bce669b8" start_index="0" end="742c9a0b-24ee-4ed1-a7e3-e9e867d14dda" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1d068d93-f09d-43e0-92f7-d808bce669b8" start_index="0" end="d20e81ae-19b6-4d2d-b68f-9d0ae4264189" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6552721e-b319-4093-bb64-9d377d4e8a00" start_index="0" end="1d068d93-f09d-43e0-92f7-d808bce669b8" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="629b1b6c-1331-43c0-9a05-562e80cb598a" start_index="0" end="6552721e-b319-4093-bb64-9d377d4e8a00" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="76dd45a7-669a-45c1-a506-b430c5c2b540" start_index="0" end="1d068d93-f09d-43e0-92f7-d808bce669b8" end_index="1" portType="0" />
+  </Connectors>
+  <Notes>
+    <Dynamo.Models.NoteModel text="If same Calc val is found in multiple schedule, it will be returned as list of list." x="1189.75146450608" y="287.390793725879" />
+  </Notes>
+</Workspace>

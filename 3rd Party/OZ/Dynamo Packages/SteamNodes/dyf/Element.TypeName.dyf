@@ -1,0 +1,62 @@
+<Workspace Version="0.7.2.2921" X="30" Y="409.769736842105" zoom="1.19736842105263" Description="Get Type Name as string" Category="SteamNodes.Element" Name="Element.TypeName" ID="300d81b1-f1de-4d91-a12e-560ae39f9ac3">
+  <Elements>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="4d7029ed-263e-4a3b-b27c-88d7c2e24b39" nickname="Python Script" x="166" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="1">
+      <Script>#python nodes in dynamo 0.7
+#proposed by Julien Benoit @jbenoit44 
+#http://aecuandme.wordpress.com/
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+from System.Collections.Generic import *
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+dataEnteringNode = IN[0]
+
+#unwrap all elements to use with API
+a=UnwrapElement(IN[0])
+	
+# "Start" the transaction
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+b=a.GetType().ToString()
+
+
+# "End" the transaction
+TransactionManager.Instance.TransactionTaskDone()
+
+
+#Assign your output to the OUT variable
+OUT = b</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="9a30e7dc-d89e-49f8-be4e-96d77302b7a5" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="a0e4142a-4f73-4d51-a0a2-4fafbdaa59ea" nickname="Output" x="390" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="4d7029ed-263e-4a3b-b27c-88d7c2e24b39" start_index="0" end="a0e4142a-4f73-4d51-a0a2-4fafbdaa59ea" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9a30e7dc-d89e-49f8-be4e-96d77302b7a5" start_index="0" end="4d7029ed-263e-4a3b-b27c-88d7c2e24b39" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

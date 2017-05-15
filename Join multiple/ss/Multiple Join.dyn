@@ -1,0 +1,194 @@
+<Workspace Version="1.0.0.1180" X="192.775254580958" Y="139.318088518252" zoom="0.763346969568488" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="95d988e3-49e3-4f47-89c2-c622b2d1f3ff" type="PythonNodeModels.PythonNode" nickname="Python Script" x="359.294485556292" y="96.7537104185313" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+from System.Collections.Generic import *
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+
+#The inputs to this node will be stored as a list in the IN variables.
+dataEnteringNode = IN
+
+items1 = UnwrapElement(IN[0])
+items2 = UnwrapElement(IN[1])
+i = 0
+booleans=[]
+TransactionManager.Instance.EnsureInTransaction(doc)
+for item1 in items1:
+	try:
+		JoinGeometryUtils.JoinGeometry(doc,item1,items2)
+		booleans.append(True)
+	except:
+		booleans.append(False)
+	i += 1
+TransactionManager.Instance.TransactionTaskDone()
+
+#Assign your output to the OUT variable.
+OUT = booleans</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Nodes.DSModelElementSelection guid="d3d7c7fc-0081-4813-9cdc-a8998f6b47bc" type="Dynamo.Nodes.DSModelElementSelection" nickname="Select Model Element" x="-6.62151839149664" y="159.201201618581" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false" />
+    <Dynamo.Nodes.DSModelElementsSelection guid="e7e4594c-ac1b-4db0-a169-2f260daeac16" type="Dynamo.Nodes.DSModelElementsSelection" nickname="Select Model Elements" x="-40.0421623066394" y="12.082002161712" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false" />
+    <PythonNodeModels.PythonNode guid="abb9b009-e4d6-4178-855c-ec6d2b4bc24d" type="PythonNodeModels.PythonNode" nickname="Python Script" x="381.957506983454" y="508.557511199755" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+from System.Collections.Generic import *
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+
+#The inputs to this node will be stored as a list in the IN variables.
+dataEnteringNode = IN
+
+items1 = UnwrapElement(IN[0])
+items2 = UnwrapElement(IN[1])
+booleans=[]
+TransactionManager.Instance.EnsureInTransaction(doc)
+for item1 in items1:
+	for item2 in items2:
+		if item1.DoesIntersect(item2):
+			try:
+				JoinGeometryUtils.JoinGeometry(doc,item1,item2)
+				booleans.append(True)
+			except:
+				booleans.append(False)
+TransactionManager.Instance.TransactionTaskDone()
+
+#Assign your output to the OUT variable.
+OUT = booleans</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Nodes.DSModelElementsSelection guid="c9cf3dfe-3778-4417-b967-b6dcfd648c95" type="Dynamo.Nodes.DSModelElementsSelection" nickname="Select Model Elements" x="53.3229633031109" y="468.5031160334" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <instance id="5f164bfc-99bc-4139-ad54-a8080bf5cc11-00001ca8" />
+      <instance id="5f164bfc-99bc-4139-ad54-a8080bf5cc11-00001caa" />
+    </Dynamo.Nodes.DSModelElementsSelection>
+    <Dynamo.Nodes.DSModelElementsSelection guid="2ce30ab8-260b-46fe-8660-718330dd75d0" type="Dynamo.Nodes.DSModelElementsSelection" nickname="Select Model Elements" x="48.4170075641019" y="607.61652578997" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <instance id="5f164bfc-99bc-4139-ad54-a8080bf5cc11-00001b32" />
+      <instance id="5f164bfc-99bc-4139-ad54-a8080bf5cc11-00001c38" />
+      <instance id="5f164bfc-99bc-4139-ad54-a8080bf5cc11-00001c50" />
+    </Dynamo.Nodes.DSModelElementsSelection>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="d1f66c32-e7da-4fbd-89cc-6dbba0999802" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.FilterByBoolMask" x="1697.47378024216" y="1125.94621144451" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="DSCoreNodes.dll" function="DSCore.List.FilterByBoolMask@var[]..[],var[]..[]" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="8d0574e1-3c67-4758-bdc8-fbb326f7d843" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="&gt;" x="1475.72908018253" y="1365.04481708738" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="Operators" function="&gt;@var[]..[],var[]..[]" />
+    <CoreNodeModels.HigherOrder.Map guid="1ee3f22f-49fe-4de3-a855-22e63ca87da5" type="CoreNodeModels.HigherOrder.Map" nickname="List.Map" x="1243.33726119526" y="1363.44170429816" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="91bf779c-f8b2-42b1-b1dc-9d392b6bec3b" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1247.16201351417" y="1547.80022311645" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="1;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="2064d0bc-8049-41f2-89ea-0a1a422e83e1" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.Count" x="1002.76444597292" y="1450.81005557093" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.List.Count@var[]..[]" />
+    <CoreNodeModels.HigherOrder.Map guid="071201de-1a57-4f1b-8caf-5ed06d1104b9" type="CoreNodeModels.HigherOrder.Map" nickname="List.Map" x="850.314380544552" y="1323.50827004802" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="74902403-e022-4efd-8bb6-184c7a17fc63" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Flatten" x="721.926291978032" y="1411.0940361603" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="BuiltIn" function="Flatten@var[]..[]" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="5e0bd779-7410-4e4b-9074-416a16c2b65e" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="210.503665581753" y="1376.13528480396" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="1;" ShouldFocus="false" />
+    <Dynamo.Nodes.DSModelElementsSelection guid="99b4abe9-439b-4137-9b98-0796d8db9c15" type="Dynamo.Nodes.DSModelElementsSelection" nickname="Select Model Elements" x="-187.760399489855" y="1137.34895022526" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <instance id="5f164bfc-99bc-4139-ad54-a8080bf5cc11-00001ca8" />
+      <instance id="5f164bfc-99bc-4139-ad54-a8080bf5cc11-00001caa" />
+      <instance id="562eab4a-4ef4-45b6-b40b-2ae5527e27fd-00001d56" />
+      <instance id="562eab4a-4ef4-45b6-b40b-2ae5527e27fd-00001e0e" />
+    </Dynamo.Nodes.DSModelElementsSelection>
+    <Dynamo.Nodes.DSModelElementsSelection guid="cf7bc25e-7b17-40ee-b1ec-e8dd794838f3" type="Dynamo.Nodes.DSModelElementsSelection" nickname="Select Model Elements" x="-193.807581278619" y="1267.55250026828" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <instance id="5f164bfc-99bc-4139-ad54-a8080bf5cc11-00001b32" />
+      <instance id="5f164bfc-99bc-4139-ad54-a8080bf5cc11-00001c38" />
+      <instance id="5f164bfc-99bc-4139-ad54-a8080bf5cc11-00001c50" />
+      <instance id="562eab4a-4ef4-45b6-b40b-2ae5527e27fd-00001e07" />
+    </Dynamo.Nodes.DSModelElementsSelection>
+    <CoreNodeModels.Watch guid="f99933e4-eb4e-4f8e-92da-4abf2eeea30e" type="CoreNodeModels.Watch" nickname="Watch" x="2008.2070206361" y="962.458264192839" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" />
+    <PythonNodeModels.PythonNode guid="8462efe2-01d4-4ac7-b301-2d1945e50ccd" type="PythonNodeModels.PythonNode" nickname="Python Script" x="2802.48114691148" y="881.914164247564" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+from System.Collections.Generic import *
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+
+#The inputs to this node will be stored as a list in the IN variables.
+dataEnteringNode = IN
+
+items1 = UnwrapElement(IN[0])
+
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+booleans=[]
+
+for i in range (0,len(items1)):
+	for j in range(0,len(items1[i])):
+		try:
+			JoinGeometryUtils.JoinGeometry(doc,items1[i][0],items1[i][j])
+			booleans.append(True)
+		except:
+			booleans.append(False)
+
+TransactionManager.Instance.TransactionTaskDone()
+
+#Assign your output to the OUT variable.
+OUT = booleans</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="c7069a16-6895-4a7b-b7dd-aed8958a8651" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Tool.GetSurroundingElements" x="474.456495903861" y="1171.97965030306" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <ID value="12c4cde0-3fe8-4a48-ae7e-74202be5c2b8" />
+      <Name value="Tool.GetSurroundingElements" />
+      <Description value="Get Surrounding Elements by Categories, group them  as  List. Tolerance distance available." />
+      <Inputs>
+        <Input value="Element" />
+        <Input value="ElementCheck" />
+        <Input value="Tolerance" />
+      </Inputs>
+      <Outputs>
+        <Output value="Set of elements" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="66e6f91f-51ce-40b6-a670-3e1391a51287" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Element.JoinGeometry" x="2546.18278293616" y="1050.28104642433" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <ID value="38d2b003-a570-4fc4-9836-4e10befcd4fc" />
+      <Name value="Element.JoinGeometry" />
+      <Description value="Joins two model elements (if possible). Only works inside the project environment." />
+      <Inputs>
+        <Input value="element1" />
+        <Input value="element2" />
+      </Inputs>
+      <Outputs>
+        <Output value="bool" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="d3d7c7fc-0081-4813-9cdc-a8998f6b47bc" start_index="0" end="95d988e3-49e3-4f47-89c2-c622b2d1f3ff" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="e7e4594c-ac1b-4db0-a169-2f260daeac16" start_index="0" end="95d988e3-49e3-4f47-89c2-c622b2d1f3ff" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="d1f66c32-e7da-4fbd-89cc-6dbba0999802" start_index="0" end="f99933e4-eb4e-4f8e-92da-4abf2eeea30e" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="d1f66c32-e7da-4fbd-89cc-6dbba0999802" start_index="0" end="8462efe2-01d4-4ac7-b301-2d1945e50ccd" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="8d0574e1-3c67-4758-bdc8-fbb326f7d843" start_index="0" end="d1f66c32-e7da-4fbd-89cc-6dbba0999802" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="1ee3f22f-49fe-4de3-a855-22e63ca87da5" start_index="0" end="8d0574e1-3c67-4758-bdc8-fbb326f7d843" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="91bf779c-f8b2-42b1-b1dc-9d392b6bec3b" start_index="0" end="8d0574e1-3c67-4758-bdc8-fbb326f7d843" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="2064d0bc-8049-41f2-89ea-0a1a422e83e1" start_index="0" end="1ee3f22f-49fe-4de3-a855-22e63ca87da5" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="74902403-e022-4efd-8bb6-184c7a17fc63" start_index="0" end="071201de-1a57-4f1b-8caf-5ed06d1104b9" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="5e0bd779-7410-4e4b-9074-416a16c2b65e" start_index="0" end="c7069a16-6895-4a7b-b7dd-aed8958a8651" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="99b4abe9-439b-4137-9b98-0796d8db9c15" start_index="0" end="c7069a16-6895-4a7b-b7dd-aed8958a8651" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="cf7bc25e-7b17-40ee-b1ec-e8dd794838f3" start_index="0" end="c7069a16-6895-4a7b-b7dd-aed8958a8651" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c7069a16-6895-4a7b-b7dd-aed8958a8651" start_index="0" end="071201de-1a57-4f1b-8caf-5ed06d1104b9" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c7069a16-6895-4a7b-b7dd-aed8958a8651" start_index="0" end="1ee3f22f-49fe-4de3-a855-22e63ca87da5" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c7069a16-6895-4a7b-b7dd-aed8958a8651" start_index="0" end="d1f66c32-e7da-4fbd-89cc-6dbba0999802" end_index="0" portType="0" />
+  </Connectors>
+  <Notes>
+    <Dynamo.Graph.Notes.NoteModel guid="a01d456f-37a8-4943-a9a3-4ebb20b3a38d" text="Select Multiple Walls" x="11.3303456155843" y="-27.0011908967846" />
+    <Dynamo.Graph.Notes.NoteModel guid="e53cb033-8315-4c95-ab61-889e0ad34770" text="Select One Floor" x="48.0925424397688" y="123.028315061374" />
+    <Dynamo.Graph.Notes.NoteModel guid="34a1fd92-8f9a-4515-94e7-cdd3c66e525d" text="Select Multiple Floors" x="99.9528580476999" y="567.09125445517" />
+    <Dynamo.Graph.Notes.NoteModel guid="a3c1a456-7e50-40fd-8138-951bde44b3c9" text="Select Multiple Walls" x="63.1906612235149" y="416.14110987889" />
+    <Dynamo.Graph.Notes.NoteModel guid="3a5d7957-6f93-4b05-8c10-2ce2dc8cce64" text="Select Element to be Joined to" x="-189.569520312623" y="1238.04354801862" />
+    <Dynamo.Graph.Notes.NoteModel guid="e28e7343-22df-4a92-873b-6f22ee9a5f3d" text="Select Element to be Joined" x="-161.795228879333" y="1102.15191736908" />
+  </Notes>
+  <Annotations>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="21e753e2-033f-4713-9672-a53dadb12681" annotationText="SteamNodes" left="464.456495903861" top="1141.97965030306" width="254" height="175" fontSize="14" InitialTop="1171.97965030306" InitialHeight="175" TextblockHeight="20" backgrouund="#FFC1D676">
+      <Models ModelGuid="c7069a16-6895-4a7b-b7dd-aed8958a8651" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+  </Annotations>
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

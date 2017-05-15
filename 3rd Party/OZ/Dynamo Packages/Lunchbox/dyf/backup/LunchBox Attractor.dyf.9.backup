@@ -1,0 +1,65 @@
+<Workspace Version="0.7.1.29946" X="253.35" Y="84.5375" zoom="1.1575" Description="Simple distance-based attractor calculation" Category="LunchBox.Generate.Attractor" Name="LunchBox Attractor" ID="9de45a66-3ad7-4cb5-9407-4246a9c5c1cf">
+  <Elements>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="c5b5c1d2-9413-4e6e-b933-39f5882c1653" nickname="Math.RemapRange" x="453.80799903813" y="98.986685295316" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.Math.RemapRange@double[],double,double">
+      <PortInfo index="1" default="True" />
+      <PortInfo index="2" default="True" />
+    </Dynamo.Nodes.DSFunction>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="171cd159-72c9-4d90-803f-751233514162" nickname="Python Script" x="250" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="2">
+      <Script>#Copyright(c) 2014, Nathan Miller
+# The Proving Ground, http://theprovingground.org
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+import math
+
+#The input to this node will be stored in the IN[0] variable.
+list = IN[0]
+tar = IN[1]
+
+distList = []
+
+att = []
+if hasattr(list, "__iter__"):
+    for i in range(0,len(list)):
+		att.append(list[i])
+else:
+    att.append(list)
+
+for i in range(0,len(tar)):
+	myTarget = tar[i]
+	distance = 0
+	vector = Point.ByCoordinates(0,0,0)
+	for j in range(0,len(att)):
+		distance = distance + att[j].DistanceTo(myTarget)
+	avg = distance/len(att)
+	distList.append(avg)
+
+#Assign your output to the OUT variable
+OUT = distList</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="bf87ee3d-beff-4115-a72e-002ef708693d" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Attractors" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="c8bf4d66-7c03-4baa-ae9d-40e089d59836" nickname="Input" x="0" y="150" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Targets" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="15ee4d35-fc39-44f7-a61f-e3d29a8ce4e0" nickname="Input" x="0" y="300" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Min" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="e838a98f-5f8c-4e51-827d-b8711e953eb8" nickname="Input" x="0" y="450" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Max" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="c46e5e0b-489f-48c7-a197-eba66a04911e" nickname="Output" x="690.80799903813" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="var[]..[]" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="c5b5c1d2-9413-4e6e-b933-39f5882c1653" start_index="0" end="c46e5e0b-489f-48c7-a197-eba66a04911e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="171cd159-72c9-4d90-803f-751233514162" start_index="0" end="c5b5c1d2-9413-4e6e-b933-39f5882c1653" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="bf87ee3d-beff-4115-a72e-002ef708693d" start_index="0" end="171cd159-72c9-4d90-803f-751233514162" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c8bf4d66-7c03-4baa-ae9d-40e089d59836" start_index="0" end="171cd159-72c9-4d90-803f-751233514162" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="15ee4d35-fc39-44f7-a61f-e3d29a8ce4e0" start_index="0" end="c5b5c1d2-9413-4e6e-b933-39f5882c1653" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e838a98f-5f8c-4e51-827d-b8711e953eb8" start_index="0" end="c5b5c1d2-9413-4e6e-b933-39f5882c1653" end_index="2" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

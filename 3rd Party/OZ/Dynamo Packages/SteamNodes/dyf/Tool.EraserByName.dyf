@@ -1,0 +1,88 @@
+<Workspace Version="0.7.2.2921" X="-1095" Y="196.466424174594" zoom="0.85170677112479" Description="erase things in a list, selected by the name" Category="SteamNodes.Tool" Name="Tool.EraserByName" ID="4f1b48d9-2d6e-4a2b-906f-6342856c007f">
+  <Elements>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="963a9349-2ba9-46d5-8f45-bf8b0d1dbc1e" nickname="List.FilterByBoolMask" x="1252" y="38" isVisible="true" isUpstreamVisible="true" lacing="Longest" assembly="DSCoreNodes.dll" function="DSCore.List.FilterByBoolMask@var[]..[],var[]..[]" />
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="bbf3077f-2a85-4625-9e7a-677f330ecc16" nickname="String.Contains" x="993" y="64" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.String.Contains@string,string,bool">
+      <PortInfo index="2" default="True" />
+    </Dynamo.Nodes.DSFunction>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="779695af-1192-4e99-a80e-c81b932c9dc4" nickname="Python Script" x="1497" y="8.99999999999999" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="1">
+      <Script>#python nodes in dynamo 0.7
+#proposed by Julien Benoit @jbenoit44 
+#http://aecuandme.wordpress.com/
+
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+# Import geometry conversion extension methods
+clr.ImportExtensions(Revit.GeometryConversion)
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+from System.Collections.Generic import *
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+elt = []
+for i in IN[0]:
+	elt.append(UnwrapElement(i).Id)
+
+# Start Transaction
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+
+cantdelete=[]
+for item in elt:
+	try:
+		doc.Delete(item)
+	except:
+		cantdelete.append(item)
+		
+
+# End Transaction
+TransactionManager.Instance.TransactionTaskDone()
+doc.Regenerate()
+OUT=cantdelete</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="0dde635c-df5b-43f2-89ee-da60ae0613bb" nickname="Element.Name" x="766.134034165572" y="9.99080157687246" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="RevitNodes.dll" function="Revit.Elements.Element.Name" />
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="dfd93954-28aa-441d-85c9-333a155e9a10" nickname="Output" x="1721" y="8.99999999999999" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Cant Delete" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="b0a84a98-3d6a-4ac4-92b2-5aae317980ae" nickname="Output" x="1721" y="93" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Not Matching" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="371a4a0c-22c1-445a-a038-88ed9649b574" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Things" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="6abe0f35-02b1-4c96-9cbf-81ed3b633008" nickname="Input" x="0" y="83" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Contains this string" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="fec258df-7eeb-4916-86f8-7491e212d195" nickname="Input" x="0" y="167" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Ignore Case (bool)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.CodeBlockNodeModel type="Dynamo.Nodes.CodeBlockNodeModel" guid="9f7212cd-6f38-4de9-b1d0-c16f11e53fb8" nickname="Code Block" x="248" y="44" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="Flatten({item});" ShouldFocus="false" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="963a9349-2ba9-46d5-8f45-bf8b0d1dbc1e" start_index="0" end="779695af-1192-4e99-a80e-c81b932c9dc4" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="963a9349-2ba9-46d5-8f45-bf8b0d1dbc1e" start_index="1" end="b0a84a98-3d6a-4ac4-92b2-5aae317980ae" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="bbf3077f-2a85-4625-9e7a-677f330ecc16" start_index="0" end="963a9349-2ba9-46d5-8f45-bf8b0d1dbc1e" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="779695af-1192-4e99-a80e-c81b932c9dc4" start_index="0" end="dfd93954-28aa-441d-85c9-333a155e9a10" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0dde635c-df5b-43f2-89ee-da60ae0613bb" start_index="0" end="bbf3077f-2a85-4625-9e7a-677f330ecc16" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="371a4a0c-22c1-445a-a038-88ed9649b574" start_index="0" end="9f7212cd-6f38-4de9-b1d0-c16f11e53fb8" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6abe0f35-02b1-4c96-9cbf-81ed3b633008" start_index="0" end="bbf3077f-2a85-4625-9e7a-677f330ecc16" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="fec258df-7eeb-4916-86f8-7491e212d195" start_index="0" end="bbf3077f-2a85-4625-9e7a-677f330ecc16" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9f7212cd-6f38-4de9-b1d0-c16f11e53fb8" start_index="0" end="963a9349-2ba9-46d5-8f45-bf8b0d1dbc1e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9f7212cd-6f38-4de9-b1d0-c16f11e53fb8" start_index="0" end="0dde635c-df5b-43f2-89ee-da60ae0613bb" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

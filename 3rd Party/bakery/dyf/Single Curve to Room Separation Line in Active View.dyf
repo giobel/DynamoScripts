@@ -1,0 +1,53 @@
+<Workspace Version="0.9.2.4472" X="50.19" Y="140.12" zoom="0.8425" Name="Single Curve to Room Separation Line in Active View" Description="view should be a Plan View" ID="26238d52-01f3-4313-9aaa-999aaddfc43b" Category="Bakery.Rooms">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="e471754c-711b-4356-a2de-22f41e27513c" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Document.Current" x="250" y="86.8660660157175" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" assembly="RevitNodes.dll" function="Revit.Application.Document.Current" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="a21fca37-cf6c-41c0-9c2f-ba222951c51f" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Document.ActiveView" x="413.422266735541" y="81.3383061919287" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" assembly="RevitNodes.dll" function="Revit.Application.Document.ActiveView" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="6f4c24c6-2816-421d-af14-09528eab3f25" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="SketchPlane.ByPlane" x="631.197975633887" y="200.333021973631" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" assembly="RevitNodes.dll" function="Revit.Elements.SketchPlane.ByPlane@Autodesk.DesignScript.Geometry.Plane" />
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="4e509304-98a1-4063-93d8-e0ea178a3361" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="View.Plane" x="408.088792570575" y="219.4566662362" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false">
+      <ID value="d6dbde59-f3f7-47b5-9e1e-f30991f58ac1" />
+      <Name value="View.Plane" />
+      <Description value="Retrieves the plane of a given view" />
+      <Inputs>
+        <Input value="view" />
+      </Inputs>
+      <Outputs>
+        <Output value="plane" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="816d41db-b9de-49ef-af45-bffea6330743" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="RoomSeparator.FromCurve" x="670.562488618111" y="0" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false">
+      <ID value="c68c0799-65c3-42f4-b8ba-93a248013d35" />
+      <Name value="RoomSeparator.FromCurve" />
+      <Description value="Creates room separation lines from geometry curves. " />
+      <Inputs>
+        <Input value="curve" />
+        <Input value="sketchPlane" />
+        <Input value="view" />
+      </Inputs>
+      <Outputs>
+        <Output value="roomSeparator" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="62f70438-f48c-40a6-b95c-fe2f8e9930a6" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false">
+      <Symbol value="curve : Curve" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="f12834b2-7765-4e95-a84c-4a094fe170c6" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="975.562488618111" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false">
+      <Symbol value="roomSeparator" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="e471754c-711b-4356-a2de-22f41e27513c" start_index="0" end="a21fca37-cf6c-41c0-9c2f-ba222951c51f" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="a21fca37-cf6c-41c0-9c2f-ba222951c51f" start_index="0" end="816d41db-b9de-49ef-af45-bffea6330743" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="a21fca37-cf6c-41c0-9c2f-ba222951c51f" start_index="0" end="4e509304-98a1-4063-93d8-e0ea178a3361" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="6f4c24c6-2816-421d-af14-09528eab3f25" start_index="0" end="816d41db-b9de-49ef-af45-bffea6330743" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="4e509304-98a1-4063-93d8-e0ea178a3361" start_index="0" end="6f4c24c6-2816-421d-af14-09528eab3f25" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="816d41db-b9de-49ef-af45-bffea6330743" start_index="0" end="f12834b2-7765-4e95-a84c-4a094fe170c6" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="62f70438-f48c-40a6-b95c-fe2f8e9930a6" start_index="0" end="816d41db-b9de-49ef-af45-bffea6330743" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

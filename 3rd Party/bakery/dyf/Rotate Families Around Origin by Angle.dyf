@@ -1,0 +1,91 @@
+<Workspace Version="0.8.0.950" X="48.6222179283297" Y="25.5194439023974" zoom="0.725965249380776" Name="Rotate Families Around Origin by Angle" ID="70dfb57b-d3c0-449f-83e2-44e6ee85b61e" Description="this will take Family Instance and angles as list inputs, and rotate Families around their origin. Outputs provide feedback on information used." Category="Bakery.Families">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.DSFunction guid="732b82b8-8ce4-41f6-8252-d360e4d3bdab" type="Dynamo.Nodes.DSFunction" nickname="FamilyInstance.Location" x="263.756266205704" y="-167.383318928263" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="RevitNodes.dll" function="Revit.Elements.FamilyInstance.Location" />
+    <Dynamo.Nodes.Symbol guid="0c58eda5-0630-462c-b735-165dde85eebb" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="259.25" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="FamilyElement" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.DSFunction guid="9a159930-e67e-4064-ba37-ef5ddfee644e" type="Dynamo.Nodes.DSFunction" nickname="Line.ByStartPointEndPoint" x="1114.0345721694" y="-120.535868625756" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Line.ByStartPointEndPoint@Autodesk.DesignScript.Geometry.Point,Autodesk.DesignScript.Geometry.Point" />
+    <Dynamo.Nodes.DSFunction guid="7ec24822-4609-4337-9492-0ece094580f4" type="Dynamo.Nodes.DSFunction" nickname="Math.DegreesToRadians" x="983.401037165082" y="569.451166810717" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.Math.DegreesToRadians@double" />
+    <Dynamo.Nodes.Function guid="ed3838b7-ed98-4fc6-80a0-da3cdeb15065" type="Dynamo.Nodes.Function" nickname="Element Ids" x="766" y="349" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="7e1e91a7-1b83-41a1-9ba7-27fb81ab3f0b" />
+      <Name value="Element Ids" />
+      <Description value="This node will query an element id that can be used with Revit nodes. Dynamo Element Id node returns integer value. " />
+      <Inputs>
+        <Input value="Element(s)" />
+      </Inputs>
+      <Outputs>
+        <Output value="Rvt ElementId(s)" />
+        <Output value="Id String(s)" />
+        <Output value="GUID(s)" />
+        <Output value="Integer(s)" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="0a729fe7-f349-4d70-a5bb-71a181a5101e" type="Dynamo.Nodes.Function" nickname="Rotate Family" x="1405.77355229041" y="309.783059636992" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="369d0d18-cc8b-4e68-9794-adb7c19f2c91" />
+      <Name value="Rotate Family" />
+      <Description value="This node will rotate a family in Revit around a given axis by supplied angle (in radians). Please remember that every time you run your definition it will rotate family by given angle every time. " />
+      <Inputs>
+        <Input value="ElementId" />
+        <Input value="Axis" />
+        <Input value="Angle" />
+      </Inputs>
+      <Outputs>
+        <Output value="Family" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="64b11fd5-5d96-4108-b394-806e42d2b503" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="464" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="DegreesToRotate" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="85c92e0c-c41a-4c84-bfb2-b1e792a91f6c" type="Dynamo.Nodes.Output" nickname="Output" x="1632" y="357" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="RotatedItems" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="efa1ebba-8727-493b-adb0-11dd50d6d850" type="Dynamo.Nodes.Output" nickname="Output" x="1635.1477960242" y="-258.119273984443" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="InstanceOriginPoint" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="6a4fc0f7-a2f1-400d-a8bf-cfee471cad69" type="Dynamo.Nodes.Output" nickname="Output" x="1632" y="441" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Ids" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.DSFunction guid="643ad286-4d52-4979-af52-7a905cfda8c8" type="Dynamo.Nodes.DSFunction" nickname="Flatten" x="1092" y="356" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="" function="Flatten@var[]..[]" />
+    <Dynamo.Nodes.Output guid="ff48a317-c457-4926-ba2d-c84443766582" type="Dynamo.Nodes.Output" nickname="Output" x="1632" y="83" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="AxisUsed" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="86bcff25-d50e-4822-874f-ad8d4c6464cd" type="Dynamo.Nodes.Output" nickname="Output" x="1632" y="166" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="PointProjectedToMakeAxis" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.DSFunction guid="3a5a5910-4f37-4a44-a84a-2c96fb9689d5" type="Dynamo.Nodes.DSFunction" nickname="Point.ByCoordinates" x="868.303370786517" y="25.3885047536733" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Point.ByCoordinates@double,double,double">
+      <PortInfo index="0" default="True" />
+      <PortInfo index="1" default="True" />
+      <PortInfo index="2" default="True" />
+    </Dynamo.Nodes.DSFunction>
+    <Dynamo.Nodes.DSFunction guid="8b59893a-614f-4823-87b3-89b1bd618273" type="Dynamo.Nodes.DSFunction" nickname="Point.X" x="521" y="105.5" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Point.X" />
+    <Dynamo.Nodes.DSFunction guid="dcf1e7eb-9386-4550-b1ff-0344b6a680fd" type="Dynamo.Nodes.DSFunction" nickname="Point.Y" x="521" y="213.5" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Point.Y" />
+    <Dynamo.Nodes.DSFunction guid="5bd191f1-1cfc-4c9b-a831-370748f8bfad" type="Dynamo.Nodes.DSFunction" nickname="Math.Sum" x="517.8522039758" y="406.490492653414" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.Math.Sum@double[]" />
+    <Dynamo.Nodes.DoubleInput guid="3ece7c62-2140-4aee-b8d6-3ab719cd07e9" type="Dynamo.Nodes.DoubleInput" nickname="Number" x="0" y="343.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Double value="-2000.000" />
+    </Dynamo.Nodes.DoubleInput>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="732b82b8-8ce4-41f6-8252-d360e4d3bdab" start_index="0" end="9a159930-e67e-4064-ba37-ef5ddfee644e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="732b82b8-8ce4-41f6-8252-d360e4d3bdab" start_index="0" end="efa1ebba-8727-493b-adb0-11dd50d6d850" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="732b82b8-8ce4-41f6-8252-d360e4d3bdab" start_index="0" end="8b59893a-614f-4823-87b3-89b1bd618273" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="732b82b8-8ce4-41f6-8252-d360e4d3bdab" start_index="0" end="dcf1e7eb-9386-4550-b1ff-0344b6a680fd" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0c58eda5-0630-462c-b735-165dde85eebb" start_index="0" end="ed3838b7-ed98-4fc6-80a0-da3cdeb15065" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0c58eda5-0630-462c-b735-165dde85eebb" start_index="0" end="732b82b8-8ce4-41f6-8252-d360e4d3bdab" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9a159930-e67e-4064-ba37-ef5ddfee644e" start_index="0" end="0a729fe7-f349-4d70-a5bb-71a181a5101e" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9a159930-e67e-4064-ba37-ef5ddfee644e" start_index="0" end="ff48a317-c457-4926-ba2d-c84443766582" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="7ec24822-4609-4337-9492-0ece094580f4" start_index="0" end="0a729fe7-f349-4d70-a5bb-71a181a5101e" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ed3838b7-ed98-4fc6-80a0-da3cdeb15065" start_index="1" end="643ad286-4d52-4979-af52-7a905cfda8c8" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0a729fe7-f349-4d70-a5bb-71a181a5101e" start_index="0" end="85c92e0c-c41a-4c84-bfb2-b1e792a91f6c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="64b11fd5-5d96-4108-b394-806e42d2b503" start_index="0" end="7ec24822-4609-4337-9492-0ece094580f4" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="643ad286-4d52-4979-af52-7a905cfda8c8" start_index="0" end="0a729fe7-f349-4d70-a5bb-71a181a5101e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="643ad286-4d52-4979-af52-7a905cfda8c8" start_index="0" end="6a4fc0f7-a2f1-400d-a8bf-cfee471cad69" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3a5a5910-4f37-4a44-a84a-2c96fb9689d5" start_index="0" end="86bcff25-d50e-4822-874f-ad8d4c6464cd" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3a5a5910-4f37-4a44-a84a-2c96fb9689d5" start_index="0" end="9a159930-e67e-4064-ba37-ef5ddfee644e" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="8b59893a-614f-4823-87b3-89b1bd618273" start_index="0" end="3a5a5910-4f37-4a44-a84a-2c96fb9689d5" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="dcf1e7eb-9386-4550-b1ff-0344b6a680fd" start_index="0" end="3a5a5910-4f37-4a44-a84a-2c96fb9689d5" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="5bd191f1-1cfc-4c9b-a831-370748f8bfad" start_index="0" end="3a5a5910-4f37-4a44-a84a-2c96fb9689d5" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3ece7c62-2140-4aee-b8d6-3ab719cd07e9" start_index="0" end="5bd191f1-1cfc-4c9b-a831-370748f8bfad" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

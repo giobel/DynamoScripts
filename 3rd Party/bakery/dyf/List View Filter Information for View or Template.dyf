@@ -1,0 +1,75 @@
+<Workspace Version="0.8.2.2371" X="-224.278029789934" Y="254.166670540261" zoom="1.02988563947099" Name="List View Filter Information for View or Template" Description="use with List.Map" ID="19d4c809-362f-43dd-b865-8489704a8a63" Category="Bakery.Views">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Symbol guid="bbd70e74-d497-406e-ab7c-4499b8855df3" type="Dynamo.Nodes.Symbol" nickname="Input" x="10" y="10.3892355694229" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="View(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Function guid="9dc19043-662c-4edc-8906-4c98c53e0898" type="Dynamo.Nodes.Function" nickname="Turn Into List" x="160.069422776911" y="72.7012480499222" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="var[]" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSIronPythonNode.PythonNode guid="02cce8e2-4b59-4a0a-88f0-344e98f4d1f8" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="378.150527344304" y="75.7742564800206" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+views = UnwrapElement(IN[0])
+elementlist = list()
+
+collector = FilteredElementCollector(doc)
+filters = collector.OfClass(FilterElement).ToElements()
+viewNameList = list()
+filterList = []
+filterIdList = []
+filterEntities = []
+filtersHidden = []
+filterOverrides = []
+filterOverridesCutFillColor = []
+for view in views:
+	try:
+		viewNameList.append(view.Name)
+		thisfilter = False
+		for filter in filters:
+			if view.IsFilterApplied(filter.Id):
+				thisfilter = True
+				filterList.append(filter.Name)
+				filterIdList.append(filter.Id)
+				filterEntities.append(filter)
+				filtersHidden.append(view.GetFilterVisibility(filter.Id))
+				filterOverrides.append(view.GetFilterOverrides(filter.Id))
+		if thisfilter:
+			elementlist.append(True)
+		else:
+			elementlist.append(False)
+	except:
+		elementlist.append(False)
+OUT = viewNameList, elementlist, filterList, filterIdList, filterEntities, filtersHidden, filterOverrides</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Output guid="2d33b04b-f2f7-4150-9b64-8742bc26d263" type="Dynamo.Nodes.Output" nickname="Output" x="781.822968718557" y="-94.3348062567082" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="oneOutput" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="bbd70e74-d497-406e-ab7c-4499b8855df3" start_index="0" end="9dc19043-662c-4edc-8906-4c98c53e0898" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9dc19043-662c-4edc-8906-4c98c53e0898" start_index="0" end="02cce8e2-4b59-4a0a-88f0-344e98f4d1f8" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="02cce8e2-4b59-4a0a-88f0-344e98f4d1f8" start_index="0" end="2d33b04b-f2f7-4150-9b64-8742bc26d263" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

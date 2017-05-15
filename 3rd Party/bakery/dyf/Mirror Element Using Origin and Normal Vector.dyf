@@ -1,0 +1,106 @@
+<Workspace Version="0.8.0.950" X="-465.386623826201" Y="8.33456146058897" zoom="0.643176972789841" Name="Mirror Element Using Origin and Normal Vector" ID="c47c3665-8be8-4750-8b2c-cbb3ab72ee34" Description="" Category="Bakery.Elements">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.DSFunction guid="dc2d240f-d122-4a97-96d9-cf3714dc837a" type="Dynamo.Nodes.DSFunction" nickname="Flatten" x="250" y="171.419904356842" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="" function="Flatten@var[]..[]" />
+    <Dynamo.Nodes.StringInput guid="d4894d5b-a92e-4ce5-8ec5-a0ccd16d72ab" type="Dynamo.Nodes.StringInput" nickname="String" x="343.735047295292" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.String>Delete Mirror Originals</System.String>
+      <System.String value="Delete Mirror Originals" />
+    </Dynamo.Nodes.StringInput>
+    <Dynamo.Nodes.Function guid="901f5d02-2db7-4fa0-a70d-10a455c19c76" type="Dynamo.Nodes.Function" nickname="HostedObject.FacingOrientation" x="231.097005076761" y="335.280587293761" isVisible="true" isUpstreamVisible="true" lacing="Shortest">
+      <ID value="0f1e972c-690f-466a-a6e4-8eff98dcdbef" />
+      <Name value="HostedObject.FacingOrientation" />
+      <Description value="Gets the facing orientation of a hosted object (e.g. a window or a door)" />
+      <Inputs>
+        <Input value="element(s)" />
+      </Inputs>
+      <Outputs>
+        <Output value="Vector(s)" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.DSFunction guid="514d928b-7a1c-47db-a1f4-9b9f51d971f0" type="Dynamo.Nodes.DSFunction" nickname="Plane.ByOriginNormal" x="908.558302945289" y="507.91581150313" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Plane.ByOriginNormal@Autodesk.DesignScript.Geometry.Point,Autodesk.DesignScript.Geometry.Vector" />
+    <Dynamo.Nodes.Function guid="c579f58b-9972-4112-8506-e7523c1c23ac" type="Dynamo.Nodes.Function" nickname="SelectionSet.ByElements" x="641.848337080024" y="13.1086850780932" isVisible="true" isUpstreamVisible="true" lacing="Shortest">
+      <ID value="abdd4174-8c8f-45ae-90a4-ffa3b369941b" />
+      <Name value="SelectionSet.ByElements" />
+      <Description value="Creates a selections set of the given elements. Note that if a selection set of the given name already exists in the model, its contents will be replaced. Also, if the selection set is already applied as a view filter, the view filter will have to be manually updated in the visibility / graphic overrides." />
+      <Inputs>
+        <Input value="Name" />
+        <Input value="Element(s)" />
+      </Inputs>
+      <Outputs>
+        <Output value="SelectionSet" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="f77c5d25-fd84-4a89-b8bb-7ffc444e1e6a" type="Dynamo.Nodes.Function" nickname="Element.Location" x="310.262655465595" y="650.023255338036" isVisible="true" isUpstreamVisible="true" lacing="Shortest">
+      <ID value="0b59c4d8-afe4-4063-bf7e-2195fa33e8a9" />
+      <Name value="Element.Location" />
+      <Description value="Returns the location of an element as an XYZ (or if it's line-based the start and end point of the line), along with some booleans to help filtering the results. Use this for some element types (e.g. walls or lines) that do not work with the built-in Get Family Instance Location node. " />
+      <Inputs>
+        <Input value="Element(s)" />
+      </Inputs>
+      <Outputs>
+        <Output value="Points" />
+        <Output value="Curve Endpoints" />
+        <Output value="Curves" />
+        <Output value="Is Point" />
+        <Output value="Is Curve" />
+        <Output value="Has Location" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="1bd1899e-1f27-48e9-8af0-64b93d6d2b0b" type="Dynamo.Nodes.Function" nickname="Mirror an Element" x="1004.44381433208" y="151.944784804817" isVisible="true" isUpstreamVisible="true" lacing="Shortest">
+      <ID value="888c2901-ed8c-4bb1-a658-7749481fe527" />
+      <Name value="Mirror an Element" />
+      <Description value="using python" />
+      <Inputs>
+        <Input value="elementList" />
+        <Input value="planeList" />
+      </Inputs>
+      <Outputs>
+        <Output value="Out" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Output guid="757faf0f-04b1-4351-b9ee-0adbeebdf154" type="Dynamo.Nodes.Output" nickname="Output" x="1236.77714766542" y="900" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Done" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Symbol guid="a302fbd6-a2bd-471e-abe8-72578e35813b" type="Dynamo.Nodes.Symbol" nickname="Input" x="34.0089052203474" y="16.510775908216" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="elementsToMirror" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Function guid="6937bc5f-2e11-41ef-9ca7-e51ff91c4abc" type="Dynamo.Nodes.Function" nickname="HostedObject.HandOrientation" x="221.409810227211" y="496.608321747584" isVisible="true" isUpstreamVisible="true" lacing="Shortest">
+      <ID value="f35a4902-48b5-40f2-8d0a-98edae74a72b" />
+      <Name value="HostedObject.HandOrientation" />
+      <Description value="Gets the hand orientation of a hosted object (e.g. a window or a door)" />
+      <Inputs>
+        <Input value="element(s)" />
+      </Inputs>
+      <Outputs>
+        <Output value="Vector(s)" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.DSFunction guid="a1d868a1-d386-413b-bf2a-c25735e44a40" type="Dynamo.Nodes.DSFunction" nickname="List.GetItemAtIndex" x="634.583106097631" y="366.060340926362" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <DSCoreNodesUI.CreateList guid="4603c8cb-0b3b-46ef-b138-3bc8749a2644" type="DSCoreNodesUI.CreateList" nickname="List.Create" x="470.752305633163" y="404.160527080889" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="2" />
+    <Dynamo.Nodes.Symbol guid="233e5fff-2fb0-4cd8-be92-faf82da16857" type="Dynamo.Nodes.Symbol" nickname="Input" x="-86.1130609500864" y="346.570295847725" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Facing0orHand1" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="6809754f-8e59-452b-bfec-f7a42b844e2a" type="Dynamo.Nodes.Output" nickname="Output" x="1382.51554433147" y="390.186710880004" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Selection Set" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="dc2d240f-d122-4a97-96d9-cf3714dc837a" start_index="0" end="901f5d02-2db7-4fa0-a70d-10a455c19c76" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="dc2d240f-d122-4a97-96d9-cf3714dc837a" start_index="0" end="f77c5d25-fd84-4a89-b8bb-7ffc444e1e6a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="dc2d240f-d122-4a97-96d9-cf3714dc837a" start_index="0" end="1bd1899e-1f27-48e9-8af0-64b93d6d2b0b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="dc2d240f-d122-4a97-96d9-cf3714dc837a" start_index="0" end="c579f58b-9972-4112-8506-e7523c1c23ac" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="dc2d240f-d122-4a97-96d9-cf3714dc837a" start_index="0" end="6937bc5f-2e11-41ef-9ca7-e51ff91c4abc" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d4894d5b-a92e-4ce5-8ec5-a0ccd16d72ab" start_index="0" end="c579f58b-9972-4112-8506-e7523c1c23ac" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="901f5d02-2db7-4fa0-a70d-10a455c19c76" start_index="0" end="4603c8cb-0b3b-46ef-b138-3bc8749a2644" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="514d928b-7a1c-47db-a1f4-9b9f51d971f0" start_index="0" end="1bd1899e-1f27-48e9-8af0-64b93d6d2b0b" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c579f58b-9972-4112-8506-e7523c1c23ac" start_index="0" end="6809754f-8e59-452b-bfec-f7a42b844e2a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f77c5d25-fd84-4a89-b8bb-7ffc444e1e6a" start_index="0" end="514d928b-7a1c-47db-a1f4-9b9f51d971f0" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1bd1899e-1f27-48e9-8af0-64b93d6d2b0b" start_index="0" end="757faf0f-04b1-4351-b9ee-0adbeebdf154" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a302fbd6-a2bd-471e-abe8-72578e35813b" start_index="0" end="dc2d240f-d122-4a97-96d9-cf3714dc837a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6937bc5f-2e11-41ef-9ca7-e51ff91c4abc" start_index="0" end="4603c8cb-0b3b-46ef-b138-3bc8749a2644" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a1d868a1-d386-413b-bf2a-c25735e44a40" start_index="0" end="514d928b-7a1c-47db-a1f4-9b9f51d971f0" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4603c8cb-0b3b-46ef-b138-3bc8749a2644" start_index="0" end="a1d868a1-d386-413b-bf2a-c25735e44a40" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="233e5fff-2fb0-4cd8-be92-faf82da16857" start_index="0" end="a1d868a1-d386-413b-bf2a-c25735e44a40" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

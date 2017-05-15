@@ -1,0 +1,65 @@
+<Workspace Version="0.7.2.2921" X="30" Y="189.590909090909" zoom="0.596285434995112" Description="List A-B / List Intersection / List symmetric difference" Category="SteamNodes.List" Name="List.Operations" ID="5f657175-9062-456c-a507-e52ed24e1543">
+  <Elements>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="cedc30b0-b6de-4c84-81b3-a3710fe9c443" nickname="List.GetItemAtIndex" x="403" y="0" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="db571e20-9019-4d90-882e-f35d75b7c349" nickname="List.GetItemAtIndex" x="403" y="268" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="d8670200-bbe7-4e24-8bd0-b2906a9428f6" nickname="List.GetItemAtIndex" x="403" y="134" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="9f8caba8-2f5a-48c1-bee6-b1f1169b1a33" nickname="Python Script" x="179" y="134" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="2">
+      <Script>#python nodes in dynamo 0.7
+#proposed by Julien Benoit @jbenoit44 
+#http://aecuandme.wordpress.com/
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+listA = IN[0]
+listB = IN[1]
+
+if len(listA) &gt; len(listB):
+	a=list(set(listA).difference(set(listB)))
+else:
+	a=list(set(listB).difference(set(listA)))
+
+b=list(set(listA).intersection(set(listB)))
+
+c=list(set(listA).symmetric_difference(set(listB)))
+
+OUT = a,b,c</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.CodeBlockNodeModel type="Dynamo.Nodes.CodeBlockNodeModel" guid="7ee75b5f-9c6f-49b6-9462-5cff70625d67" nickname="Code Block" x="0" y="137.655" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="0;&#xA;1;&#xA;2;" ShouldFocus="false" />
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="84bd0563-faf6-47ea-b662-096b7c6faa55" nickname="Output" x="862" y="134" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Intersection" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="ef456ca5-60fa-4cf5-adc4-8cf97498819a" nickname="Output" x="862" y="51" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="A-B" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="2a6f83d3-3ed3-4a10-8718-831d7c353078" nickname="Output" x="862" y="217" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Symmetric Difference" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="8a2c8572-c1cc-42ff-bcb0-b3bcd21385d8" nickname="Input" x="0" y="54" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="List A" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="8fce6841-13c1-4eca-9954-de2ec53b0b01" nickname="Input" x="0" y="249" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="List B" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="352b08a3-1044-45ae-b451-0b69ca5c8e90" nickname="Flatten" x="638" y="26" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="" function="Flatten@var[]..[]" />
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="3de762a8-ad1d-4d5f-b857-e0778c60c136" nickname="Flatten" x="638" y="134" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="" function="Flatten@var[]..[]" />
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="0e7738ee-1b8d-407f-bc0f-3003efe5b4c8" nickname="Flatten" x="638" y="242" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="" function="Flatten@var[]..[]" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="cedc30b0-b6de-4c84-81b3-a3710fe9c443" start_index="0" end="352b08a3-1044-45ae-b451-0b69ca5c8e90" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="db571e20-9019-4d90-882e-f35d75b7c349" start_index="0" end="0e7738ee-1b8d-407f-bc0f-3003efe5b4c8" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d8670200-bbe7-4e24-8bd0-b2906a9428f6" start_index="0" end="3de762a8-ad1d-4d5f-b857-e0778c60c136" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9f8caba8-2f5a-48c1-bee6-b1f1169b1a33" start_index="0" end="cedc30b0-b6de-4c84-81b3-a3710fe9c443" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9f8caba8-2f5a-48c1-bee6-b1f1169b1a33" start_index="0" end="d8670200-bbe7-4e24-8bd0-b2906a9428f6" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9f8caba8-2f5a-48c1-bee6-b1f1169b1a33" start_index="0" end="db571e20-9019-4d90-882e-f35d75b7c349" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="7ee75b5f-9c6f-49b6-9462-5cff70625d67" start_index="0" end="cedc30b0-b6de-4c84-81b3-a3710fe9c443" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="7ee75b5f-9c6f-49b6-9462-5cff70625d67" start_index="1" end="d8670200-bbe7-4e24-8bd0-b2906a9428f6" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="7ee75b5f-9c6f-49b6-9462-5cff70625d67" start_index="2" end="db571e20-9019-4d90-882e-f35d75b7c349" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="8a2c8572-c1cc-42ff-bcb0-b3bcd21385d8" start_index="0" end="9f8caba8-2f5a-48c1-bee6-b1f1169b1a33" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="8fce6841-13c1-4eca-9954-de2ec53b0b01" start_index="0" end="9f8caba8-2f5a-48c1-bee6-b1f1169b1a33" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="352b08a3-1044-45ae-b451-0b69ca5c8e90" start_index="0" end="ef456ca5-60fa-4cf5-adc4-8cf97498819a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3de762a8-ad1d-4d5f-b857-e0778c60c136" start_index="0" end="84bd0563-faf6-47ea-b662-096b7c6faa55" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0e7738ee-1b8d-407f-bc0f-3003efe5b4c8" start_index="0" end="2a6f83d3-3ed3-4a10-8718-831d7c353078" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

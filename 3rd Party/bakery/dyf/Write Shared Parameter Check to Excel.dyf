@@ -1,0 +1,101 @@
+<Workspace Version="0.8.2.2371" X="0" Y="0" zoom="1" Name="Write Shared Parameter Check to Excel" Description="" ID="c25062ba-0a87-4832-8615-f1d2786936ec" Category="Bakery.Parameters">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.StringInput guid="dd7f5756-d866-4fc4-92e9-2bfafeef036b" type="Dynamo.Nodes.StringInput" nickname="String" x="590.66701587822" y="71.1599500515802" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <System.String>---List of GUIDs---</System.String>
+      <System.String value="---List of GUIDs---" />
+    </Dynamo.Nodes.StringInput>
+    <Dynamo.Nodes.StringInput guid="81906d0e-4769-40c1-bded-318045f1ae23" type="Dynamo.Nodes.StringInput" nickname="String" x="581.0562921033" y="8.81505792219014" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <System.String>---If True then FAIL---</System.String>
+      <System.String value="---If True then FAIL---" />
+    </Dynamo.Nodes.StringInput>
+    <Dynamo.Nodes.StringInput guid="993b27b4-fc36-42f6-80a7-7b55ade123dd" type="Dynamo.Nodes.StringInput" nickname="String" x="591.39761316621" y="132.17373418197" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <System.String>---GUID should be this---</System.String>
+      <System.String value="---GUID should be this---" />
+    </Dynamo.Nodes.StringInput>
+    <DSCoreNodesUI.BoolSelector guid="10b1af9a-7e37-4a70-b189-4c111e4b300c" type="DSCoreNodesUI.BoolSelector" nickname="Boolean" x="250" y="371.66721459858" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <System.Boolean>True</System.Boolean>
+    </DSCoreNodesUI.BoolSelector>
+    <Dynamo.Nodes.Function guid="ff05ce3c-4627-49ef-9fe7-cb53247adc77" type="Dynamo.Nodes.Function" nickname="Check Project Shared Parameter against benchmark GUID" x="445.06838668682" y="214.06941097859" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="82536b35-fc8d-4c2e-8fe7-3c0707a90c98" />
+      <Name value="Check Project Shared Parameter against benchmark GUID" />
+      <Description value="and report results" />
+      <Inputs>
+        <Input value="searchForSP" />
+        <Input value="GUIDinStringNode" />
+        <Input value="TrueForType" />
+      </Inputs>
+      <Outputs>
+        <Output value="ifTrueThenFAIL" />
+        <Output value="listOfGuids" />
+        <Output value="colHeading" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSCoreNodesUI.CreateList guid="a2c0e49a-4920-437d-a28f-dc1366814758" type="DSCoreNodesUI.CreateList" nickname="List.Create" x="894.70171609632" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="7" />
+    <Dynamo.Nodes.StringInput guid="443fb04e-f882-40b3-9ac3-5866707f7580" type="Dynamo.Nodes.StringInput" nickname="String" x="976.24885279047" y="360.58189438596" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <System.String>NULL VALUE</System.String>
+      <System.String value="NULL VALUE" />
+    </Dynamo.Nodes.StringInput>
+    <Dynamo.Nodes.DSFunction guid="5490e0cc-b216-4715-acc9-bac8bb68d206" type="Dynamo.Nodes.DSFunction" nickname="Flatten" x="998.77072187531" y="252.70453833296" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="BuiltIn" function="Flatten@var[]..[]" />
+    <Dynamo.Nodes.Function guid="57432dfc-d7d4-4ddf-b251-451ae0411c83" type="Dynamo.Nodes.Function" nickname="List.ReplaceNull" x="1188.37553878928" y="359.97554733848" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="2dd1e892-6338-4fba-8345-f7a9f418bb57" />
+      <Name value="List.ReplaceNull" />
+      <Description value="Replaces all null values within a given list with a substitute" />
+      <Inputs>
+        <Input value="list" />
+        <Input value="replacement" />
+      </Inputs>
+      <Outputs>
+        <Output value="list" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="ece7ddd8-3724-452d-8f50-962b4fa7b564" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1409.379191353" y="217.4448245456" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="0;" ShouldFocus="false" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="92942c63-dd2c-4c84-9d88-48ef2441f1f1" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1401.379191353" y="423.4448245456" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="true;" ShouldFocus="false" />
+    <Dynamo.Nodes.DSFunction guid="155b220e-452a-4ac4-8fed-1621766af534" type="Dynamo.Nodes.DSFunction" nickname="Excel.WriteToFile" x="1653.64884338139" y="184.81689265016" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSOffice.dll" function="DSOffice.Excel.WriteToFile@string,string,int,int,var[][],bool">
+      <PortInfo index="5" default="True" />
+    </Dynamo.Nodes.DSFunction>
+    <Dynamo.Nodes.Symbol guid="34af25e0-42ca-4aa6-846f-83ce152c6669" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="searchForSP : var[]..[]" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="978c456c-488e-47c3-ad45-eba1a747f2d8" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="150" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="GUIDinStringNode : var[]..[]" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="1e5ef875-2b34-4cbb-9c7d-e55e55b87685" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="450" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="filePath : string" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="e29b2b20-1a7d-4ea5-bb55-beab4374b3c8" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="600" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="sheetName : string" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="86d33e41-dc18-4bf2-8a05-90501c19e9f2" type="Dynamo.Nodes.Output" nickname="Output" x="1889.64884338139" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="data" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="dd7f5756-d866-4fc4-92e9-2bfafeef036b" start_index="0" end="a2c0e49a-4920-437d-a28f-dc1366814758" end_index="3" portType="0" />
+    <Dynamo.Models.ConnectorModel start="81906d0e-4769-40c1-bded-318045f1ae23" start_index="0" end="a2c0e49a-4920-437d-a28f-dc1366814758" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="993b27b4-fc36-42f6-80a7-7b55ade123dd" start_index="0" end="a2c0e49a-4920-437d-a28f-dc1366814758" end_index="5" portType="0" />
+    <Dynamo.Models.ConnectorModel start="10b1af9a-7e37-4a70-b189-4c111e4b300c" start_index="0" end="ff05ce3c-4627-49ef-9fe7-cb53247adc77" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ff05ce3c-4627-49ef-9fe7-cb53247adc77" start_index="0" end="a2c0e49a-4920-437d-a28f-dc1366814758" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ff05ce3c-4627-49ef-9fe7-cb53247adc77" start_index="1" end="a2c0e49a-4920-437d-a28f-dc1366814758" end_index="4" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ff05ce3c-4627-49ef-9fe7-cb53247adc77" start_index="2" end="a2c0e49a-4920-437d-a28f-dc1366814758" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a2c0e49a-4920-437d-a28f-dc1366814758" start_index="0" end="5490e0cc-b216-4715-acc9-bac8bb68d206" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="443fb04e-f882-40b3-9ac3-5866707f7580" start_index="0" end="57432dfc-d7d4-4ddf-b251-451ae0411c83" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="5490e0cc-b216-4715-acc9-bac8bb68d206" start_index="0" end="57432dfc-d7d4-4ddf-b251-451ae0411c83" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="57432dfc-d7d4-4ddf-b251-451ae0411c83" start_index="0" end="155b220e-452a-4ac4-8fed-1621766af534" end_index="4" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ece7ddd8-3724-452d-8f50-962b4fa7b564" start_index="0" end="155b220e-452a-4ac4-8fed-1621766af534" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ece7ddd8-3724-452d-8f50-962b4fa7b564" start_index="0" end="155b220e-452a-4ac4-8fed-1621766af534" end_index="3" portType="0" />
+    <Dynamo.Models.ConnectorModel start="92942c63-dd2c-4c84-9d88-48ef2441f1f1" start_index="0" end="155b220e-452a-4ac4-8fed-1621766af534" end_index="5" portType="0" />
+    <Dynamo.Models.ConnectorModel start="155b220e-452a-4ac4-8fed-1621766af534" start_index="0" end="86d33e41-dc18-4bf2-8a05-90501c19e9f2" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="34af25e0-42ca-4aa6-846f-83ce152c6669" start_index="0" end="ff05ce3c-4627-49ef-9fe7-cb53247adc77" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="978c456c-488e-47c3-ad45-eba1a747f2d8" start_index="0" end="ff05ce3c-4627-49ef-9fe7-cb53247adc77" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="978c456c-488e-47c3-ad45-eba1a747f2d8" start_index="0" end="a2c0e49a-4920-437d-a28f-dc1366814758" end_index="6" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1e5ef875-2b34-4cbb-9c7d-e55e55b87685" start_index="0" end="155b220e-452a-4ac4-8fed-1621766af534" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e29b2b20-1a7d-4ea5-bb55-beab4374b3c8" start_index="0" end="155b220e-452a-4ac4-8fed-1621766af534" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

@@ -1,0 +1,57 @@
+<Workspace Version="0.8.2.2392" X="-1030.4" Y="-175.2" zoom="1" Name="Get Location Point and add Z offset" Description="" ID="95574336-dcc0-4be0-ab1e-af54513e6e18" Category="Bakery.Elements">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Watch guid="458a8108-500f-45e9-807f-e696ddc0eb9b" type="Dynamo.Nodes.Watch" nickname="Watch" x="542.030929214063" y="50.2632205283892" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+    <Dynamo.Nodes.Function guid="0f0f3514-6ba9-4ef7-950b-da2335f69ea1" type="Dynamo.Nodes.Function" nickname="Element.Location" x="250" y="0" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="0b59c4d8-afe4-4063-bf7e-2195fa33e8a9" />
+      <Name value="Element.Location" />
+      <Description value="Returns the location of an element as an XYZ (or if it's line-based the start and end point of the line), along with some booleans to help filtering the results. Use this for some element types (e.g. walls or lines) that do not work with the built-in Get Family Instance Location node. " />
+      <Inputs>
+        <Input value="element" />
+      </Inputs>
+      <Outputs>
+        <Output value="points" />
+        <Output value="curveEndpoints" />
+        <Output value="curves" />
+        <Output value="isPoint" />
+        <Output value="isCurve" />
+        <Output value="hasLocation" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.DSFunction guid="ff57c220-7aec-464e-a7c3-948953cd95a3" type="Dynamo.Nodes.DSFunction" nickname="Points.DeconstructPoint" x="642.661978321863" y="211.13977483981" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="..\..\LunchBox%20for%20Dynamo\bin\LunchBox.dll" function="Geometry.Points.DeconstructPoint@Autodesk.DesignScript.Geometry.Point" />
+    <Dynamo.Nodes.Watch guid="3a6943a8-2d46-4178-b9e6-8d7d455609dc" type="Dynamo.Nodes.Watch" nickname="Watch" x="928.346936605743" y="241.893007562953" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+    <Dynamo.Nodes.DSFunction guid="e0c68a02-2db2-40cf-803b-271f40859b8e" type="Dynamo.Nodes.DSFunction" nickname="Point.ByCoordinates" x="1075.49311907754" y="26.0979784082922" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Point.ByCoordinates@double,double,double">
+      <PortInfo index="0" default="True" />
+      <PortInfo index="1" default="True" />
+      <PortInfo index="2" default="True" />
+    </Dynamo.Nodes.DSFunction>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="fe95d1a3-3825-4a3e-948f-1357ccbd66a7" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1180.60087665356" y="272.662559777698" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="x+o;" ShouldFocus="false" />
+    <Dynamo.Nodes.Symbol guid="983ffadc-2435-490b-b85a-48346c1f67ba" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="element : var[]..[]" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="10f488ef-4874-429d-a2f9-e68c33df1941" type="Dynamo.Nodes.Output" nickname="Output" x="1375.60087665356" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="Point" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Symbol guid="f4037da0-f9b0-48ce-812b-c1092887bf97" type="Dynamo.Nodes.Symbol" nickname="Input" x="1125.6" y="412" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="z offset" />
+    </Dynamo.Nodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="458a8108-500f-45e9-807f-e696ddc0eb9b" start_index="0" end="ff57c220-7aec-464e-a7c3-948953cd95a3" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0f0f3514-6ba9-4ef7-950b-da2335f69ea1" start_index="0" end="458a8108-500f-45e9-807f-e696ddc0eb9b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ff57c220-7aec-464e-a7c3-948953cd95a3" start_index="0" end="e0c68a02-2db2-40cf-803b-271f40859b8e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ff57c220-7aec-464e-a7c3-948953cd95a3" start_index="1" end="e0c68a02-2db2-40cf-803b-271f40859b8e" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ff57c220-7aec-464e-a7c3-948953cd95a3" start_index="2" end="3a6943a8-2d46-4178-b9e6-8d7d455609dc" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3a6943a8-2d46-4178-b9e6-8d7d455609dc" start_index="0" end="fe95d1a3-3825-4a3e-948f-1357ccbd66a7" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e0c68a02-2db2-40cf-803b-271f40859b8e" start_index="0" end="10f488ef-4874-429d-a2f9-e68c33df1941" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="fe95d1a3-3825-4a3e-948f-1357ccbd66a7" start_index="0" end="e0c68a02-2db2-40cf-803b-271f40859b8e" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="983ffadc-2435-490b-b85a-48346c1f67ba" start_index="0" end="0f0f3514-6ba9-4ef7-950b-da2335f69ea1" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f4037da0-f9b0-48ce-812b-c1092887bf97" start_index="0" end="fe95d1a3-3825-4a3e-948f-1357ccbd66a7" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="271373.75" eyeY="72699.0234375" eyeZ="147957.765625" lookX="-271373.75" lookY="-225096.53125" lookZ="-147957.765625" />
+  </Cameras>
+</Workspace>

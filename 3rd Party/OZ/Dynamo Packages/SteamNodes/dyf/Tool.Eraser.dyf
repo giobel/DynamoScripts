@@ -1,0 +1,66 @@
+<Workspace Version="0.7.2.2921" X="-240.182448865335" Y="370.166911664689" zoom="1.11905169493478" Description="Try to delete any element from project" Category="SteamNodes.Tool" Name="Tool.Eraser" ID="73f2fb6b-75ab-46ae-a9a6-731e4899e8b7">
+  <Elements>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="7472712e-8f22-4f49-8bd1-bb86408b7477" nickname="Python Script" x="507" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="1">
+      <Script>#python nodes in dynamo 0.7
+#proposed by Julien Benoit @jbenoit44 
+#http://aecuandme.wordpress.com/
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+# Import geometry conversion extension methods
+clr.ImportExtensions(Revit.GeometryConversion)
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+from System.Collections.Generic import *
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+elt = []
+for i in IN[0]:
+	elt.append(UnwrapElement(i).Id)
+
+# Start Transaction
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+
+cantdelete=[]
+for item in elt:
+	try:
+		doc.Delete(item)
+	except:
+		cantdelete.append(item)
+		
+
+# End Transaction
+TransactionManager.Instance.TransactionTaskDone()
+doc.Regenerate()
+OUT=cantdelete</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="40310a3a-f390-48ca-9a79-5fbce1bf8337" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Element(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="6edb91b7-2205-4d76-b23b-a04808508968" nickname="Output" x="731" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Can't delete (Ids)" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.CodeBlockNodeModel type="Dynamo.Nodes.CodeBlockNodeModel" guid="5fdeac25-ba2a-4927-82c7-9ce46cab031d" nickname="Code Block" x="199" y="4.21833333333333" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="Flatten({item});" ShouldFocus="false" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="7472712e-8f22-4f49-8bd1-bb86408b7477" start_index="0" end="6edb91b7-2205-4d76-b23b-a04808508968" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="40310a3a-f390-48ca-9a79-5fbce1bf8337" start_index="0" end="5fdeac25-ba2a-4927-82c7-9ce46cab031d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="5fdeac25-ba2a-4927-82c7-9ce46cab031d" start_index="0" end="7472712e-8f22-4f49-8bd1-bb86408b7477" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

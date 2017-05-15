@@ -1,0 +1,53 @@
+<Workspace Version="0.8.2.2371" X="304" Y="298" zoom="1" Name="View Templates for View List" Description="" ID="ef91964c-52ca-429b-abd8-6d5c2c5122d5" Category="Bakery.Views">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Symbol guid="87346fd4-8caa-4447-bb19-8c42439c8621" type="Dynamo.Nodes.Symbol" nickname="Input" x="10" y="10.773892773893" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="View(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Function guid="1b5f1583-4aab-4269-8388-98b3800fa8b9" type="Dynamo.Nodes.Function" nickname="Turn Into List" x="146.818181818182" y="84.327887629608" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="var[]" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSIronPythonNode.PythonNode guid="ee561540-f532-4c10-bd65-69a70978ee8b" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="332.538628038627" y="84.520923520924" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+views = UnwrapElement(IN[0])
+elementlist = list()
+
+for view in views:
+	if view.ViewTemplateId.IntegerValue == -1:
+		elementlist.append(list())
+	else:
+		elementlist.append(doc.GetElement(view.ViewTemplateId))
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Output guid="5b45460b-3b2b-48dc-9267-5ea4c058a0a5" type="Dynamo.Nodes.Output" nickname="Output" x="781.69555444556" y="10" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="View Templates(s)" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="87346fd4-8caa-4447-bb19-8c42439c8621" start_index="0" end="1b5f1583-4aab-4269-8388-98b3800fa8b9" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1b5f1583-4aab-4269-8388-98b3800fa8b9" start_index="0" end="ee561540-f532-4c10-bd65-69a70978ee8b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ee561540-f532-4c10-bd65-69a70978ee8b" start_index="0" end="5b45460b-3b2b-48dc-9267-5ea4c058a0a5" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

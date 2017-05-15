@@ -1,0 +1,48 @@
+<Workspace Version="1.2.1.3083" X="-144.213587204842" Y="51.6080114644053" zoom="1.1988764122517" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="161d43ba-6f6c-44c0-89ea-5e4c73687d74" type="PythonNodeModels.PythonNode" nickname="Python Script" x="563.796626308023" y="277.135426645126" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="2">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variables.
+lista = IN[0]
+inlista = IN[1]
+
+def find(lst, a):
+    result = []
+    for i, x in enumerate(lst):
+        for item in a:
+            if x==item:
+                result.append(i)
+    return result
+
+
+
+
+#Assign your output to the OUT variable.
+OUT = find(lista, inlista)</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="05f8c01d-4da8-48d1-b72e-45966a976807" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="57" y="145" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" CodeText="{1..10,5,3};" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="f12bc6e2-4e4b-4631-805d-aa36908346fc" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="247" y="13" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" CodeText="Flatten(a);" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="4fc2d2b6-85d7-41ed-8e02-125b49ff534d" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="225" y="412" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="{3,4};" ShouldFocus="false" />
+    <CoreNodeModels.CreateList guid="c29098d8-58ed-4a2d-b8c8-8da9acf86ee0" type="CoreNodeModels.CreateList" nickname="List.Create" x="515.402061380723" y="105.265699838445" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.CreateList>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="05f8c01d-4da8-48d1-b72e-45966a976807" start_index="0" end="f12bc6e2-4e4b-4631-805d-aa36908346fc" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="f12bc6e2-4e4b-4631-805d-aa36908346fc" start_index="0" end="161d43ba-6f6c-44c0-89ea-5e4c73687d74" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="4fc2d2b6-85d7-41ed-8e02-125b49ff534d" start_index="0" end="161d43ba-6f6c-44c0-89ea-5e4c73687d74" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

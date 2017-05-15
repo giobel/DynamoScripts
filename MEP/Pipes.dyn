@@ -1,0 +1,79 @@
+<Workspace Version="1.2.3.592" X="-161.124204620366" Y="-207.465466686783" zoom="0.72583335096494" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSRevitNodesUI.Categories guid="24690664-d663-4f13-8c43-57f415576358" type="DSRevitNodesUI.Categories" nickname="Categories" x="333" y="380.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false" index="309:PipeCurves" />
+    <DSRevitNodesUI.ElementsOfCategory guid="c65965c4-d80b-4b6c-bd66-efad60b4aecc" type="DSRevitNodesUI.ElementsOfCategory" nickname="All Elements of Category" x="578" y="378.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </DSRevitNodesUI.ElementsOfCategory>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="52c2f7c7-e789-4fcd-91a7-7168cadcf094" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.GetParameterValueByName" x="872" y="379.5" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="RevitNodes.dll" function="Revit.Elements.Element.GetParameterValueByName@string">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="eb4db2a5-72c1-4b5d-8ab2-78cafe4f1a97" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="597" y="554" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;Diameter&quot;;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="2dd3ee1c-0b45-4070-a7aa-3f26af34750b" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.GetParameterValueByName" x="1198.1320951139" y="796.672554533153" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="RevitNodes.dll" function="Revit.Elements.Element.GetParameterValueByName@string">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="84d8009d-f221-4470-b5fd-62f4b9dfdd78" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="935.684694838123" y="880.514889858233" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;Size&quot;;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="9fff0f7f-96ac-4eec-9dfe-5493f9c33ebe" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="MEP Fitting connected MEPCurves" x="826.848421902646" y="1068.53377050465" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <ID value="5d34fdf8-fb8e-423d-a421-92bb6fc95455" />
+      <Name value="MEP Fitting connected MEPCurves" />
+      <Description value="Returns the pipes, ducts, conduits or cable trays that are connected to the given fittings" />
+      <Inputs>
+        <Input value="Fittings" />
+      </Inputs>
+      <Outputs>
+        <Output value="MEP curves" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <PythonNodeModels.PythonNode guid="ab4de497-3bf7-4269-9f61-a1f500ff4024" type="PythonNodeModels.PythonNode" nickname="Python Script" x="886.848421902646" y="1171.03377050465" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variables.
+if isinstance(IN[0], list):
+	fittings = UnwrapElement(IN[0])
+else:
+	fittings = [UnwrapElement(IN[0])]
+
+refs = []
+
+for x in fittings:
+	connset = x.MEPModel.ConnectorManager.Connectors
+	conn_pipes = []
+	for c in connset:
+		if c.IsConnected:
+			for lc in c.AllRefs:
+				conn_pipes.append(lc.Owner)
+	refs.append(conn_pipes)
+
+#Assign your output to the OUT variable.
+OUT = refs</Script>
+    </PythonNodeModels.PythonNode>
+    <DSRevitNodesUI.ElementsOfCategory guid="2d7b31c1-27c7-4b20-97ed-c229bec8a38f" type="DSRevitNodesUI.ElementsOfCategory" nickname="All Elements of Category" x="642.354956541352" y="794.770116774115" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </DSRevitNodesUI.ElementsOfCategory>
+    <DSRevitNodesUI.Categories guid="4f099c65-0445-4ad8-9d8f-f07eb0824710" type="DSRevitNodesUI.Categories" nickname="Categories" x="381.152498348626" y="787.710146680915" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false" index="302:PipeFitting" />
+    <CoreNodeModels.DynamoConvert guid="f7ad063c-3be6-4e31-9826-0f576193f5d4" type="CoreNodeModels.DynamoConvert" nickname="Convert Between Units" x="1235.69270631813" y="510.755840963576" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" conversionMetric="Length" conversionFrom="Feet" conversionTo="Meters">
+      <PortInfo index="0" default="True" />
+    </CoreNodeModels.DynamoConvert>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="24690664-d663-4f13-8c43-57f415576358" start_index="0" end="c65965c4-d80b-4b6c-bd66-efad60b4aecc" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c65965c4-d80b-4b6c-bd66-efad60b4aecc" start_index="0" end="52c2f7c7-e789-4fcd-91a7-7168cadcf094" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="52c2f7c7-e789-4fcd-91a7-7168cadcf094" start_index="0" end="f7ad063c-3be6-4e31-9826-0f576193f5d4" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="eb4db2a5-72c1-4b5d-8ab2-78cafe4f1a97" start_index="0" end="52c2f7c7-e789-4fcd-91a7-7168cadcf094" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="84d8009d-f221-4470-b5fd-62f4b9dfdd78" start_index="0" end="2dd3ee1c-0b45-4070-a7aa-3f26af34750b" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="2d7b31c1-27c7-4b20-97ed-c229bec8a38f" start_index="0" end="ab4de497-3bf7-4269-9f61-a1f500ff4024" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="2d7b31c1-27c7-4b20-97ed-c229bec8a38f" start_index="0" end="2dd3ee1c-0b45-4070-a7aa-3f26af34750b" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="4f099c65-0445-4ad8-9d8f-f07eb0824710" start_index="0" end="2d7b31c1-27c7-4b20-97ed-c229bec8a38f" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

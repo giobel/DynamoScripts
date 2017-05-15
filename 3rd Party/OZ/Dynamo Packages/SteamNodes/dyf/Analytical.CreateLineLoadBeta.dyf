@@ -1,0 +1,108 @@
+<Workspace Version="0.7.2.2921" X="30" Y="187.004807692308" zoom="0.586538461538462" Description="beta 1" Category="SteamNodes.Analytical" Name="Analytical.CreateLineLoadBeta" ID="2a499cdf-d4d2-4705-90c8-9459b21dc155">
+  <Elements>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="67e986d8-47a8-433b-a662-3acf9c403615" nickname="Python Script" x="712" y="101" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="4">
+      <Script>#python nodes in dynamo 0.7
+#proposed by Julien Benoit @jbenoit44 
+#http://aecuandme.wordpress.com/
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+# Import geometry conversion extension methods
+clr.ImportExtensions(Revit.GeometryConversion)
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+from System.Collections.Generic import *
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+from System.Collections.Generic import *
+
+doc = DocumentManager.Instance.CurrentDBDocument
+
+
+forces=[]
+for i in IN[1]:
+	forces.append(UnwrapElement(i).ToXyz(False))
+moments=[]
+for i in IN[2]:
+	moments.append(UnwrapElement(i).ToXyz(False))
+
+loads=[]
+loadtype=UnwrapElement(IN[3])
+F=List[XYZ](forces)
+M=List[XYZ](moments)
+p1=XYZ(1,0,0)
+p2=XYZ(0,0,1)
+p3=XYZ(0,0,0)
+p=Plane(p1,p2,p3)
+
+
+pts = []
+for list in IN[0]:
+	for i in list:
+		pts.append(UnwrapElement(i).ToXyz(False))
+		I=List[XYZ](pts)
+		# Start Transaction
+		doc = DocumentManager.Instance.CurrentDBDocument
+		TransactionManager.Instance.EnsureInTransaction(doc)
+		skp=SketchPlane.Create(doc,p)
+		a=doc.NewLineLoad(I,F,M,True,True,False,loadtype,skp)
+		loads.append(a)
+
+		# End Transaction
+		TransactionManager.Instance.TransactionTaskDone()
+
+OUT = loads</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="ed1f8767-1d6f-47e0-bf50-0390ce965fc2" nickname="List.OfRepeatedItem" x="473" y="73" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.OfRepeatedItem@var[]..[],int" />
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="1f754d75-b1c1-43fa-bc1b-c47422615fcb" nickname="List.OfRepeatedItem" x="473" y="207" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.OfRepeatedItem@var[]..[],int" />
+    <Dynamo.Nodes.CodeBlockNodeModel type="Dynamo.Nodes.CodeBlockNodeModel" guid="9fe640b6-f11e-4e7f-b406-12f541f74cde" nickname="Code Block" x="0" y="166.218333333333" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="2;" ShouldFocus="false" />
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="e052d097-ee30-449e-9c46-066b2709a44f" nickname="Point.ByCoordinates" x="235" y="220" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Point.ByCoordinates@double,double,double">
+      <PortInfo index="0" default="True" />
+      <PortInfo index="1" default="True" />
+      <PortInfo index="2" default="True" />
+    </Dynamo.Nodes.DSFunction>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="45c116ce-7991-4ead-9a5d-49a375bad8da" nickname="Point.ByCoordinates" x="235" y="60" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Point.ByCoordinates@double,double,double">
+      <PortInfo index="0" default="True" />
+      <PortInfo index="1" default="True" />
+      <PortInfo index="2" default="True" />
+    </Dynamo.Nodes.DSFunction>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="ac7427b1-78a9-49ce-ad20-5e16a7e68941" nickname="Input" x="0" y="251" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Load Type" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="8f1cc808-1b74-4994-810c-5db6825e8700" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Pairs of XYZ (List)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="41b63d25-57af-41e4-81c2-cd33a8de8739" nickname="Output" x="936" y="101" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="LineLoad(s)" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="3794bbc8-a79f-4e06-98be-a1074e5de37e" nickname="Input" x="0" y="83" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Z Force" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="33b0726a-80aa-490c-b85f-931d8e416501" nickname="Input" x="0" y="334" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Z Moment" />
+    </Dynamo.Nodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="67e986d8-47a8-433b-a662-3acf9c403615" start_index="0" end="41b63d25-57af-41e4-81c2-cd33a8de8739" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ed1f8767-1d6f-47e0-bf50-0390ce965fc2" start_index="0" end="67e986d8-47a8-433b-a662-3acf9c403615" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1f754d75-b1c1-43fa-bc1b-c47422615fcb" start_index="0" end="67e986d8-47a8-433b-a662-3acf9c403615" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9fe640b6-f11e-4e7f-b406-12f541f74cde" start_index="0" end="ed1f8767-1d6f-47e0-bf50-0390ce965fc2" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9fe640b6-f11e-4e7f-b406-12f541f74cde" start_index="0" end="1f754d75-b1c1-43fa-bc1b-c47422615fcb" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e052d097-ee30-449e-9c46-066b2709a44f" start_index="0" end="1f754d75-b1c1-43fa-bc1b-c47422615fcb" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="45c116ce-7991-4ead-9a5d-49a375bad8da" start_index="0" end="ed1f8767-1d6f-47e0-bf50-0390ce965fc2" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ac7427b1-78a9-49ce-ad20-5e16a7e68941" start_index="0" end="67e986d8-47a8-433b-a662-3acf9c403615" end_index="3" portType="0" />
+    <Dynamo.Models.ConnectorModel start="8f1cc808-1b74-4994-810c-5db6825e8700" start_index="0" end="67e986d8-47a8-433b-a662-3acf9c403615" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3794bbc8-a79f-4e06-98be-a1074e5de37e" start_index="0" end="45c116ce-7991-4ead-9a5d-49a375bad8da" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="33b0726a-80aa-490c-b85f-931d8e416501" start_index="0" end="e052d097-ee30-449e-9c46-066b2709a44f" end_index="2" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

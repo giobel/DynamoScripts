@@ -1,0 +1,133 @@
+<Workspace Version="1.2.0.2514" X="2455.46612373012" Y="-1907.60620699751" zoom="1.15332682463896" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="Point" resolvedName="Autodesk.DesignScript.Geometry.Point" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Line" resolvedName="Autodesk.DesignScript.Geometry.Line" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="DSCore.Object.Identity" resolvedName="DSCore.Object" assemblyName="DSCoreNodes.dll" />
+    <ClassMap partialName="DSCore.Object" resolvedName="DSCore.Object" assemblyName="DSCoreNodes.dll" />
+    <ClassMap partialName="Vector" resolvedName="Autodesk.DesignScript.Geometry.Vector" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="CoordinateSystem" resolvedName="Autodesk.DesignScript.Geometry.CoordinateSystem" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="CoordinateSystem.Identity" resolvedName="Autodesk.DesignScript.Geometry.CoordinateSystem" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Vector.ZAxis" resolvedName="Autodesk.DesignScript.Geometry.Vector" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Geometry" resolvedName="Autodesk.DesignScript.Geometry.Geometry" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="NurbsCurve" resolvedName="Autodesk.DesignScript.Geometry.NurbsCurve" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Display" resolvedName="Display.Display" assemblyName="Display.dll" />
+    <ClassMap partialName="Color" resolvedName="DSCore.Color" assemblyName="DSCoreNodes.dll" />
+    <ClassMap partialName="Math" resolvedName="DSCore.Math" assemblyName="DSCoreNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="a3a9c1c7-3339-46cd-8024-7f0ff61e4e38" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Math.RandomList" x="-2929.42337609232" y="1560.95626945664" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.Math.RandomList@int">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="a0f725cb-a358-45b6-b6eb-be2a9f09af33" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-3123.90994929177" y="1702.55326398079" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="5;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="3afbeb9c-961d-4011-8e6f-c5078abd1b2e" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Math.RandomList" x="-2939.10947872531" y="1670.23204459474" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.Math.RandomList@int">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="e7c41e5a-e500-4af0-bb6a-6256887dbb0c" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Math.RandomList" x="-2944.80769340057" y="1806.9155262054" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.Math.RandomList@int">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <PythonNodeModels.PythonNode guid="c7096fff-bd73-49a9-8fd3-7998c2de952c" type="PythonNodeModels.PythonNode" nickname="Python Script" x="-2617.52769474174" y="1628.06078206776" isVisible="false" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="3">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variables.
+
+PtX = IN[0]
+PtY = IN[1]
+PtZ = IN[2]
+
+Pts = []
+crv = []
+
+for x,y,z in zip(PtX,PtY,PtZ):
+	Pts.append(Point.ByCoordinates(x*10,y*10,z*10))
+
+for i in range(1,5):
+	crv.append(NurbsCurve.ByControlPoints(Pts,i))
+	
+
+#Assign your output to the OUT variable.
+OUT = Pts,crv</Script>
+    </PythonNodeModels.PythonNode>
+    <PythonNodeModels.PythonNode guid="5740dc89-49d7-49c0-a14f-f20a46f19f06" type="PythonNodeModels.PythonNode" nickname="Py-IF" x="-2706.81360172845" y="1919.30472657858" isVisible="false" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variables.
+PtA = Point.ByCoordinates(0,0,0)
+PtB = Point.ByCoordinates(5,5,0)
+
+distance = Point.DistanceTo(PtA,PtB)
+
+mindistance = 1
+
+if distance &lt; mindistance:
+	ln = Line.ByStartPointEndPoint(PtA,PtB)
+
+elif distance - mindistance &lt; 3:
+	ln = "Almost there"
+
+else:
+	ln = "Too Far Away"
+
+#Assign your output to the OUT variable.
+OUT = PtA, PtB, ln</Script>
+    </PythonNodeModels.PythonNode>
+    <PythonNodeModels.PythonNode guid="529d9ca6-79b2-4836-99c8-9f8a71734c6e" type="PythonNodeModels.PythonNode" nickname="Python Script" x="-1901.40602195445" y="2170.89509591085" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+#The inputs to this node will be stored as a list in the IN variables.
+
+PtA = Point.ByCoordinates(0,0,0)
+PtB = Point.ByCoordinates(3,3,6)
+PtC = Point.ByCoordinates(4,4,2)
+PtD = Point.ByCoordinates(5,8,1)
+PtE = Point.ByCoordinates(9,4,5)
+
+Pts = [PtA,PtB,PtC,PtD,PtE]
+crv = []
+
+for i in range(1,5):
+	crv.append(NurbsCurve.ByControlPoints(Pts,i))
+
+	
+#Assign your output to the OUT variable.
+OUT = Pts,crv</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="a8890861-ba49-4482-a28f-9f900f0e7e22" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Display.ByGeometryColor" x="-1056.83316323167" y="2652.08737389762" isVisible="true" isUpstreamVisible="true" lacing="Longest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="Display.dll" function="Display.Display.ByGeometryColor@Autodesk.DesignScript.Geometry.Geometry,DSCore.Color">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="e0364a30-9d63-4777-9dc6-d97f1eeb5049" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-1394.53887479006" y="2591.76369202453" isVisible="false" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="a[1];" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="c44f97a1-6de4-4b2e-be63-be9f59f87d70" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-2470.55232642404" y="2692.64666171738" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="def rnd1(){return = Math.Random(0,255);&#xA;};&#xA;def rnd_col(x){return = Color.ByARGB(255,rnd1(),rnd1(),rnd1());&#xA;};" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="a0c78764-f9bb-4df7-87ba-a7ad4559b722" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-1464.36151518581" y="2801.83149911997" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="rnd_col(c);" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="a3a9c1c7-3339-46cd-8024-7f0ff61e4e38" start_index="0" end="c7096fff-bd73-49a9-8fd3-7998c2de952c" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="a0f725cb-a358-45b6-b6eb-be2a9f09af33" start_index="0" end="a3a9c1c7-3339-46cd-8024-7f0ff61e4e38" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="a0f725cb-a358-45b6-b6eb-be2a9f09af33" start_index="0" end="3afbeb9c-961d-4011-8e6f-c5078abd1b2e" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="a0f725cb-a358-45b6-b6eb-be2a9f09af33" start_index="0" end="e7c41e5a-e500-4af0-bb6a-6256887dbb0c" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="3afbeb9c-961d-4011-8e6f-c5078abd1b2e" start_index="0" end="c7096fff-bd73-49a9-8fd3-7998c2de952c" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="e7c41e5a-e500-4af0-bb6a-6256887dbb0c" start_index="0" end="c7096fff-bd73-49a9-8fd3-7998c2de952c" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="529d9ca6-79b2-4836-99c8-9f8a71734c6e" start_index="0" end="e0364a30-9d63-4777-9dc6-d97f1eeb5049" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="e0364a30-9d63-4777-9dc6-d97f1eeb5049" start_index="0" end="a8890861-ba49-4482-a28f-9f900f0e7e22" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="e0364a30-9d63-4777-9dc6-d97f1eeb5049" start_index="0" end="a0c78764-f9bb-4df7-87ba-a7ad4559b722" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="a0c78764-f9bb-4df7-87ba-a7ad4559b722" start_index="0" end="a8890861-ba49-4482-a28f-9f900f0e7e22" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="10.1213390634694" eyeY="4.75030043279392" eyeZ="3.41566862220636" lookX="-12.2736977986279" lookY="-2.257221455438" lookZ="-10.7407885847882" upX="0.0590433728180083" upY="0.996917357457783" upZ="0.0516692155491569" />
+  </Cameras>
+</Workspace>

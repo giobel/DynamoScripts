@@ -1,0 +1,92 @@
+<Workspace Version="0.8.2.2371" X="628" Y="279" zoom="1" Name="Get Checkout Status with Time Trigger" Description="" ID="efe97fd3-1231-4127-8aab-9a039323b708" Category="Bakery.Elements">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Function guid="10d2d3e7-eb29-44ed-8dd4-507fbeebb46b" type="Dynamo.Nodes.Function" nickname="Current Document" x="10" y="38" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="True">
+      <ID value="5b9b1cd5-c248-4799-b689-6b31fe525bd2" />
+      <Name value="Current Document" />
+      <Description value="Retrieves Current Document" />
+      <Inputs />
+      <Outputs>
+        <Output value="OUT" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSIronPythonNode.PythonNode guid="7728e5db-cc56-4ccf-91d5-b7f612d360db" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="190.5" y="39" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>#Copyright(c) 2015, Konrad Sobon
+# @arch_laboratory, http://archi-lab.net
+
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+# Import DocumentManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+from Autodesk.Revit.DB import *
+clr.ImportExtensions(Revit.Elements)
+
+#The inputs to this node will be stored as a list in the IN variable.
+#doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+doc = UnwrapElement(IN[0])
+
+#create workset collector
+allElems = FilteredElementCollector(doc).WhereElementIsNotElementType().ToElementIds()
+#extract workset's name and ids
+ids, checkoutStat = [], []
+for i in allElems:
+	try:
+		checkoutStat.append(WorksharingUtils.GetCheckoutStatus(doc, i))
+	except:
+		checkoutStat.append("unknown checkout status")
+#	names.append(i.Name)
+#	ids.append(i.Id)
+#	wsIsOpens.append(i.IsOpen)
+#	wsIsVis.append(i.IsVisibleByDefault)
+#	wsIsDefault.append(i.IsDefaultWorkset)
+	
+#Assign your output to the OUT variable
+OUT = allElems, checkoutStat</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="4f905a2d-7511-48bf-8fe2-2e8ab58e23a2" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="382.5" y="110" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="0;" ShouldFocus="false" />
+    <Dynamo.Nodes.DSFunction guid="c643e12d-2918-4620-9032-7f6c2f604893" type="Dynamo.Nodes.DSFunction" nickname="List.GetItemAtIndex" x="485.5" y="10" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.DSFunction guid="ee1bf8ee-ee80-4af7-8fbc-cd835c18c39d" type="Dynamo.Nodes.DSFunction" nickname="List.GetItemAtIndex" x="485.5" y="200" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="31dd8421-a4b6-44c7-bc33-3aecccc71c02" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="382.5" y="300" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="1;" ShouldFocus="false" />
+    <Dynamo.Nodes.Output guid="4031aee3-2c34-4998-97fa-1bf50dc62394" type="Dynamo.Nodes.Output" nickname="Output" x="695.5" y="10" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="element Ids" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="b8ec4132-7e47-4e5c-86aa-35feb58b823e" type="Dynamo.Nodes.Output" nickname="Output" x="695.5" y="160" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="checkout status" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Symbol guid="c1c6c604-52cd-41b9-8f0d-cac301a67fdf" type="Dynamo.Nodes.Symbol" nickname="Input" x="-35" y="345" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="updater" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.DSFunction guid="1359f76a-26b0-4ceb-ab81-b73da2d0a997" type="Dynamo.Nodes.DSFunction" nickname="Thread.Pause" x="179" y="143" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.Thread.Pause@var,int" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="10d2d3e7-eb29-44ed-8dd4-507fbeebb46b" start_index="0" end="1359f76a-26b0-4ceb-ab81-b73da2d0a997" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="7728e5db-cc56-4ccf-91d5-b7f612d360db" start_index="0" end="c643e12d-2918-4620-9032-7f6c2f604893" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="7728e5db-cc56-4ccf-91d5-b7f612d360db" start_index="0" end="ee1bf8ee-ee80-4af7-8fbc-cd835c18c39d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4f905a2d-7511-48bf-8fe2-2e8ab58e23a2" start_index="0" end="c643e12d-2918-4620-9032-7f6c2f604893" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c643e12d-2918-4620-9032-7f6c2f604893" start_index="0" end="4031aee3-2c34-4998-97fa-1bf50dc62394" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ee1bf8ee-ee80-4af7-8fbc-cd835c18c39d" start_index="0" end="b8ec4132-7e47-4e5c-86aa-35feb58b823e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="31dd8421-a4b6-44c7-bc33-3aecccc71c02" start_index="0" end="ee1bf8ee-ee80-4af7-8fbc-cd835c18c39d" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c1c6c604-52cd-41b9-8f0d-cac301a67fdf" start_index="0" end="1359f76a-26b0-4ceb-ab81-b73da2d0a997" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1359f76a-26b0-4ceb-ab81-b73da2d0a997" start_index="0" end="7728e5db-cc56-4ccf-91d5-b7f612d360db" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

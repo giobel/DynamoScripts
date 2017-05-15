@@ -1,0 +1,86 @@
+<Workspace Version="1.2.0.2514" X="502.894851726394" Y="-1501.12472606295" zoom="1.20659214625698" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="Point" resolvedName="Autodesk.DesignScript.Geometry.Point" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Line" resolvedName="Autodesk.DesignScript.Geometry.Line" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="DSCore.Object.Identity" resolvedName="DSCore.Object" assemblyName="DSCoreNodes.dll" />
+    <ClassMap partialName="DSCore.Object" resolvedName="DSCore.Object" assemblyName="DSCoreNodes.dll" />
+    <ClassMap partialName="Vector" resolvedName="Autodesk.DesignScript.Geometry.Vector" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="CoordinateSystem" resolvedName="Autodesk.DesignScript.Geometry.CoordinateSystem" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="CoordinateSystem.Identity" resolvedName="Autodesk.DesignScript.Geometry.CoordinateSystem" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Vector.ZAxis" resolvedName="Autodesk.DesignScript.Geometry.Vector" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Geometry" resolvedName="Autodesk.DesignScript.Geometry.Geometry" assemblyName="ProtoGeometry.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="a3a9c1c7-3339-46cd-8024-7f0ff61e4e38" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Math.RandomList" x="-622.739662375083" y="1100.91587963445" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.Math.RandomList@int">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="a0f725cb-a358-45b6-b6eb-be2a9f09af33" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-817.226235574534" y="1241.41510995004" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="40;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="3afbeb9c-961d-4011-8e6f-c5078abd1b2e" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Math.RandomList" x="-632.425765008071" y="1210.19165477255" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.Math.RandomList@int">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="e7c41e5a-e500-4af0-bb6a-6256887dbb0c" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Math.RandomList" x="-638.123979683334" y="1345.77737217465" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.Math.RandomList@int">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <PythonNodeModels.PythonNode guid="c7096fff-bd73-49a9-8fd3-7998c2de952c" type="PythonNodeModels.PythonNode" nickname="Python Script" x="-297.84319710128" y="1192.37031915297" isVisible="false" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="3">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variables.
+
+PtX = IN[0]
+PtY = IN[1]
+PtZ = IN[2]
+
+Pts = []
+
+for x,y,z in zip(PtX,PtY,PtZ):
+	Pts.append(Point.ByCoordinates(x*10,y*10,z*10))
+	
+
+#Assign your output to the OUT variable.
+OUT = Pts</Script>
+    </PythonNodeModels.PythonNode>
+    <PythonNodeModels.PythonNode guid="5740dc89-49d7-49c0-a14f-f20a46f19f06" type="PythonNodeModels.PythonNode" nickname="Py-IF" x="-259.658213584863" y="1647.41074118402" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variables.
+PtA = Point.ByCoordinates(0,0,0)
+PtB = Point.ByCoordinates(5,5,0)
+
+distance = Point.DistanceTo(PtA,PtB)
+
+mindistance = 1
+
+if distance &lt; mindistance:
+	ln = Line.ByStartPointEndPoint(PtA,PtB)
+
+elif distance - mindistance &lt; 3:
+	ln = "Almost there"
+
+else:
+	ln = "Too Far Away"
+
+#Assign your output to the OUT variable.
+OUT = PtA, PtB, ln</Script>
+    </PythonNodeModels.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="a3a9c1c7-3339-46cd-8024-7f0ff61e4e38" start_index="0" end="c7096fff-bd73-49a9-8fd3-7998c2de952c" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="a0f725cb-a358-45b6-b6eb-be2a9f09af33" start_index="0" end="a3a9c1c7-3339-46cd-8024-7f0ff61e4e38" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="a0f725cb-a358-45b6-b6eb-be2a9f09af33" start_index="0" end="3afbeb9c-961d-4011-8e6f-c5078abd1b2e" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="a0f725cb-a358-45b6-b6eb-be2a9f09af33" start_index="0" end="e7c41e5a-e500-4af0-bb6a-6256887dbb0c" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="3afbeb9c-961d-4011-8e6f-c5078abd1b2e" start_index="0" end="c7096fff-bd73-49a9-8fd3-7998c2de952c" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="e7c41e5a-e500-4af0-bb6a-6256887dbb0c" start_index="0" end="c7096fff-bd73-49a9-8fd3-7998c2de952c" end_index="2" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-5.64326858520508" eyeY="16.9499549865723" eyeZ="15.7189140319824" lookX="10.7961196899414" lookY="-16.3536472320557" lookZ="-18.9357757568359" upX="0.20539653301239" upY="0.90996128320694" upZ="-0.360253751277924" />
+  </Cameras>
+</Workspace>

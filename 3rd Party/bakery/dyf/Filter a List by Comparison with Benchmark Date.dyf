@@ -1,0 +1,67 @@
+<Workspace Version="0.8.2.2371" X="415.116262660661" Y="413.503626750597" zoom="0.712594832628488" Name="Filter a List by Comparison with Benchmark Date" Description="" ID="15241fec-5e49-4dc5-b9a6-dc94975bc7a9" Category="Bakery.Date">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.DSFunction guid="875bc0d8-ece2-4753-82a5-69daa522a816" type="Dynamo.Nodes.DSFunction" nickname="List.FilterByBoolMask" x="466.167412841636" y="107.63393653189" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.FilterByBoolMask@var[]..[],var[]..[]" />
+    <DSIronPythonNode.PythonNode guid="c4154692-d90f-4176-a239-eb13154041e3" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="250" y="192.264232661239" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>import clr
+from datetime import datetime, date
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variables.
+dateNow = IN[0]
+dateOther = IN[1]
+dateComps = []
+for x in dateOther:
+	dateComps.append(dateNow &gt; x)
+#Assign your output to the OUT variable.
+OUT = dateComps</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSFunction guid="11b8250b-3593-4a4a-b172-484be3f976c8" type="Dynamo.Nodes.DSFunction" nickname="List.FilterByBoolMask" x="461.843365256882" y="317.827097629422" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.FilterByBoolMask@var[]..[],var[]..[]" />
+    <Dynamo.Nodes.Watch guid="08a6bd40-d2ea-4149-8e14-b001d574e286" type="Dynamo.Nodes.Watch" nickname="Watch" x="810.137982224894" y="292.658120948763" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+    <Dynamo.Nodes.Watch guid="c4334a2f-f3b4-4141-89e9-0d8042704d8b" type="Dynamo.Nodes.Watch" nickname="Watch" x="931.497133465501" y="-234.59473522085" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+    <Dynamo.Nodes.Symbol guid="38597aff-bf30-46d1-85a1-1542bf480b13" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="list One to Filter" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="958b489b-8c32-4a36-834d-c0231d2eb50d" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="150" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="benchmark date" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="7d79053c-39f0-4e58-8c98-8ec789787aa8" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="300" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="list of dates to compare" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="d7cf80ac-0c77-4647-a804-d179ad07822a" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="450" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="list Two to Filter" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="1b8a23d6-e590-43aa-8ecb-1fac7bce6c80" type="Dynamo.Nodes.Output" nickname="Output" x="1039.89375314757" y="53.4827375633025" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="list One Other" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="7eb20a1c-e6e2-47f8-b95f-04dbd8da8089" type="Dynamo.Nodes.Output" nickname="Output" x="961.558336633886" y="152.340642909882" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="list Two Other" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="b4124030-c9df-4e64-8226-3dc8d53a8255" type="Dynamo.Nodes.Output" nickname="Output" x="1169.95404676742" y="300" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="list Two Newer" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="83c0364c-bfe8-42b5-a9d7-448887173f35" type="Dynamo.Nodes.Output" nickname="Output" x="1353.49707795057" y="81.6984208708938" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="list One Newer" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="875bc0d8-ece2-4753-82a5-69daa522a816" start_index="0" end="1b8a23d6-e590-43aa-8ecb-1fac7bce6c80" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="875bc0d8-ece2-4753-82a5-69daa522a816" start_index="1" end="c4334a2f-f3b4-4141-89e9-0d8042704d8b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c4154692-d90f-4176-a239-eb13154041e3" start_index="0" end="875bc0d8-ece2-4753-82a5-69daa522a816" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c4154692-d90f-4176-a239-eb13154041e3" start_index="0" end="11b8250b-3593-4a4a-b172-484be3f976c8" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="11b8250b-3593-4a4a-b172-484be3f976c8" start_index="0" end="7eb20a1c-e6e2-47f8-b95f-04dbd8da8089" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="11b8250b-3593-4a4a-b172-484be3f976c8" start_index="1" end="08a6bd40-d2ea-4149-8e14-b001d574e286" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="08a6bd40-d2ea-4149-8e14-b001d574e286" start_index="0" end="b4124030-c9df-4e64-8226-3dc8d53a8255" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c4334a2f-f3b4-4141-89e9-0d8042704d8b" start_index="0" end="83c0364c-bfe8-42b5-a9d7-448887173f35" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="38597aff-bf30-46d1-85a1-1542bf480b13" start_index="0" end="875bc0d8-ece2-4753-82a5-69daa522a816" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="958b489b-8c32-4a36-834d-c0231d2eb50d" start_index="0" end="c4154692-d90f-4176-a239-eb13154041e3" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="7d79053c-39f0-4e58-8c98-8ec789787aa8" start_index="0" end="c4154692-d90f-4176-a239-eb13154041e3" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d7cf80ac-0c77-4647-a804-d179ad07822a" start_index="0" end="11b8250b-3593-4a4a-b172-484be3f976c8" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

@@ -1,0 +1,117 @@
+<Workspace Version="0.7.1.29946" X="11.7533617614424" Y="92.3856854818273" zoom="1.31537540500821" Description="Create a Triangular XYZ grid on a face.  The face surface must have an untrimmed UV parameter space." Category="LunchBox.Geometry.Panel" Name="LunchBox Triangle Grid by Face" ID="6416bb15-e846-4d65-9880-c03b9a4e8803">
+  <Elements>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="8d85fb30-bc86-43bd-9288-2a1ced4469d7" nickname="Input" x="159.271897885205" y="115.806220275221" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Surface" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="5b620cf9-cc7c-4455-9c07-c693d820aef8" nickname="Input" x="173" y="194.04" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="U" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="d3b4a7b7-7a58-44b8-9aec-60e61cd9bcf6" nickname="Input" x="172" y="261.79" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="V" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="de1e1cf3-a58c-411c-b292-50763e6bf743" nickname="Output" x="834.441642729412" y="88.4516903415359" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Panel Pts" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="ff909136-030b-4fcb-8fc3-afc7e5fadc6b" nickname="List.GetItemAtIndex" x="606.250136206749" y="339.539865150763" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="572cf88c-e261-448b-a1ad-7e673234def5" nickname="List.GetItemAtIndex" x="606.958120503791" y="216.344216037835" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="6086a8ea-48ea-4bfe-b28e-17134f806147" nickname="Number" x="505.119379472254" y="239.328478932038" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Double value="1" />
+    </Dynamo.Nodes.DoubleInput>
+    <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="6dd23ee8-b7a7-4b8d-ae23-2423764209b1" nickname="Number" x="508.088877238284" y="367.120980623807" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Double value="2" />
+    </Dynamo.Nodes.DoubleInput>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="0683645b-c163-4900-9038-710de279d05a" nickname="Python Script" x="329.69082076064" y="151.767433905934" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="3">
+      <Script>#Copyright(c) 2014, Nathan Miller
+# The Proving Ground, http://theprovingground.org
+
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+#The input to this node will be stored in the IN[0] variable.
+srf = IN[0]
+
+udiv = IN[1]
+vdiv = IN[2]
+
+ustep = 1.0/udiv
+vstep = 1.0/vdiv
+
+tris = []
+polys = []
+panels = []
+for i in range(0,int(udiv)):
+	for j in range(0,int(vdiv)):
+	
+		triA = []
+		triB = []
+		
+		#XYZ Tris A
+		myXYZ1A = srf.PointAtParameter(i*ustep, j*vstep)
+		myXYZ1B = srf.PointAtParameter((i+1)*ustep,j*vstep)
+		myXYZ1C = srf.PointAtParameter((i+1)*ustep,(j+1)*vstep)
+		
+		#XYZ Tris B
+		myXYZ2A = srf.PointAtParameter((i+1)*ustep,(j+1)*vstep)
+		myXYZ2B = srf.PointAtParameter(i*ustep,(j+1)*vstep)
+		myXYZ2C = srf.PointAtParameter(i*ustep, j*vstep)
+		
+		#Append to tri
+		triA.append(myXYZ1A)
+		triA.append(myXYZ1B)
+		triA.append(myXYZ1C)
+
+		triB.append(myXYZ2A)
+		triB.append(myXYZ2B)
+		triB.append(myXYZ2C)
+		
+		#Append tris
+		tris.append(triA)
+		tris.append(triB)
+		
+		#Polygons
+		polyA = Polygon.ByPoints(triA)
+		polyB = Polygon.ByPoints(triB)
+		polys.append(polyA)
+		polys.append(polyB)
+		
+		#Panels
+		panelA = Surface.ByPerimeterPoints(triA)
+		panelB = Surface.ByPerimeterPoints(triB)
+		panels.append(panelA)
+		panels.append(panelB)
+
+output = []
+output.append(tris)
+output.append(polys)
+output.append(panels)
+#Assign your output to the OUT variable
+OUT = output</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="bf63f960-f073-466d-9e2e-af65d1590c70" nickname="List.GetItemAtIndex" x="606.038749988024" y="88.5517143460663" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="07dd9c4c-42a1-4eda-8c53-028fa3550c50" nickname="Number" x="503.069252221993" y="117.052200334878" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Double value="0" />
+    </Dynamo.Nodes.DoubleInput>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="8bf0c3de-26b9-43e1-ab65-2395d2f80e21" nickname="Output" x="836.313701070934" y="214.651404406406" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Panel Polys" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="f1098804-4252-40a3-9ec3-b97f38f321a7" nickname="Output" x="829.0628885162" y="336.289683023149" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Panel Faces" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="8d85fb30-bc86-43bd-9288-2a1ced4469d7" start_index="0" end="0683645b-c163-4900-9038-710de279d05a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="5b620cf9-cc7c-4455-9c07-c693d820aef8" start_index="0" end="0683645b-c163-4900-9038-710de279d05a" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d3b4a7b7-7a58-44b8-9aec-60e61cd9bcf6" start_index="0" end="0683645b-c163-4900-9038-710de279d05a" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ff909136-030b-4fcb-8fc3-afc7e5fadc6b" start_index="0" end="f1098804-4252-40a3-9ec3-b97f38f321a7" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="572cf88c-e261-448b-a1ad-7e673234def5" start_index="0" end="8bf0c3de-26b9-43e1-ab65-2395d2f80e21" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6086a8ea-48ea-4bfe-b28e-17134f806147" start_index="0" end="572cf88c-e261-448b-a1ad-7e673234def5" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6dd23ee8-b7a7-4b8d-ae23-2423764209b1" start_index="0" end="ff909136-030b-4fcb-8fc3-afc7e5fadc6b" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0683645b-c163-4900-9038-710de279d05a" start_index="0" end="ff909136-030b-4fcb-8fc3-afc7e5fadc6b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0683645b-c163-4900-9038-710de279d05a" start_index="0" end="572cf88c-e261-448b-a1ad-7e673234def5" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0683645b-c163-4900-9038-710de279d05a" start_index="0" end="bf63f960-f073-466d-9e2e-af65d1590c70" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="bf63f960-f073-466d-9e2e-af65d1590c70" start_index="0" end="de1e1cf3-a58c-411c-b292-50763e6bf743" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="07dd9c4c-42a1-4eda-8c53-028fa3550c50" start_index="0" end="bf63f960-f073-466d-9e2e-af65d1590c70" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

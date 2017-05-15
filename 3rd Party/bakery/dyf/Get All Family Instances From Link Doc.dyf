@@ -1,0 +1,65 @@
+<Workspace Version="0.8.2.2371" X="463" Y="399" zoom="1" Name="Get All Family Instances From Link Doc" Description="" ID="8741a1a2-0c43-420d-87ed-a373355bd207" Category="Bakery.Collect">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="12cee00a-ec78-4197-91d2-cbd9162d8267" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="250" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>#Copyright(c) 2015, Konrad Sobon
+# @arch_laboratory, http://archi-lab.net
+
+# This node is based on Julien Benoit's Element.GetElementFromLinkedFile 
+# node. Some slight improvements were made removing unnecessary imports/references.
+# Big thank you to Julien for sharing his work. 
+
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+import System
+
+import sys
+pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
+sys.path.append(pyt_path)
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+_linkDoc = IN[0]
+
+try:
+	errorReport = None
+#	filter = ElementCategoryFilter(System.Enum.ToObject(BuiltInCategory, _category.Id))
+#	result = FilteredElementCollector(_linkDoc).WherePasses(filter).WhereElementIsNotElementType().ToElements()
+	result = FilteredElementCollector(_linkDoc).OfClass(FamilyInstance).ToElements()
+except:
+	# if error accurs anywhere in the process catch it
+	import traceback
+	errorReport = traceback.format_exc()
+
+#Assign your output to the OUT variable
+if errorReport == None:
+	OUT = result
+else:
+	OUT = errorReport</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol guid="422fb647-f02e-4615-8309-9ec92f422e0d" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="linkdoc" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="75602e00-6994-4a74-8624-2c8c7a06944b" type="Dynamo.Nodes.Output" nickname="Output" x="449.8" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="elements" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="12cee00a-ec78-4197-91d2-cbd9162d8267" start_index="0" end="75602e00-6994-4a74-8624-2c8c7a06944b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="422fb647-f02e-4615-8309-9ec92f422e0d" start_index="0" end="12cee00a-ec78-4197-91d2-cbd9162d8267" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

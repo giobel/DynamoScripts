@@ -1,0 +1,122 @@
+<Workspace Version="0.8.2.2392" X="-2876.51845136869" Y="-565.824216871635" zoom="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.DSModelElementsSelection guid="7133cdf5-45c5-4d31-9fc8-77bf7356cfcc" type="Dynamo.Nodes.DSModelElementsSelection" nickname="Select Model Elements" x="1380.51845136869" y="776.324216871635" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <instance id="76a531ee-6606-44cb-8928-e9346dbb85c2-00427667" />
+      <instance id="76a531ee-6606-44cb-8928-e9346dbb85c2-00427774" />
+      <instance id="76a531ee-6606-44cb-8928-e9346dbb85c2-004277e7" />
+      <instance id="76a531ee-6606-44cb-8928-e9346dbb85c2-004277e9" />
+    </Dynamo.Nodes.DSModelElementsSelection>
+    <Dynamo.Nodes.DSModelElementsSelection guid="f8bdb26b-de47-4a7c-8e2d-775f1a1ce164" type="Dynamo.Nodes.DSModelElementsSelection" nickname="Select Model Elements" x="1371.51845136869" y="923.324216871635" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <instance id="ebc2f98d-cc38-40cc-b696-49c60701d5bf-000fdc71" />
+    </Dynamo.Nodes.DSModelElementsSelection>
+    <Dynamo.Nodes.Function guid="63f94fd0-e95e-4b38-9246-484eea8ebc6d" type="Dynamo.Nodes.Function" nickname="Tool.GetSurroundingElements" x="1780.51845136869" y="808.324216871635" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="12c4cde0-3fe8-4a48-ae7e-74202be5c2b8" />
+      <Name value="Tool.GetSurroundingElements" />
+      <Description value="Get Surrounding Elements by Categories, group them  as  List. Tolerance distance available." />
+      <Inputs>
+        <Input value="Element(s)" />
+        <Input value="Element(s) to check" />
+        <Input value="Tolerance" />
+      </Inputs>
+      <Outputs>
+        <Output value="Set of elements" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="fe39fe0e-acee-43cd-824a-9bc3fccb3bac" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1662" y="965" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="1;" ShouldFocus="false" />
+    <DSCore.Map guid="61345a3e-d128-4d60-b818-9288ee955d2c" type="DSCore.Map" nickname="List.Map" x="2299.51845136869" y="973.324216871635" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+    <Dynamo.Nodes.DSFunction guid="dafbc7fe-822c-46dc-9020-3ea1d7e2d5c6" type="Dynamo.Nodes.DSFunction" nickname="List.Count" x="2063.51845136869" y="1047.32421687164" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.Count@var[]..[]" />
+    <Dynamo.Nodes.DSFunction guid="106f4ed7-78d5-49a5-a568-0e5d525f63a6" type="Dynamo.Nodes.DSFunction" nickname="&gt;" x="2708.51845136869" y="969.324216871635" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="Operators" function="&gt;@var[]..[],var[]..[]" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="a3778671-78b4-42d6-977a-920e4a2cc850" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="2498" y="1067" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="1;" ShouldFocus="false" />
+    <Dynamo.Nodes.DSFunction guid="633c9086-b820-49c8-b0ad-c495429c6806" type="Dynamo.Nodes.DSFunction" nickname="List.FilterByBoolMask" x="2931.51845136869" y="803.324216871635" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.FilterByBoolMask@var[]..[],var[]..[]" />
+    <DSIronPythonNode.PythonNode guid="95df446b-8050-4788-a438-5df8479e2d3e" type="DSIronPythonNode.PythonNode" nickname="Py - JOIN" x="3234.51845136869" y="696.324216871635" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+from System.Collections.Generic import *
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+
+#The inputs to this node will be stored as a list in the IN variables.
+dataEnteringNode = IN
+
+items1 = UnwrapElement(IN[0])
+
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+booleans=[]
+
+for i in range (0,len(items1)):
+	for j in range(0,len(items1[i])):
+		try:
+			JoinGeometryUtils.JoinGeometry(doc,items1[i][0],items1[i][j])
+			booleans.append(True)
+		except:
+			booleans.append(False)
+
+TransactionManager.Instance.TransactionTaskDone()
+
+#Assign your output to the OUT variable.
+OUT = booleans</Script>
+    </DSIronPythonNode.PythonNode>
+    <DSIronPythonNode.PythonNode guid="3ed2a410-0d2c-41fc-ba7a-4b0f3530da10" type="DSIronPythonNode.PythonNode" nickname="Py - SWITCH JOIN" x="3325.51845136869" y="940.824216871635" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+from System.Collections.Generic import *
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+
+#The inputs to this node will be stored as a list in the IN variables.
+dataEnteringNode = IN
+
+items1 = UnwrapElement(IN[0])
+
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+booleans=[]
+
+for i in range (0,len(items1)):
+	for j in range(0,len(items1[i])):
+		try:
+			JoinGeometryUtils.SwitchJoinOrder(doc,items1[i][0],items1[i][j])
+			booleans.append(True)
+		except:
+			booleans.append(False)
+
+TransactionManager.Instance.TransactionTaskDone()
+
+#Assign your output to the OUT variable.
+OUT = booleans</Script>
+    </DSIronPythonNode.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="7133cdf5-45c5-4d31-9fc8-77bf7356cfcc" start_index="0" end="63f94fd0-e95e-4b38-9246-484eea8ebc6d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f8bdb26b-de47-4a7c-8e2d-775f1a1ce164" start_index="0" end="63f94fd0-e95e-4b38-9246-484eea8ebc6d" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="63f94fd0-e95e-4b38-9246-484eea8ebc6d" start_index="0" end="61345a3e-d128-4d60-b818-9288ee955d2c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="63f94fd0-e95e-4b38-9246-484eea8ebc6d" start_index="0" end="633c9086-b820-49c8-b0ad-c495429c6806" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="fe39fe0e-acee-43cd-824a-9bc3fccb3bac" start_index="0" end="63f94fd0-e95e-4b38-9246-484eea8ebc6d" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="61345a3e-d128-4d60-b818-9288ee955d2c" start_index="0" end="106f4ed7-78d5-49a5-a568-0e5d525f63a6" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="dafbc7fe-822c-46dc-9020-3ea1d7e2d5c6" start_index="0" end="61345a3e-d128-4d60-b818-9288ee955d2c" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="106f4ed7-78d5-49a5-a568-0e5d525f63a6" start_index="0" end="633c9086-b820-49c8-b0ad-c495429c6806" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a3778671-78b4-42d6-977a-920e4a2cc850" start_index="0" end="106f4ed7-78d5-49a5-a568-0e5d525f63a6" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="633c9086-b820-49c8-b0ad-c495429c6806" start_index="0" end="3ed2a410-0d2c-41fc-ba7a-4b0f3530da10" end_index="0" portType="0" />
+  </Connectors>
+  <Notes>
+    <Dynamo.Models.NoteModel guid="cf5bf367-dcbe-4bd5-8207-7100fe43749b" text="Select Element to be Joined" x="1385.51845136869" y="734.324216871635" />
+    <Dynamo.Models.NoteModel guid="d4024ac2-ead0-45cd-b603-c095f9517323" text="Select Element to be Joined to" x="1378.51845136869" y="893.824216871635" />
+  </Notes>
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

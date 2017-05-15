@@ -1,0 +1,181 @@
+<Workspace Version="1.2.0.2514" X="-826.071512878273" Y="-287.118923704441" zoom="1.06158416923322" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="Curves.DeconstructPolyCurve" resolvedName="Geometry.Curves" assemblyName="LunchBox.dll" />
+    <ClassMap partialName="Curves" resolvedName="Geometry.Curves" assemblyName="LunchBox.dll" />
+    <ClassMap partialName="NurbsCurve" resolvedName="Autodesk.DesignScript.Geometry.NurbsCurve" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Autodesk.Curve" resolvedName="Autodesk.DesignScript.Geometry.Curve" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Autodesk.DesignScript.Geometry.Curve" resolvedName="Autodesk.DesignScript.Geometry.Curve" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="NurbsCurve.ClosestPointTo" resolvedName="Autodesk.DesignScript.Geometry.NurbsCurve" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="PolyCurve" resolvedName="Autodesk.DesignScript.Geometry.PolyCurve" assemblyName="ProtoGeometry.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <CoreNodeModels.Input.Filename guid="c02fa007-8b67-4692-aa4c-3c060d1c36f5" type="CoreNodeModels.Input.Filename" nickname="File Path" x="-468.5" y="330.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>.\TrussExampleSetup.3dm</System.String>
+      <HintPath>C:\Users\giovanni.brogioli\Documents\Dynamo\Scripts\PythonShell\TrussExampleSetup.3dm</HintPath>
+    </CoreNodeModels.Input.Filename>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="618827f6-7fea-40c0-ae0c-856031c69923" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="OpenRhino3dmModel.Get_RhinoFile" x="-152.103521150607" y="331.507441853218" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="..\..\..\..\AppData\Roaming\Dynamo\Dynamo%20Core\1.2\packages\Rhynamo\bin\Rhynamo.dll" function="Interoperability.ReadRhino.OpenRhino3dmModel.Get_RhinoFile@var">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="414f5f41-9fab-44ea-9858-928d1b3f26e5" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="RhinoObject.Get_RhinoObjects" x="149.926673265546" y="334.049390866062" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="..\..\..\..\AppData\Roaming\Dynamo\Dynamo%20Core\1.2\packages\Rhynamo\bin\Rhynamo.dll" function="Interoperability.ReadRhino.RhinoObject.Get_RhinoObjects@var">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <PythonNodeModels.PythonNode guid="d54eeed8-035c-461a-942b-02f155d9a1bf" type="PythonNodeModels.PythonNode" nickname="Python Script" x="1257.05397365903" y="530.499127917145" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="4">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <PortInfo index="3" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+import math
+#The inputs to this node will be stored as a list in the IN variables.
+
+crvRoof = IN[0]
+
+crvFloor = IN[1]
+
+subdiv = IN[2]
+
+minHH = IN[3]
+
+crvLen = crvRoof.Length #Length of the Roof
+
+divisions = math.ceil(crvLen/subdiv)
+
+newSubDiv = crvLen/divisions
+
+#ptsTop = Curve.PointAtParameter(crvRoof,div)
+
+ptsTop = NurbsCurve.PointsAtEqualSegmentLength(crvRoof,divisions) #top chord nodes
+
+ptsBottom = [] #bottom chord nodes
+
+error = "False" #define a check variable
+
+param = []
+
+
+dist = []
+
+for i in range(0,len(ptsTop)): #for each node of top chord
+	#distance to ground found with the closest point
+	param.append(NurbsCurve.ClosestPointTo(crvFloor,ptsTop[i]))
+	distance = (Geometry.DistanceTo(ptsTop[i],param[i]))
+	dist.append(distance)
+
+	if distance &lt; minHH:
+		#if the profile is too close to the terrain
+		distance = "Profile too close"
+		error = "True" 
+		break
+	
+	if distance - minHH &lt; newSubDiv:
+		#if the truss is closer than the field length
+		trussHeight = distance - minHH
+	else:
+		trussHeight = newSubDiv
+	#bottom chord points
+	newpt = Point.ByCoordinates(ptsTop[i].X,ptsTop[i].Y,ptsTop[i].Z-trussHeight)
+	#append newpt to the list
+	ptsBottom.append(newpt)	
+
+topChord = []
+botChord = []
+verticals = []
+diagonals = []
+invertdiagonals = []
+#GENERATE TRUSS GEOMETRY
+if error == "False":
+	topChord.append(PolyCurve.ByPoints(ptsTop))
+	botChord.append(PolyCurve.ByPoints(ptsBottom))
+	for i in range(0,len(ptsTop)):
+	   	verticals.append(Line.ByStartPointEndPoint(ptsTop[i],ptsBottom[i]))
+	   	if i &lt; len(ptsTop)-1:
+	   		diagonals.append(Line.ByStartPointEndPoint(ptsTop[i],ptsBottom[i+1]))
+			invertdiagonals.append(Line.ByStartPointEndPoint(ptsBottom[i],ptsTop[i+1]))
+#Assign your output to the OUT variable.
+OUT = topChord,botChord,verticals,diagonals,invertdiagonals
+</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="045d3575-7ade-4234-8b5d-dae594824a8b" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="857.86496070775" y="207.522221356029" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" CodeText="a[0];" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="5e452b4e-f956-4e79-b8d0-0b6d8befe756" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="845.725661586394" y="361.000482370701" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" CodeText="a[1];" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="61f1dda5-2b33-4797-a428-4386349e21af" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Subdivision Length" x="838.684380175366" y="509.57715042297" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="10;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="274c5ff3-bb2f-4096-a8c9-a6d91e69bc64" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Minimum Height" x="849.155510626644" y="611.541354769201" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="3;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="946ba4cd-6d4a-4275-8b62-52a988f3d330" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="RhinoTranslationToDS.Rhino_NurbsCurvesToDS" x="447.018916316186" y="277.452769362409" isVisible="false" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="..\..\..\..\AppData\Roaming\Dynamo\Dynamo%20Core\1.2\packages\Rhynamo\bin\Rhynamo.dll" function="Interoperability.ReadRhino.RhinoTranslationToDS.Rhino_NurbsCurvesToDS@var[]">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="7cfa7f40-4c0f-44b4-a071-413aa05485ec" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1565.38518537966" y="140.089720291146" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" CodeText="NurbsCurve.DivideByLengthFromParameter(a,b,0);" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="925e640a-32eb-4792-b0f6-36af1c78e359" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1984.88034311992" y="242.67293544394" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="Autodesk.Curve.DivideEqually(a,b);" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="e2a90ee2-e344-4af2-b687-4e4d8c14d6dc" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="2262" y="346" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="crv.PointAtParameter(0..1..#11);" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="d5a55412-d3bf-44a2-9b0b-0e86a1df4eb8" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1833" y="669" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" CodeText="Autodesk.Curve.PointAtParameter(crv,b);" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="c2aadacb-6a19-4f28-b933-5c4f3e87f54f" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1390.4605863266" y="757.726601519266" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" CodeText="(0..1..#11);" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="8d1dc9ee-7db4-492c-adde-1ef855ffb959" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1620" y="850" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="0.5;" ShouldFocus="false" />
+    <PythonNodeModels.PythonNode guid="01070b70-4df6-48c8-8981-b354037ca972" type="PythonNodeModels.PythonNode" nickname="Python Script" x="1653.15726963075" y="512.466701186014" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="2">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+import math
+#The inputs to this node will be stored as a list in the IN variables.
+dataEnteringNode = IN
+
+crvRoof = IN[0]
+
+subdiv = IN[1]
+
+crvLen = crvRoof.Length #Length of the Roof
+
+divisions = math.ceil(crvLen/subdiv)
+
+newSubDiv = crvLen/divisions
+
+
+ran = []
+for i in range(0, int(divisions)):
+	ran.append(float((i+1.0)/int(divisions)))
+
+
+#Assign your output to the OUT variable.
+OUT = divisions,ran,float(5.0/4)</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="82612553-0d86-4d71-bb82-8188cf578463" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1025.87643900296" y="714.117514435842" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" CodeText="0..1..#4;" ShouldFocus="false" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="c02fa007-8b67-4692-aa4c-3c060d1c36f5" start_index="0" end="618827f6-7fea-40c0-ae0c-856031c69923" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="618827f6-7fea-40c0-ae0c-856031c69923" start_index="0" end="414f5f41-9fab-44ea-9858-928d1b3f26e5" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="414f5f41-9fab-44ea-9858-928d1b3f26e5" start_index="0" end="946ba4cd-6d4a-4275-8b62-52a988f3d330" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="045d3575-7ade-4234-8b5d-dae594824a8b" start_index="0" end="d54eeed8-035c-461a-942b-02f155d9a1bf" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="045d3575-7ade-4234-8b5d-dae594824a8b" start_index="0" end="d5a55412-d3bf-44a2-9b0b-0e86a1df4eb8" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="045d3575-7ade-4234-8b5d-dae594824a8b" start_index="0" end="01070b70-4df6-48c8-8981-b354037ca972" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="5e452b4e-f956-4e79-b8d0-0b6d8befe756" start_index="0" end="d54eeed8-035c-461a-942b-02f155d9a1bf" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="61f1dda5-2b33-4797-a428-4386349e21af" start_index="0" end="d54eeed8-035c-461a-942b-02f155d9a1bf" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="61f1dda5-2b33-4797-a428-4386349e21af" start_index="0" end="925e640a-32eb-4792-b0f6-36af1c78e359" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="61f1dda5-2b33-4797-a428-4386349e21af" start_index="0" end="01070b70-4df6-48c8-8981-b354037ca972" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="274c5ff3-bb2f-4096-a8c9-a6d91e69bc64" start_index="0" end="d54eeed8-035c-461a-942b-02f155d9a1bf" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="946ba4cd-6d4a-4275-8b62-52a988f3d330" start_index="0" end="045d3575-7ade-4234-8b5d-dae594824a8b" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="946ba4cd-6d4a-4275-8b62-52a988f3d330" start_index="0" end="5e452b4e-f956-4e79-b8d0-0b6d8befe756" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="8d1dc9ee-7db4-492c-adde-1ef855ffb959" start_index="0" end="d5a55412-d3bf-44a2-9b0b-0e86a1df4eb8" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="4.96919918060303" eyeY="12.2656450271606" eyeZ="22.680778503418" lookX="2.82796120643616" lookY="-6.23890447616577" lookZ="-26.0768890380859" upX="0.00188162934500724" upY="0.999847710132599" upZ="-0.0173506755381823" />
+  </Cameras>
+</Workspace>

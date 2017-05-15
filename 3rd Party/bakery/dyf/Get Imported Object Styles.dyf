@@ -1,0 +1,30 @@
+<Workspace Version="0.9.1.4062" X="-13.6384491568274" Y="46.6609801357653" zoom="0.915562285281226" Name="Get Imported Object Styles" Description="original code by Konrad" ID="74f7790a-6309-4a80-bb1e-024457ae390d" Category="Bakery.Imports">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="28d5ddb1-db24-4cc8-81d2-45d73c53656d" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="285.310655437307" y="41.5618279311727" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" CodeText="&quot;import clr&#xA;clr.AddReference('ProtoGeometry')&#xA;from Autodesk.DesignScript.Geometry import *&#xA;&#xA;clr.AddReference('RevitServices')&#xA;import RevitServices&#xA;from RevitServices.Persistence import DocumentManager&#xA;&#xA;clr.AddReference('RevitAPI')&#xA;import Autodesk&#xA;from Autodesk.Revit.DB import *&#xA;&#xA;doc = DocumentManager.Instance.CurrentDBDocument&#xA;&#xA;dataEnteringNode = IN&#xA;catName = IN[0]&#xA;nameEquals = IN[1]&#xA;&#xA;gStyles = FilteredElementCollector(doc).OfClass(GraphicsStyle).ToElements()&#xA;&#xA;if nameEquals:&#xA;	for i in gStyles:&#xA;		if i.GraphicsStyleCategory.Name == str(catName):&#xA;			gStyleCategory = i.GraphicsStyleCategory&#xA;			break&#xA;		else:&#xA;			continue&#xA;	gStyleSubCategories = gStyleCategory.SubCategories&#xA;	gStyleSubCategoriesList = []&#xA;	for i in gStyleSubCategories:&#xA;		gStyleSubCategoriesList.append(i.Name)&#xA;	OUT = gStyleSubCategoriesList&#xA;else:&#xA;	gStyleCategoryList = []&#xA;	for i in gStyles:&#xA;		if str(catName) in i.GraphicsStyleCategory.Name:&#xA;			gStyleCategoryList.append(i.GraphicsStyleCategory)&#xA;	gStyleSubCategories = []&#xA;	for i in gStyleCategoryList:&#xA;		gStyleSubCategories.append(i.SubCategories)&#xA;	gStyleSubCategoriesList = [[] for i in range(0, len(gStyleSubCategories))]&#xA;	for index, item in enumerate(gStyleSubCategories):&#xA;		for j in item:&#xA;			gStyleSubCategoriesList[index].append(j.Name)&#xA;	OUT = gStyleSubCategoriesList&quot;;" ShouldFocus="false" />
+    <PythonNodeModels.PythonStringNode guid="1a430745-b6b9-43ef-8eb7-4e02523cf0b0" type="PythonNodeModels.PythonStringNode" nickname="Python Script From String" x="1367.55548012128" y="40.7211960731433" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" inputcount="3" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="6b854616-d1e8-45f2-a112-3757d4253fef" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1055" y="91" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" CodeText="&quot;Imports in Families&quot;;&#xA;true;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="d65e6661-58bd-466b-b137-c1c62ce8e31b" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1069.09222498139" y="179.907775018613" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" CodeText="&quot;.dwg&quot;;&#xA;false;" ShouldFocus="false" />
+    <CoreNodeModels.Watch guid="59d5845b-f912-4ad3-8d00-653bdcc5db80" type="CoreNodeModels.Watch" nickname="Watch" x="1651.53397528192" y="28.7067212778853" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" />
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="8f6d2699-b5b1-408c-9606-f707f51e15de" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1588.18492636147" y="205.647168262592" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false">
+      <Symbol value="list" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="bf6529a0-30c5-4f8e-a158-72be2cda4f14" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1033.53349888322" y="250.902398808773" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" CodeText="&quot;ARCH3&quot;;&#xA;false;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="b03ff811-f46c-4c9b-bd2d-5f71b8a33a09" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="1033.33463581683" y="427.36883948417" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false">
+      <Symbol value="Search for" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="a4178adb-5c1b-4238-bcea-01aa9e6ef06b" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="974.839185109544" y="567.173637101716" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false">
+      <Symbol value="False for catch more" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="28d5ddb1-db24-4cc8-81d2-45d73c53656d" start_index="0" end="1a430745-b6b9-43ef-8eb7-4e02523cf0b0" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="1a430745-b6b9-43ef-8eb7-4e02523cf0b0" start_index="0" end="59d5845b-f912-4ad3-8d00-653bdcc5db80" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="1a430745-b6b9-43ef-8eb7-4e02523cf0b0" start_index="0" end="8f6d2699-b5b1-408c-9606-f707f51e15de" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="b03ff811-f46c-4c9b-bd2d-5f71b8a33a09" start_index="0" end="1a430745-b6b9-43ef-8eb7-4e02523cf0b0" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="a4178adb-5c1b-4238-bcea-01aa9e6ef06b" start_index="0" end="1a430745-b6b9-43ef-8eb7-4e02523cf0b0" end_index="2" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+</Workspace>

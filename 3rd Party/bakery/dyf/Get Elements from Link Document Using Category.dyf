@@ -1,0 +1,66 @@
+<Workspace Version="0.8.2.2371" X="644.303260372838" Y="840.657676102191" zoom="1.40972876398001" Name="Get Elements from Link Document Using Category" Description="" ID="18f8bc05-fab8-4a62-a118-8d76c9d9b53e" Category="Bakery.Collect">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Symbol guid="5e1c6181-ecbd-4cd9-9dbd-c257adde606a" type="Dynamo.Nodes.Symbol" nickname="Input" x="-448.47760364371" y="-407.937905199385" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="Link Document" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="4ea71cfc-2e1e-4a82-a58d-0f1e7fb74cc9" type="Dynamo.Nodes.Symbol" nickname="Input" x="-291.165771289564" y="-294.197359779198" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="builtInName" />
+    </Dynamo.Nodes.Symbol>
+    <DSIronPythonNode.PythonNode guid="258e08da-9fcf-41b1-a022-3363ca8a73bf" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="129.616874642547" y="-320.980005711308" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>#python nodes in dynamo 0.7
+#proposed by Julien Benoit @jbenoit44 
+#http://aecuandme.wordpress.com/
+import System
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+# Import geometry conversion extension methods
+clr.ImportExtensions(Revit.GeometryConversion)
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+from System.Collections.Generic import *
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+uidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+
+LinkDoc=IN[0]
+BuiltIn = IN[1]
+#BuiltIn = System.Enum.ToObject(BuiltInCategory, cat.Id)
+
+collector = FilteredElementCollector(LinkDoc)
+filter = ElementCategoryFilter(BuiltIn)
+list=collector.WherePasses(filter).WhereElementIsNotElementType().ToElements()
+
+
+OUT = list</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Output guid="cdbb2967-b1eb-4364-a16d-ba526abd95fd" type="Dynamo.Nodes.Output" nickname="Output" x="352.834228710436" y="-320.197359779198" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="Element(s)" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="5e1c6181-ecbd-4cd9-9dbd-c257adde606a" start_index="0" end="258e08da-9fcf-41b1-a022-3363ca8a73bf" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4ea71cfc-2e1e-4a82-a58d-0f1e7fb74cc9" start_index="0" end="258e08da-9fcf-41b1-a022-3363ca8a73bf" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="258e08da-9fcf-41b1-a022-3363ca8a73bf" start_index="0" end="cdbb2967-b1eb-4364-a16d-ba526abd95fd" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

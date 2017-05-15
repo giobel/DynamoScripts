@@ -1,0 +1,106 @@
+<Workspace Version="0.7.4.3245" X="348.473490260531" Y="-99.367421176314" zoom="1.13758205229474" Description="Creates a parametric mobius surface." Category="LunchBox.Geometry.Form" Name="LunchBox Mobius" ID="f9840fdd-48f6-4a5e-9dcc-fff14528b7d8">
+  <Elements>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="0e765eb1-a464-4add-b4e6-daff9ac52aad" nickname="Python Script" x="437.429529753094" y="463.535396163565" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="9">
+      <Script>#Copyright(c) 2014, Nathan Miller
+# The Proving Ground, http://theprovingground.org
+import clr
+import math
+from System import Array
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+#Variables
+U = IN[0]
+V = IN[1]
+R = IN[2]
+T = IN[3]
+S = IN[4]
+U0 = IN[5]
+U1 = IN[6]
+V0 = IN[7]
+V1 = IN[8]
+
+uStep = math.fabs(U1 - U0) / (U-1)
+vStep = math.fabs(V1 - V0) / (V-1)
+uCount = 0
+vCount = 0
+
+i = U0
+j = V0
+
+newU = 0
+while i &lt;= U1 + uStep:
+	i = i + uStep
+	newU = newU + 1
+
+i=U0
+
+ptsarrarr = Array.CreateInstance(Array[Point], newU)
+while i &lt;= U1 + uStep and uCount &lt;= newU:
+	j = V0
+	vCount = 0
+	ptsarr = Array.CreateInstance(Point, V)
+	while j &lt;= V1 + vStep:
+		x = (R + j * math.cos(T * i)) * math.cos(i)
+		y = (R + j * math.cos(T * i)) * math.sin(i)
+		z = j * math.sin(T * i)
+		
+		pt = Point.ByCoordinates(x*S,y*S,z*S)
+		ptsarr[vCount] = pt
+		
+		j = j + vStep
+		vCount = vCount + 1
+		
+	ptsarrarr[uCount] = ptsarr
+	i = i + uStep
+	uCount = uCount + 1
+
+srf = NurbsSurface.ByPoints(ptsarrarr)
+	
+OUT = srf</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="127e0b30-67b9-44ef-a933-53ccba964a8e" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="U" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="e7da86ad-8ca9-4e47-bef0-9b1dcae0acdf" nickname="Input" x="0" y="150" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="V" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="a357bf88-e486-4fb0-9a51-2ffb7e378fbd" nickname="Input" x="0" y="300" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="R" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="2ff1a4de-ea60-4df6-a41d-276e9cf82931" nickname="Input" x="0" y="450" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="T" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="ec155609-eeb8-4699-a15b-cb1edfe0160d" nickname="Input" x="0" y="600" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="S" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="b64fa1d0-5a5e-47c8-8d8d-9a45eb82debb" nickname="Input" x="0" y="750" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="U0" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="9cf7c4da-b4d4-48b3-9d3a-27592364b382" nickname="Input" x="0" y="900" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="U1" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="e8c9d051-9481-435f-89c9-b8f5086c3ce4" nickname="Input" x="0" y="1050" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="V0" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="5090f9aa-8722-4887-897d-6e660c80d927" nickname="Input" x="0" y="1200" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="V1" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="5ac44a41-3867-4e08-892a-41a6b1204256" nickname="Output" x="636.429529753094" y="463.535396163565" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Surface" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="0e765eb1-a464-4add-b4e6-daff9ac52aad" start_index="0" end="5ac44a41-3867-4e08-892a-41a6b1204256" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="127e0b30-67b9-44ef-a933-53ccba964a8e" start_index="0" end="0e765eb1-a464-4add-b4e6-daff9ac52aad" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e7da86ad-8ca9-4e47-bef0-9b1dcae0acdf" start_index="0" end="0e765eb1-a464-4add-b4e6-daff9ac52aad" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a357bf88-e486-4fb0-9a51-2ffb7e378fbd" start_index="0" end="0e765eb1-a464-4add-b4e6-daff9ac52aad" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="2ff1a4de-ea60-4df6-a41d-276e9cf82931" start_index="0" end="0e765eb1-a464-4add-b4e6-daff9ac52aad" end_index="3" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ec155609-eeb8-4699-a15b-cb1edfe0160d" start_index="0" end="0e765eb1-a464-4add-b4e6-daff9ac52aad" end_index="4" portType="0" />
+    <Dynamo.Models.ConnectorModel start="b64fa1d0-5a5e-47c8-8d8d-9a45eb82debb" start_index="0" end="0e765eb1-a464-4add-b4e6-daff9ac52aad" end_index="5" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9cf7c4da-b4d4-48b3-9d3a-27592364b382" start_index="0" end="0e765eb1-a464-4add-b4e6-daff9ac52aad" end_index="6" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e8c9d051-9481-435f-89c9-b8f5086c3ce4" start_index="0" end="0e765eb1-a464-4add-b4e6-daff9ac52aad" end_index="7" portType="0" />
+    <Dynamo.Models.ConnectorModel start="5090f9aa-8722-4887-897d-6e660c80d927" start_index="0" end="0e765eb1-a464-4add-b4e6-daff9ac52aad" end_index="8" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

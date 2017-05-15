@@ -1,0 +1,48 @@
+<Workspace Version="0.8.1.1942" X="35" Y="190" zoom="1" Name="Load Selection Set as Elements" ID="a68e4235-eff2-44ce-800a-92b253c4907e" Description="" Category="Bakery.Elements">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Symbol guid="982132d1-ae65-4549-8df1-f2a88128c795" type="Dynamo.Nodes.Symbol" nickname="Input" x="10" y="10" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="SelectionSet(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Function guid="0367d10c-8b57-4968-814d-7442ef4abcea" type="Dynamo.Nodes.Function" nickname="Turn Into List" x="223" y="99.2528438205236" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="var[]" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSIronPythonNode.PythonNode guid="12da886e-519d-4720-aec9-78fb8141c36f" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="440.5304894143" y="82.7171143365254" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+items = UnwrapElement(IN[0])
+elementlist = list()
+for item in items:
+	selsetmembers = list()
+	for member in item.GetElementIds():
+		selsetmembers.append(doc.GetElement(member))
+	elementlist.append(selsetmembers)
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Output guid="ca3a5858-58cb-4c35-95a3-c2b055c2e288" type="Dynamo.Nodes.Output" nickname="Output" x="1007.39863179187" y="10" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Elements" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="982132d1-ae65-4549-8df1-f2a88128c795" start_index="0" end="0367d10c-8b57-4968-814d-7442ef4abcea" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0367d10c-8b57-4968-814d-7442ef4abcea" start_index="0" end="12da886e-519d-4720-aec9-78fb8141c36f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="12da886e-519d-4720-aec9-78fb8141c36f" start_index="0" end="ca3a5858-58cb-4c35-95a3-c2b055c2e288" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+</Workspace>

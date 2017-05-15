@@ -1,0 +1,64 @@
+<Workspace Version="0.7.2.2921" X="30" Y="396.529285714286" zoom="0.65546218487395" Description="Create Line Boundary Condition from Analytical Line" Category="SteamNodes.Analytical" Name="Analytical.CreateLineBoundaryCondition" ID="dacf0406-62db-4dad-93e4-a78d35704d89">
+  <Elements>
+    <Dynamo.Nodes.CodeBlockNodeModel type="Dynamo.Nodes.CodeBlockNodeModel" guid="e1dd0939-99d3-4dd6-97bc-f15b9598b404" nickname="Code Block" x="0" y="84.2183333333333" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="0;" ShouldFocus="false" />
+    <Dynamo.Nodes.CodeBlockNodeModel type="Dynamo.Nodes.CodeBlockNodeModel" guid="dfedcb74-6286-47d6-bf86-18ba0f7099c7" nickname="Code Block" x="235" y="31.2183333333333" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="Flatten({item});" ShouldFocus="false" />
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="15a267e3-83b7-4f8d-a246-147cd46a2833" nickname="Output" x="767" y="27" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="" />
+    </Dynamo.Nodes.Output>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="4d4b9f47-3d4f-491d-b69c-fdf914e10d63" nickname="Python Script" x="543" y="27" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="2">
+      <Script>#python nodes in dynamo 0.7
+#proposed by Julien Benoit @jbenoit44 
+#http://aecuandme.wordpress.com/
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+# Import geometry conversion extension methods
+clr.ImportExtensions(Revit.GeometryConversion)
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+from System.Collections.Generic import *
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+from System.Collections.Generic import *
+
+doc = DocumentManager.Instance.CurrentDBDocument
+
+elt=UnwrapElement(IN[0])
+
+R=float(IN[1])
+
+bc=[]
+# Start Transaction
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+for e in elt:
+	s=Autodesk.Revit.DB.Structure.TranslationRotationValue.Fixed
+	a=doc.Create.NewLineBoundaryConditions(e,s,R,s,R,s,R,s,R)
+	bc.append(a)
+
+# End Transaction
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT =bc</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="4a568993-f486-4c0e-88e2-5d001627783a" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Analytical Beams" />
+    </Dynamo.Nodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="e1dd0939-99d3-4dd6-97bc-f15b9598b404" start_index="0" end="4d4b9f47-3d4f-491d-b69c-fdf914e10d63" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="dfedcb74-6286-47d6-bf86-18ba0f7099c7" start_index="0" end="4d4b9f47-3d4f-491d-b69c-fdf914e10d63" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4d4b9f47-3d4f-491d-b69c-fdf914e10d63" start_index="0" end="15a267e3-83b7-4f8d-a246-147cd46a2833" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4a568993-f486-4c0e-88e2-5d001627783a" start_index="0" end="dfedcb74-6286-47d6-bf86-18ba0f7099c7" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

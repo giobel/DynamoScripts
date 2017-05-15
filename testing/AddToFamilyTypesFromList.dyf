@@ -1,0 +1,80 @@
+<Workspace Version="0.8.1.1823" X="492.241480564361" Y="301.347824430832" zoom="0.894168083312077" Name="ElementTypesMatchList" ID="4bd950ff-f8cc-4612-9fa6-81591e76bf12" Description="Duplicates an element type" Category="Clockwork.Revit.Elements.ElementType.Actions">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="23bb6172-9017-4de5-bec4-01f37588c27d" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="-21.1200285894171" y="-63.6513589250067" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+family = UnwrapElement(IN[0])
+newNames = IN[1]
+
+nameInList = list()
+failedNameList = []
+initialSymbolNames = [n.get_Parameter(BuiltInParameter.SYMBOL_NAME_PARAM).AsString() for n in list(family.Symbols)]
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+for name in newNames:
+	try:
+		if name in initialSymbolNames:
+			nameInList.append(name)
+		else:
+			newsym = list(family.Symbols)[0].Duplicate(name)
+			nameInList.append(name)
+	except BaseException as E:
+		failedNameList.append(E[0])
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = [initialSymbolNames, nameInList, failedNameList]
+#OUT = nameInList</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="02c5f7da-bf50-4c2d-a102-5791231a315d" type="Dynamo.Nodes.Function" nickname="Turn Into List" x="-198.773927229253" y="-33.8603883802387" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element into a (flat) list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="var[]" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Output guid="d35b3219-421f-4f6d-bf1a-92ba7ceb0d39" type="Dynamo.Nodes.Output" nickname="Output" x="663.752519973163" y="-72.0638399083188" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="FailedNames" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Symbol guid="b3ab0d57-4f3a-4c15-af19-850c14d226bb" type="Dynamo.Nodes.Symbol" nickname="Input" x="-359.76113722934" y="-141.093977553644" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Family" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="c177ea95-8a7d-4ecd-b801-dc7e904835f9" type="Dynamo.Nodes.Symbol" nickname="Input" x="-363.114494511765" y="-32.5842817324958" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Names" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Watch guid="e6dc5122-26f0-4d50-8879-1e864fcae368" type="Dynamo.Nodes.Watch" nickname="Watch" x="205.777820467045" y="-66.9258257748647" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.DSFunction guid="df6075df-97cc-4c7a-93d3-111a892db0bc" type="Dynamo.Nodes.DSFunction" nickname="List.GetItemAtIndex" x="456.361596688849" y="-68.2631065414491" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="4b81778d-3f66-43e6-8bdf-d24753a7dcd8" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="327.926202313311" y="-3.86757043005622" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="2;" ShouldFocus="false" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="23bb6172-9017-4de5-bec4-01f37588c27d" start_index="0" end="e6dc5122-26f0-4d50-8879-1e864fcae368" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="02c5f7da-bf50-4c2d-a102-5791231a315d" start_index="0" end="23bb6172-9017-4de5-bec4-01f37588c27d" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="b3ab0d57-4f3a-4c15-af19-850c14d226bb" start_index="0" end="23bb6172-9017-4de5-bec4-01f37588c27d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c177ea95-8a7d-4ecd-b801-dc7e904835f9" start_index="0" end="02c5f7da-bf50-4c2d-a102-5791231a315d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e6dc5122-26f0-4d50-8879-1e864fcae368" start_index="0" end="df6075df-97cc-4c7a-93d3-111a892db0bc" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="df6075df-97cc-4c7a-93d3-111a892db0bc" start_index="0" end="d35b3219-421f-4f6d-bf1a-92ba7ceb0d39" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4b81778d-3f66-43e6-8bdf-d24753a7dcd8" start_index="0" end="df6075df-97cc-4c7a-93d3-111a892db0bc" end_index="1" portType="0" />
+  </Connectors>
+  <Notes>
+    <Dynamo.Models.NoteModel guid="64128a15-52bf-4955-a424-5565dd853f47" text="3 Lists in output&#xD;&#xA;0 - Initial Symbol List&#xD;&#xA;1 - Names to add&#xD;&#xA;2 - Names which failed to add" x="241.837944617565" y="-182.111228906407" />
+    <Dynamo.Models.NoteModel guid="960585d8-ea1c-4275-ae85-6407c77cdbac" text="Use codeblock to control &#xD;&#xA;which list is output" x="325.26514481162" y="82.4625354159795" />
+    <Dynamo.Models.NoteModel guid="2bf6423a-ba70-4753-b1a4-c71c81e59f98" text="Creates new family types &#xD;&#xA;using Duplicate method" x="-34.846120631096" y="-127.78876242014" />
+  </Notes>
+  <Annotations />
+</Workspace>

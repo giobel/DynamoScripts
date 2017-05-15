@@ -1,0 +1,116 @@
+<Workspace Version="0.9.2.4472" X="-1997.00220535089" Y="1255.20464522738" zoom="2.39779451229532" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="False">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="Curve" resolvedName="Autodesk.DesignScript.Geometry.Curve" assemblyName="ProtoGeometry.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <DSRevitNodesUI.Categories guid="ca98059c-ae82-4c46-9aff-2a969a52f8e0" type="DSRevitNodesUI.Categories" nickname="Categories" x="331.74728026309" y="-660.643633599543" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" index="842:StructuralFraming" />
+    <DSRevitNodesUI.Categories guid="b51a49f6-33af-4fea-b695-13befd0e1a47" type="DSRevitNodesUI.Categories" nickname="Categories" x="342.050922251164" y="-457.252978167428" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" index="234:DuctCurves" />
+    <DSRevitNodesUI.ElementsOfCategory guid="c4119203-d4fe-4513-a309-b49d750fd197" type="DSRevitNodesUI.ElementsOfCategory" nickname="All Elements of Category" x="593.619710333566" y="-465.650071633696" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" />
+    <DSRevitNodesUI.ElementsOfCategory guid="017eef99-862d-409f-b519-62f468b56c90" type="DSRevitNodesUI.ElementsOfCategory" nickname="All Elements of Category" x="580.453616249271" y="-651.111407034916" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="6ae5eeab-acb0-4a49-a32f-3c35ccd6400c" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.Geometry" x="854.887260664793" y="-732.291915133849" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" assembly="RevitNodes.dll" function="Revit.Elements.Element.Geometry" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="092a5d74-ed7c-487a-9b37-0c9a5c5a7524" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.Geometry" x="846.998847242201" y="-487.646371658966" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" assembly="RevitNodes.dll" function="Revit.Elements.Element.Geometry" />
+    <PythonNodeModels.PythonNode guid="ae3e45e7-9442-4cc7-982c-12476feba5ae" type="PythonNodeModels.PythonNode" nickname="Python Script" x="2919.76436216787" y="-704.155686838926" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" inputcount="2">
+      <Script>import clr
+
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+from Autodesk.Revit.DB.Structure import *
+from Autodesk.Revit.Creation import *
+
+clr.AddReference("System")
+from System.Collections.Generic import List
+
+clr.AddReference('RevitNodes')
+import Revit
+clr.ImportExtensions(Revit.GeometryConversion)
+clr.ImportExtensions(Revit.Elements)
+
+clr.AddReference('RevitServices')
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+import math
+
+doc = DocumentManager.Instance.CurrentDBDocument
+
+openings = []
+
+beams = IN[0]
+loops = IN[1]
+
+for idx in range(0,len(beams)):
+	
+	#ca = curves*/
+	el = doc.GetElement(ElementId(beams[idx].Id))
+	
+	for curves in loops[idx]:
+	
+		ca = CurveArray()
+
+		for c in curves:
+		
+			curve1 = c.ToRevitType(True)
+			ca.Append(curve1)
+					
+		TransactionManager.Instance.EnsureInTransaction(doc)
+		opening = doc.Create.NewOpening.Overloads[Element, CurveArray, eRefFace](el, ca, eRefFace.CenterY)
+		TransactionManager.Instance.TransactionTaskDone()	
+				
+		openings.append(ca)
+
+OUT = openings</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="8c37c6a9-c5a6-4ad3-bd86-2ccf3df6b0c9" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="StructuralFraming.Location" x="1243.07338137802" y="-740.211820435321" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" assembly="RevitNodes.dll" function="Revit.Elements.StructuralFraming.Location" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="ab2c3c87-e740-4a27-8f9f-d07cf1ee0065" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Plane.ByLineAndPoint" x="1864.80263376826" y="-721.692481320338" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Plane.ByLineAndPoint@Autodesk.DesignScript.Geometry.Line,Autodesk.DesignScript.Geometry.Point" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="f537edcd-807d-40ba-9037-3cae00543ca6" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Geometry.Intersect" x="2073.09991298881" y="-520.971902113468" isVisible="true" isUpstreamVisible="true" lacing="CrossProduct" isSelectedInput="False" IsFrozen="false" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Geometry.Intersect@Autodesk.DesignScript.Geometry.Geometry" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="477ded90-bdb7-40d4-b24d-65eee80c9130" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Flatten" x="2344.18652802673" y="-532.452211885932" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" assembly="BuiltIn" function="Flatten@var[]..[]" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="bc9d2331-3a4f-4600-8cbf-9295ccb131ed" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Surface.PerimeterCurves" x="2696.6895150777" y="-603.347920758807" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Surface.PerimeterCurves" />
+    <CoreNodeModels.HigherOrder.Map guid="e3ac9c57-bd4b-41d8-8007-172767eaaa08" type="CoreNodeModels.HigherOrder.Map" nickname="List.Map" x="2517.22943929797" y="-603.347920758807" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="aa7555c6-c7be-4a69-b1d4-b5f287503ab8" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Solid.Centroid" x="1698.23632614429" y="-586.13447858354" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Solid.Centroid" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="796a4dea-4865-4756-bc4a-00f86f949933" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="BoundingBox.ToCuboid" x="1468.67001852033" y="-476.576475846741" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.BoundingBox.ToCuboid" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="0ba393b0-0e56-4526-8d0b-c43f097783af" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="BoundingBox.ByGeometry" x="1237.08990350345" y="-480.035039059821" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.BoundingBox.ByGeometry@Autodesk.DesignScript.Geometry.Geometry" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="88da662c-8330-4420-90bd-cb6eaa02be09" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Flatten" x="1042.48179171488" y="-553.607248802439" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" assembly="BuiltIn" function="Flatten@var[]..[]" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="051b96f3-9cde-418f-bf61-8e8c162708ad" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.Transpose" x="2344.18652802673" y="-640.452211885931" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" assembly="DSCoreNodes.dll" function="DSCore.List.Transpose@var[]..[]" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="ca98059c-ae82-4c46-9aff-2a969a52f8e0" start_index="0" end="017eef99-862d-409f-b519-62f468b56c90" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="b51a49f6-33af-4fea-b695-13befd0e1a47" start_index="0" end="c4119203-d4fe-4513-a309-b49d750fd197" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c4119203-d4fe-4513-a309-b49d750fd197" start_index="0" end="092a5d74-ed7c-487a-9b37-0c9a5c5a7524" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="017eef99-862d-409f-b519-62f468b56c90" start_index="0" end="6ae5eeab-acb0-4a49-a32f-3c35ccd6400c" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="017eef99-862d-409f-b519-62f468b56c90" start_index="0" end="8c37c6a9-c5a6-4ad3-bd86-2ccf3df6b0c9" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="017eef99-862d-409f-b519-62f468b56c90" start_index="0" end="ae3e45e7-9442-4cc7-982c-12476feba5ae" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="6ae5eeab-acb0-4a49-a32f-3c35ccd6400c" start_index="0" end="0ba393b0-0e56-4526-8d0b-c43f097783af" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="092a5d74-ed7c-487a-9b37-0c9a5c5a7524" start_index="0" end="88da662c-8330-4420-90bd-cb6eaa02be09" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="8c37c6a9-c5a6-4ad3-bd86-2ccf3df6b0c9" start_index="0" end="ab2c3c87-e740-4a27-8f9f-d07cf1ee0065" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="ab2c3c87-e740-4a27-8f9f-d07cf1ee0065" start_index="0" end="f537edcd-807d-40ba-9037-3cae00543ca6" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="f537edcd-807d-40ba-9037-3cae00543ca6" start_index="0" end="051b96f3-9cde-418f-bf61-8e8c162708ad" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="477ded90-bdb7-40d4-b24d-65eee80c9130" start_index="0" end="e3ac9c57-bd4b-41d8-8007-172767eaaa08" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="bc9d2331-3a4f-4600-8cbf-9295ccb131ed" start_index="0" end="ae3e45e7-9442-4cc7-982c-12476feba5ae" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="e3ac9c57-bd4b-41d8-8007-172767eaaa08" start_index="0" end="bc9d2331-3a4f-4600-8cbf-9295ccb131ed" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="aa7555c6-c7be-4a69-b1d4-b5f287503ab8" start_index="0" end="ab2c3c87-e740-4a27-8f9f-d07cf1ee0065" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="796a4dea-4865-4756-bc4a-00f86f949933" start_index="0" end="aa7555c6-c7be-4a69-b1d4-b5f287503ab8" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0ba393b0-0e56-4526-8d0b-c43f097783af" start_index="0" end="796a4dea-4865-4756-bc4a-00f86f949933" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="88da662c-8330-4420-90bd-cb6eaa02be09" start_index="0" end="f537edcd-807d-40ba-9037-3cae00543ca6" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="051b96f3-9cde-418f-bf61-8e8c162708ad" start_index="0" end="e3ac9c57-bd4b-41d8-8007-172767eaaa08" end_index="0" portType="0" />
+  </Connectors>
+  <Notes>
+    <Dynamo.Graph.Notes.NoteModel guid="cbb2d7b9-5d8b-4c4a-919d-978dc20737ce" text="BIM Oasis Copyright&#xD;&#xA;For more details please visit us at:&#xD;&#xA;https://www.facebook.com/BIMOasis" x="638.20037766855" y="-842.313976536028" />
+    <Dynamo.Graph.Notes.NoteModel guid="5382f70b-66a0-4feb-bbaf-f6354f75a4db" text="(C) Copyright 2016-2017 by BIM Oasis Inc.&#xD;&#xA;&#xD;&#xA;Permission to use, copy, modify, and distribute this software in&#xD;&#xA;object code form for any purpose and without fee is hereby granted,&#xD;&#xA;provided that the above copyright notice appears in all copies and&#xD;&#xA;that both that copyright notice and the limited warranty and&#xD;&#xA;restricted rights notice below appear in all supporting&#xD;&#xA;documentation.&#xD;&#xA;&#xD;&#xA;BIM Oasis PROVIDES THIS PROGRAM &quot;AS IS&quot; AND WITH ALL FAULTS.&#xD;&#xA;BIM Oasis SPECIFICALLY DISCLAIMS ANY IMPLIED WARRANTY OF&#xD;&#xA;MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE. BIM Oasis,INC.&#xD;&#xA;DOES NOT WARRANT THAT THE OPERATION OF THE PROGRAM WILL BE&#xD;&#xA;UNINTERRUPTED OR ERROR FREE." x="322.161241874628" y="-1126.08452322629" />
+  </Notes>
+  <Annotations>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="0f94e403-a8e0-4deb-8c87-c481caa35fb3" annotationText="Get the intersection points" left="321.74728026309" top="-762.291915133849" width="839.73451145179" height="398.038936966421" fontSize="14" InitialTop="-732.291915133849" InitialHeight="325" TextblockHeight="20" backgrouund="#FFC1D676">
+      <Models ModelGuid="ca98059c-ae82-4c46-9aff-2a969a52f8e0" />
+      <Models ModelGuid="b51a49f6-33af-4fea-b695-13befd0e1a47" />
+      <Models ModelGuid="c4119203-d4fe-4513-a309-b49d750fd197" />
+      <Models ModelGuid="017eef99-862d-409f-b519-62f468b56c90" />
+      <Models ModelGuid="6ae5eeab-acb0-4a49-a32f-3c35ccd6400c" />
+      <Models ModelGuid="092a5d74-ed7c-487a-9b37-0c9a5c5a7524" />
+      <Models ModelGuid="88da662c-8330-4420-90bd-cb6eaa02be09" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+  </Annotations>
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-1982.58093261719" eyeY="-6644.35009765625" eyeZ="1821.68078613281" lookX="2267.43041992188" lookY="6003.7822265625" lookZ="-5700.87939453125" upX="0.195844575762749" upY="-0.848048150539398" upZ="-0.492401629686356" />
+  </Cameras>
+</Workspace>

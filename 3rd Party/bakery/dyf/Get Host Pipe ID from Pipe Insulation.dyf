@@ -1,0 +1,55 @@
+<Workspace Version="0.8.2.2311" X="77.625" Y="183.2175" zoom="0.8425" Name="Get Host Pipe ID from Pipe Insulation" Description="takes a list of elements (such as Pipe Insulations) and returns a list of their Hosts. Works for a variety of element types, not just Pipes :)" ID="04e95718-d70f-49ab-8e19-3a022688be26" Category="Bakery.Systems">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Symbol guid="8b6769e1-5983-4be6-9c8b-d2fc3f6cd3d5" type="Dynamo.Nodes.Symbol" nickname="Input" x="10" y="21.3651864801865" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="Element(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Function guid="e796f5c6-6e59-429b-95e5-03dff1ad3528" type="Dynamo.Nodes.Function" nickname="Turn Into List" x="172.074592074592" y="20.5866317016317" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="var[]" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSIronPythonNode.PythonNode guid="ecc49db1-50cb-4fbe-a5fc-870f59e9299e" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="366.345915212384" y="38.466360281657" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+faminsts = UnwrapElement(IN[0])
+elementlist = list()
+faillist = list()
+sourcelist = list()
+for item in faminsts:
+	sourcelist.append(doc.GetElement(item.HostElementId))
+#	try:
+#		param = item.HostElementId()
+#		elementlist.append(param)
+#	except:
+#		faillist.append(item)
+#OUT = (elementlist,faillist)
+OUT = sourcelist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Output guid="82f7a575-c7f9-4770-a82c-7e2e61cb9e8d" type="Dynamo.Nodes.Output" nickname="Output" x="815.972027972028" y="10" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="out" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="8b6769e1-5983-4be6-9c8b-d2fc3f6cd3d5" start_index="0" end="e796f5c6-6e59-429b-95e5-03dff1ad3528" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e796f5c6-6e59-429b-95e5-03dff1ad3528" start_index="0" end="ecc49db1-50cb-4fbe-a5fc-870f59e9299e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ecc49db1-50cb-4fbe-a5fc-870f59e9299e" start_index="0" end="82f7a575-c7f9-4770-a82c-7e2e61cb9e8d" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+</Workspace>

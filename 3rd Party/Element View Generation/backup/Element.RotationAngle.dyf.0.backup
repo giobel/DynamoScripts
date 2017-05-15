@@ -1,0 +1,72 @@
+<Workspace Version="0.8.2.2392" X="-153" Y="148" zoom="1" Name="Element.RotationAngle" Description="Get the rotation element of a Revit element. The rotation angle is based on the Location.Rotation property in the RevitAPI. If Location is not equal to a LocationPoint (ie. in case of slanted columns) then the Angle will be set to null." ID="c2dca06b-0037-41e6-82d7-7c5bc6e199cb" Category="BIM4Struc.Revit">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="List" resolvedName="DSCore.List" assemblyName="DSCoreNodes.dll" />
+    <ClassMap partialName="Point" resolvedName="Autodesk.DesignScript.Geometry.Point" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Element" resolvedName="Revit.Elements.Element" assemblyName="RevitNodes.dll" />
+    <ClassMap partialName="Vector" resolvedName="Autodesk.DesignScript.Geometry.Vector" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="PolyCurve" resolvedName="Autodesk.DesignScript.Geometry.PolyCurve" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Math" resolvedName="DSCore.Math" assemblyName="DSCoreNodes.dll" />
+    <ClassMap partialName="Vector.ZAxis" resolvedName="Autodesk.DesignScript.Geometry.Vector" assemblyName="ProtoGeometry.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Nodes.DSFunction guid="8488051e-6997-4d49-8d3b-81390c45a469" type="Dynamo.Nodes.DSFunction" nickname="List.Empty" x="276.430613078173" y="0" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.Empty" />
+    <DSCoreNodesUI.CreateList guid="33426ffd-3085-49c0-bce4-ec2a2493cee9" type="DSCoreNodesUI.CreateList" nickname="List.Create" x="376.279595817937" y="45.5193891901858" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2" />
+    <Dynamo.Nodes.Symbol guid="07a527e0-0355-4547-bc9e-0d6de78b9555" type="Dynamo.Nodes.Symbol" nickname="Input" x="250" y="92.5071457736035" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="Elements" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.DSFunction guid="7a94b448-0d86-4aa1-a146-6a5a4082462f" type="Dynamo.Nodes.DSFunction" nickname="Flatten" x="531.926539500509" y="46.9877565834172" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="BuiltIn" function="Flatten@var[]..[]" />
+    <DSIronPythonNode.PythonNode guid="a35d2ba7-b63c-4565-9892-edb29a99028b" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="668.177722546792" y="47.6986753476026" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>#This script looks for the rotation angle of Revit elements if available.
+#If location is a LocationPoint then the Rotation value is available.
+#In case of a slanted column, the Location is a LocationCurve, which doesn't have a rotation value.
+#Authored by Dieter Vermeulen, Autodesk, 2015
+#http://revitbeyondbim.wordpress.com
+
+import clr
+import math
+
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+#Import RevitAPI
+clr.AddReference('RevitAPI')
+import Autodesk
+#The inputs to this node will be stored as a list in the IN variables.
+resRotation = []
+strCol= IN[0]
+
+#make unwrapped list of elements
+elements=[]
+for i in strCol:
+	elements.append(UnwrapElement(i))
+	
+#get location and then rotation of element, if not not existing, then set rotation to null.
+for item in elements:
+	try:
+		loc=item.Location
+		resRotation.append(math.degrees(loc.Rotation))
+	except:
+		resRotation.append(None)
+	
+
+#Assign your output to the OUT variable.
+OUT=resRotation</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Output guid="11fe615a-e772-4ef0-bbb2-90e73c444814" type="Dynamo.Nodes.Output" nickname="Output" x="806.511242034856" y="45.5193891901858" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="Angle" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="8488051e-6997-4d49-8d3b-81390c45a469" start_index="0" end="33426ffd-3085-49c0-bce4-ec2a2493cee9" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="33426ffd-3085-49c0-bce4-ec2a2493cee9" start_index="0" end="7a94b448-0d86-4aa1-a146-6a5a4082462f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="07a527e0-0355-4547-bc9e-0d6de78b9555" start_index="0" end="33426ffd-3085-49c0-bce4-ec2a2493cee9" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="7a94b448-0d86-4aa1-a146-6a5a4082462f" start_index="0" end="a35d2ba7-b63c-4565-9892-edb29a99028b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a35d2ba7-b63c-4565-9892-edb29a99028b" start_index="0" end="11fe615a-e772-4ef0-bbb2-90e73c444814" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10427.7109313822" eyeY="14208.047919006" eyeZ="-27732.7268931289" lookX="3408.65260059809" lookY="-3541.37354567808" lookZ="-4062.27376178016" />
+  </Cameras>
+</Workspace>

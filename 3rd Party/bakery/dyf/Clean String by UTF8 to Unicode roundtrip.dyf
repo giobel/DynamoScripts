@@ -1,0 +1,40 @@
+<Workspace Version="0.8.2.2371" X="31.48681875" Y="116.934905264579" zoom="1.33823125" Name="Clean String by UTF8 to Unicode roundtrip" Description="" ID="fda5b97b-7814-415a-89b5-bc00286e7c59" Category="Bakery.Strings">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="010efebd-29a9-41da-a0af-8079e935c4f9" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="250" y="-1" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+import sys
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+sys.path.append("C:\Program Files (x86)\IronPython 2.7\Lib")
+#from xml.parsers.expat import expat -- can't find this
+import xml.etree.ElementTree as ET
+#The inputs to this node will be stored as a list in the IN variables.
+stringIn = IN[0]
+uniStr = unicode(stringIn)
+fixed = uniStr.decode('utf-8', 'replace')
+#Assign your output to the OUT variable.
+fixed.decode('utf-8')
+tree = ET.ElementTree(ET.fromstring(fixed))
+#start tree code
+#Assign your output to the OUT variable.
+OUT = tree</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol guid="c43984b7-e156-4036-b2d1-c4126719c4a1" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="IN[0]" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="d2547336-c9c5-4c2e-ae47-830eee087a5e" type="Dynamo.Nodes.Output" nickname="Output" x="449" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="ElementTree" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="010efebd-29a9-41da-a0af-8079e935c4f9" start_index="0" end="d2547336-c9c5-4c2e-ae47-830eee087a5e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c43984b7-e156-4036-b2d1-c4126719c4a1" start_index="0" end="010efebd-29a9-41da-a0af-8079e935c4f9" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="175.444717407227" eyeY="108.055969238281" eyeZ="66.9599990844727" lookX="-125.331512451172" lookY="-97.2981491088867" lookZ="-125.331512451172" />
+  </Cameras>
+</Workspace>

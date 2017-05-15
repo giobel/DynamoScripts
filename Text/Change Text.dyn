@@ -1,0 +1,320 @@
+<Workspace Version="1.2.0.2514" X="-586.874593265924" Y="135.036057133181" zoom="0.749458139491411" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="False">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.DSModelElementsSelection guid="9cbe52fc-5751-479c-99d2-23afd902b69b" type="Dynamo.Nodes.DSModelElementsSelection" nickname="Select Model Elements" x="86.6161147896349" y="216.361560147774" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="e4cf3821-71bc-4e6f-900c-8a1a05040d6c" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Excel.ReadFromFile" x="797.311572700297" y="376.632047477745" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSOffice.dll" function="DSOffice.Excel.ReadFromFile@var,string,bool">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="True" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <CoreNodeModels.Input.FileObject guid="1c9ae226-8cde-4a23-90c2-c8033bb97a9c" type="CoreNodeModels.Input.FileObject" nickname="File.FromPath" x="494.640949554896" y="384.940652818991" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.Input.FileObject>
+    <CoreNodeModels.Input.Filename guid="1149b0e5-fd31-4765-b5a6-42d8c33d5fb3" type="CoreNodeModels.Input.Filename" nickname="File Path" x="295.234421364985" y="380.192878338279" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>C:\Users\giovanni.brogioli\Documents\Dynamo\Scripts\Text\Text.xlsx</System.String>
+    </CoreNodeModels.Input.Filename>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="cfdc5ef4-2890-4f59-9aa2-e476c7d7560b" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="461" y="519" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;Sheet1&quot;;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="2d3e5c58-245c-4bcf-b959-c0ef6a73cd66" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Flatten" x="1040.6350148368" y="370.697329376855" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="BuiltIn" function="Flatten@var[]..[]">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <PythonNodeModels.PythonNode guid="5405c22f-8952-4c6b-870c-420c8a89b748" type="PythonNodeModels.PythonNode" nickname="Python Script" x="1161.91097922849" y="137.077151335311" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="2">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+items = UnwrapElement(IN[0])
+texts = IN[1]
+goodlist = []
+badlist = []
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+for i in range(0,len(items)):
+	try:
+		items[i].Text = texts[i]
+		goodlist.append(items[i])
+	except:
+		badlist.append(items[i])
+	
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = (goodlist,badlist)</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="c06a1dc5-2cf1-48a3-bad3-5b55af7604c2" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.Parameters" x="701.806870376862" y="-65.8038025038694" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="RevitNodes.dll" function="Revit.Elements.Element.Parameters">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="d75b568e-c16b-4e2b-a91f-519f75a3f0e2" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.SetParameterByName" x="1156.95548961424" y="520.252225519288" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="RevitNodes.dll" function="Revit.Elements.Element.SetParameterByName@string,var">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <PythonNodeModels.PythonNode guid="a2a57611-de3c-48ef-923e-26e4c4e599e5" type="PythonNodeModels.PythonNode" nickname="Python Script" x="946.201059412161" y="86.4979928732219" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="3">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <Script>#Copyright(c) 2015, Konrad K Sobon
+# @arch_laboratory, http://archi-lab.net
+
+import clr
+import sys
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
+sys.path.append(pyt_path)
+
+# Import Element wrapper extension methods
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+import System
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+paramName = IN[0]
+paramValues = IN[2]
+
+if isinstance(IN[1], list):
+	elements = []
+	for i in IN[1]:
+		elements.append(UnwrapElement(i))
+else:
+	elements = IN[1]
+
+def GetBuiltInParam(paramName):
+	builtInParams = System.Enum.GetValues(BuiltInParameter)
+	test = []
+	for i in builtInParams:
+		if i.ToString() == paramName:
+			test.append(i)
+			break
+		else:
+			continue
+	return test[0]
+
+try:
+	errorReport = None
+	# "Start" the transaction
+	TransactionManager.Instance.EnsureInTransaction(doc)
+	
+	bipName = GetBuiltInParam(paramName)
+	for i, j in zip(elements, paramValues):
+		param = i.get_Parameter(bipName)
+		param.Set(j)
+	
+	# "End" the transaction
+	TransactionManager.Instance.TransactionTaskDone()
+except:
+	# if error accurs anywhere in the process catch it
+	import traceback
+	errorReport = traceback.format_exc()
+
+#Assign your output to the OUT variable
+if errorReport == None:
+	OUT = 0
+else:
+	OUT = errorReport</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="80e803d5-5f6a-43b7-bdab-42b97e69ac84" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="719.843101854706" y="207.935966356522" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="1;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="17343889-af05-427e-8848-3441d9e398ab" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1156.43419552185" y="-26.1044084073352" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;TEXT_SIZE&quot;;" ShouldFocus="false" />
+    <PythonNodeModels.PythonNode guid="98ab2581-43d5-41e8-b637-6e7c1a565bb0" type="PythonNodeModels.PythonNode" nickname="Python Script" x="1484.3156413239" y="-224.551884584194" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>#Copyright(c) 2015, Konrad K Sobon
+# @arch_laboratory, http://archi-lab.net
+
+import clr
+import sys
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
+sys.path.append(pyt_path)
+
+# Import Element wrapper extension methods
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+import System
+
+#The inputs to this node will be stored as a list in the IN variable.
+
+
+textType = UnwrapElement(IN[0])
+
+#doc.GetElement(img_type)
+
+size = textType.get_Parameter(BuiltInParameter.TEXT_STYLE_SIZE)
+
+font = textType.get_Parameter(BuiltInParameter.TEXT_FONT)
+
+style = textType.get_Parameter(BuiltInParameter.TEXT_STYLE_UNDERLINE)
+
+builtInParams = System.Enum.GetValues(BuiltInParameter)
+
+OUT = builtInParams</Script>
+    </PythonNodeModels.PythonNode>
+    <CoreNodeModels.Watch guid="b67a7c79-5c16-413b-b238-06c80e329bdf" type="CoreNodeModels.Watch" nickname="Watch" x="2004.88035419119" y="-248.326176817062" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.Watch>
+    <Dynamo.Nodes.DSModelElementsSelection guid="a4dadc43-c288-4def-a58d-bc8646dcc2b2" type="Dynamo.Nodes.DSModelElementsSelection" nickname="Select Model Elements" x="1423.3830713563" y="80.5223451179434" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false" />
+    <CoreNodeModels.Input.StringInput guid="e06a4bf6-22d2-4549-a418-d565ef2b8a95" type="CoreNodeModels.Input.StringInput" nickname="String" x="1613.82745990313" y="-74.4214345264719" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>TEXT_STYLE_SIZE</System.String>
+      <System.String value="TEXT_STYLE_SIZE" />
+    </CoreNodeModels.Input.StringInput>
+    <PythonNodeModels.PythonNode guid="11188c1c-cc4c-4c4b-bc33-a84278135a89" type="PythonNodeModels.PythonNode" nickname="Python Script" x="1784.12850770682" y="181.199910461535" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="2">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <Script>#Copyright(c) 2015, Konrad K Sobon
+# @arch_laboratory, http://archi-lab.net
+
+import clr
+import sys
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
+sys.path.append(pyt_path)
+
+# Import Element wrapper extension methods
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+import System
+
+#The inputs to this node will be stored as a list in the IN variable.
+
+text = UnwrapElement(IN[0])
+
+textvalue = UnwrapElement(IN[1])
+
+#textType = text.Symbol
+
+#textType = text.GetTypeId()
+
+img = text.GetValidTypes()
+
+for img_type in img:
+	t = doc.GetElement(img_type)
+
+
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+textSize = t.get_Parameter(BuiltInParameter.TEXT_SIZE).AsDouble()
+
+textBox = t.get_Parameter(BuiltInParameter.LINE_PEN).AsDouble
+
+textBox = 5
+
+
+TransactionManager.Instance.TransactionTaskDone()
+
+
+
+
+OUT = textBox
+
+#AssemblyCode = type.get_Parameter(BuiltInParameter.TEXT_SIZE).AsString()
+
+
+#bipNumber = BuiltInParameter.TEXT_SIZE
+ 
+#tempSheetNum = bipNumber.get_Parameter(bipNumber).AsString()
+ 
+    
+#textSizeParam = textType.get_Parameter(BuiltInParameter.TEXT_SIZE);
+
+#paramTextUnderline = textType.get_Parameter(BuiltInParameter.TEXT_STYLE_UNDERLINE)
+
+#paramTextUnderline = textType.get_Parameter("TEXT_STYLE_UNDERLINE")
+
+#Name = textType.Name
+
+#textSize = textType.get_Parameter("Text Size")
+
+
+</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Nodes.DSModelElementSelection guid="a99dfa67-208a-4ef4-8c9e-08fc9c6a1dd7" type="Dynamo.Nodes.DSModelElementSelection" nickname="Select Model Element" x="1448.10512859273" y="221.634489195242" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="aed8c725-2087-4a20-8203-e078f62ccf54" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1591" y="344" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;sorta&quot;;" ShouldFocus="false" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="9cbe52fc-5751-479c-99d2-23afd902b69b" start_index="0" end="5405c22f-8952-4c6b-870c-420c8a89b748" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9cbe52fc-5751-479c-99d2-23afd902b69b" start_index="0" end="c06a1dc5-2cf1-48a3-bad3-5b55af7604c2" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9cbe52fc-5751-479c-99d2-23afd902b69b" start_index="0" end="a2a57611-de3c-48ef-923e-26e4c4e599e5" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9cbe52fc-5751-479c-99d2-23afd902b69b" start_index="0" end="98ab2581-43d5-41e8-b637-6e7c1a565bb0" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="e4cf3821-71bc-4e6f-900c-8a1a05040d6c" start_index="0" end="2d3e5c58-245c-4bcf-b959-c0ef6a73cd66" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="1c9ae226-8cde-4a23-90c2-c8033bb97a9c" start_index="0" end="e4cf3821-71bc-4e6f-900c-8a1a05040d6c" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="1149b0e5-fd31-4765-b5a6-42d8c33d5fb3" start_index="0" end="1c9ae226-8cde-4a23-90c2-c8033bb97a9c" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="cfdc5ef4-2890-4f59-9aa2-e476c7d7560b" start_index="0" end="e4cf3821-71bc-4e6f-900c-8a1a05040d6c" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="2d3e5c58-245c-4bcf-b959-c0ef6a73cd66" start_index="0" end="5405c22f-8952-4c6b-870c-420c8a89b748" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="80e803d5-5f6a-43b7-bdab-42b97e69ac84" start_index="0" end="a2a57611-de3c-48ef-923e-26e4c4e599e5" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="17343889-af05-427e-8848-3441d9e398ab" start_index="0" end="a2a57611-de3c-48ef-923e-26e4c4e599e5" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="98ab2581-43d5-41e8-b637-6e7c1a565bb0" start_index="0" end="b67a7c79-5c16-413b-b238-06c80e329bdf" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="a99dfa67-208a-4ef4-8c9e-08fc9c6a1dd7" start_index="0" end="11188c1c-cc4c-4c4b-bc33-a84278135a89" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="aed8c725-2087-4a20-8203-e078f62ccf54" start_index="0" end="11188c1c-cc4c-4c4b-bc33-a84278135a89" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

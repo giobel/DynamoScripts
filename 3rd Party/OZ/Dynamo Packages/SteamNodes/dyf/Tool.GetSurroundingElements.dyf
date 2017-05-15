@@ -1,0 +1,106 @@
+<Workspace Version="0.7.2.2921" X="210.779412141718" Y="170.984728245628" zoom="0.632790016105736" Description="Get Surrounding Elements by Categories, group them  as  List. Tolerance distance available." Category="SteamNodes.Tool" Name="Tool.GetSurroundingElements" ID="12c4cde0-3fe8-4a48-ae7e-74202be5c2b8">
+  <Elements>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="e8e46ffe-7a55-4f1a-af4f-df95cbed4407" nickname="List.FilterByBoolMask" x="1660.19294999023" y="46" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.FilterByBoolMask@var[]..[],var[]..[]" />
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="cecd7bc2-689d-464f-87bc-f1c48cdb8fa2" nickname="&gt;" x="1438.4482499306" y="285.098605642866" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="" function="&gt;@," />
+    <DSCore.Map type="DSCore.Map" guid="9cf31598-295e-49da-8fba-1e191716b640" nickname="List.Map" x="1206.05643094333" y="283.495492853645" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.CodeBlockNodeModel type="Dynamo.Nodes.CodeBlockNodeModel" guid="62c773a4-d940-488a-8f8e-1c07bf8f7367" nickname="Code Block" x="1209.88118326224" y="467.854011671933" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="1;" ShouldFocus="false" />
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="54ca7a1b-9f57-4688-988e-3b5f32804d62" nickname="List.Count" x="965.483615720994" y="370.863844126415" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.Count@var[]..[]" />
+    <DSCore.Map type="DSCore.Map" guid="04eeeada-51e2-4d78-af34-ef1342ead5a7" nickname="List.Map" x="884.807608462236" y="163.175113453539" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="a17e3ce3-d33f-4b6c-abf0-16c19e0a167b" nickname="Flatten" x="684.645461726103" y="331.147824715785" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="" function="Flatten@var[]..[]" />
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="758fd5b4-3d41-4fc5-a576-ce085ff2c2ef" nickname="Python Script" x="539.182964789885" y="160.814259618534" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="3">
+      <Script>#python nodes in dynamo 0.7
+#proposed by Julien Benoit @jbenoit44 
+#http://aecuandme.wordpress.com/
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+# Import geometry conversion extension methods
+clr.ImportExtensions(Revit.GeometryConversion)
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+from System.Collections.Generic import *
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+import itertools
+import operator
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+uidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+activeV=doc.ActiveView
+
+host = []
+finst=[]
+finstID=[]
+for i in IN[0]:
+	host.append(UnwrapElement(i))
+for i in IN[1]:
+	finst.append(UnwrapElement(i))
+for i in IN[1]:
+	finstID.append(UnwrapElement(i).Id)	
+
+
+superset=[]
+hloop=[]
+
+
+for h in host:
+	collection = List[ElementId](finstID)
+	collector=FilteredElementCollector(doc,collection)
+	a=h.BoundingBox[activeV]
+	c=Outline (a.Min,a.Max)
+	d=BoundingBoxIntersectsFilter(c,float(IN[2]))
+	e=collector.WherePasses(d).ToElements()
+	setlist=[]
+	hostlist=[]
+	hostlist.append(h)
+	setlist.append(e)
+	all_lists = [hostlist,setlist]
+	c=reduce(operator.add, all_lists)
+	superset.append(c)
+		
+OUT=superset</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="d728acb7-1126-401f-a2b3-7bb5b4f98011" nickname="Input" x="-12" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Element(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="cf04e767-7eb7-4653-b9c8-5b6341e274a0" nickname="Input" x="-12" y="150" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Element(s) to check" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="f6ac234a-3e6b-456f-8919-1e0e08ccc4f6" nickname="Output" x="1917.19294999023" y="47" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Set of elements" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.CodeBlockNodeModel type="Dynamo.Nodes.CodeBlockNodeModel" guid="5b96aebd-47ed-413f-87cf-b4f857396b65" nickname="Code Block" x="222.277753155267" y="42.0555581749716" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="Flatten({item});" ShouldFocus="false" />
+    <Dynamo.Nodes.CodeBlockNodeModel type="Dynamo.Nodes.CodeBlockNodeModel" guid="04db9ba5-1e10-4670-aa51-950784e5bfee" nickname="Code Block" x="226.277753155267" y="161.055558174972" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="Flatten({item});" ShouldFocus="false" />
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="6b45e22a-a396-453f-a4fe-6ebdf7bf12f4" nickname="Input" x="-12" y="261" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Tolerance (negative = overlap)" />
+    </Dynamo.Nodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="e8e46ffe-7a55-4f1a-af4f-df95cbed4407" start_index="0" end="f6ac234a-3e6b-456f-8919-1e0e08ccc4f6" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="cecd7bc2-689d-464f-87bc-f1c48cdb8fa2" start_index="0" end="e8e46ffe-7a55-4f1a-af4f-df95cbed4407" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9cf31598-295e-49da-8fba-1e191716b640" start_index="0" end="cecd7bc2-689d-464f-87bc-f1c48cdb8fa2" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="62c773a4-d940-488a-8f8e-1c07bf8f7367" start_index="0" end="cecd7bc2-689d-464f-87bc-f1c48cdb8fa2" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="54ca7a1b-9f57-4688-988e-3b5f32804d62" start_index="0" end="9cf31598-295e-49da-8fba-1e191716b640" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="04eeeada-51e2-4d78-af34-ef1342ead5a7" start_index="0" end="9cf31598-295e-49da-8fba-1e191716b640" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="04eeeada-51e2-4d78-af34-ef1342ead5a7" start_index="0" end="e8e46ffe-7a55-4f1a-af4f-df95cbed4407" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a17e3ce3-d33f-4b6c-abf0-16c19e0a167b" start_index="0" end="04eeeada-51e2-4d78-af34-ef1342ead5a7" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="758fd5b4-3d41-4fc5-a576-ce085ff2c2ef" start_index="0" end="04eeeada-51e2-4d78-af34-ef1342ead5a7" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d728acb7-1126-401f-a2b3-7bb5b4f98011" start_index="0" end="5b96aebd-47ed-413f-87cf-b4f857396b65" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="cf04e767-7eb7-4653-b9c8-5b6341e274a0" start_index="0" end="04db9ba5-1e10-4670-aa51-950784e5bfee" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="5b96aebd-47ed-413f-87cf-b4f857396b65" start_index="0" end="758fd5b4-3d41-4fc5-a576-ce085ff2c2ef" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="04db9ba5-1e10-4670-aa51-950784e5bfee" start_index="0" end="758fd5b4-3d41-4fc5-a576-ce085ff2c2ef" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6b45e22a-a396-453f-a4fe-6ebdf7bf12f4" start_index="0" end="758fd5b4-3d41-4fc5-a576-ce085ff2c2ef" end_index="2" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

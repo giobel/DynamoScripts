@@ -1,0 +1,104 @@
+<Workspace Version="0.8.2.2392" X="-2706.55738108618" Y="-1355.34982929247" zoom="1.39788939753628" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="False">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="Point" resolvedName="Autodesk.DesignScript.Geometry.Point" assemblyName="ProtoGeometry.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <DSRevitNodesUI.ElementTypes guid="23714c19-6683-4938-996b-349f923b7577" type="DSRevitNodesUI.ElementTypes" nickname="Element Types" x="65.5305730279514" y="1314.11967428152" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" index="120:Group" />
+    <DSRevitNodesUI.ElementsOfType guid="f015afec-4d14-4cf1-9011-9a9aafb299ec" type="DSRevitNodesUI.ElementsOfType" nickname="All Elements of Type" x="329.846189804961" y="1325.61280903276" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+    <Dynamo.Nodes.Function guid="39194073-30ca-4029-a638-4a537600bb31" type="Dynamo.Nodes.Function" nickname="Filter By Element Name" x="1231.45003883409" y="1249.89736524452" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="03cf1fff-68b5-4056-8bcc-59745b7c7110" />
+      <Name value="Filter By Element Name" />
+      <Description value="" />
+      <Inputs>
+        <Input value="Search For" />
+        <Input value="Elements" />
+      </Inputs>
+      <Outputs>
+        <Output value="Elements" />
+        <Output value="bool" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="6423a88b-35d2-4083-9a3c-d28aee029b50" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="835.704173485293" y="1526.59720169859" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="&quot;General Notes 1_100 Plan&quot;;" ShouldFocus="false" />
+    <DSIronPythonNode.PythonNode guid="3ab23cf9-dc07-42a6-b008-5ba46256618b" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="1530.38742644964" y="1319.09570220294" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+items = UnwrapElement(IN[0])
+elementlist = list()
+for item in items:
+	try:
+		elementlist.append(item.Document.GetElement(item.OwnerViewId).ToDSType(True))
+	except:
+		elementlist.append(list())
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="f54cacb1-fda1-40e0-9ebe-9e2ddce2ee41" type="Dynamo.Nodes.Function" nickname="Filter By Element Name" x="1756.68754807333" y="1243.9581351532" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="03cf1fff-68b5-4056-8bcc-59745b7c7110" />
+      <Name value="Filter By Element Name" />
+      <Description value="" />
+      <Inputs>
+        <Input value="Search For" />
+        <Input value="Elements" />
+      </Inputs>
+      <Outputs>
+        <Output value="Elements" />
+        <Output value="bool" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.DSFunction guid="a1b0278b-ab50-44b5-b45a-78aee80be742" type="Dynamo.Nodes.DSFunction" nickname="List.FilterByBoolMask" x="2119.37261736303" y="1088.99608542219" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.FilterByBoolMask@var[]..[],var[]..[]" />
+    <Dynamo.Nodes.Watch guid="ecb28297-4126-456f-9c20-41a8cd83252f" type="Dynamo.Nodes.Watch" nickname="Watch" x="491.60116680949" y="1464.11842644577" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+    <Dynamo.Nodes.Function guid="faec0c35-d295-45b2-9323-d3fcedd1fc6a" type="Dynamo.Nodes.Function" nickname="Get Built In Parameter" x="847.573273561136" y="1179.62575661258" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="597d445a-3f54-47dc-b2b2-57262f51b9f4" />
+      <Name value="Get Built In Parameter" />
+      <Description value="" />
+      <Inputs>
+        <Input value="ParameterNames" />
+        <Input value="Elements" />
+      </Inputs>
+      <Outputs>
+        <Output value="OUT" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="bec47991-256d-46d5-858a-17c00d637c6b" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="577" y="1181" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="&quot;Type&quot;;" ShouldFocus="false" />
+    <Dynamo.Nodes.StringInput guid="352ee72d-2b3e-4345-b32e-72ba66a2ee29" type="Dynamo.Nodes.StringInput" nickname="String" x="1511.49294516167" y="1471.21548235387" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <System.String>B08 LINE 5 BASE SLAB</System.String>
+      <System.String value="B08 LINE 5 BASE SLAB" />
+    </Dynamo.Nodes.StringInput>
+    <Dynamo.Nodes.Function guid="3e2a001c-4934-464e-8ec9-291ea884834a" type="Dynamo.Nodes.Function" nickname="bv Erase or Delete from Model" x="2365.59356073219" y="1077.22713388102" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="fe919115-3690-4f54-beed-e3ad71e1e198" />
+      <Name value="bv Erase or Delete from Model" />
+      <Description value="forked from SteamNodes" />
+      <Inputs>
+        <Input value="Element(s)" />
+      </Inputs>
+      <Outputs>
+        <Output value="Can't delete (Ids)" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="23714c19-6683-4938-996b-349f923b7577" start_index="0" end="f015afec-4d14-4cf1-9011-9a9aafb299ec" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f015afec-4d14-4cf1-9011-9a9aafb299ec" start_index="0" end="39194073-30ca-4029-a638-4a537600bb31" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f015afec-4d14-4cf1-9011-9a9aafb299ec" start_index="0" end="ecb28297-4126-456f-9c20-41a8cd83252f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f015afec-4d14-4cf1-9011-9a9aafb299ec" start_index="0" end="faec0c35-d295-45b2-9323-d3fcedd1fc6a" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="39194073-30ca-4029-a638-4a537600bb31" start_index="0" end="3ab23cf9-dc07-42a6-b008-5ba46256618b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="39194073-30ca-4029-a638-4a537600bb31" start_index="0" end="a1b0278b-ab50-44b5-b45a-78aee80be742" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6423a88b-35d2-4083-9a3c-d28aee029b50" start_index="0" end="39194073-30ca-4029-a638-4a537600bb31" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3ab23cf9-dc07-42a6-b008-5ba46256618b" start_index="0" end="f54cacb1-fda1-40e0-9ebe-9e2ddce2ee41" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f54cacb1-fda1-40e0-9ebe-9e2ddce2ee41" start_index="1" end="a1b0278b-ab50-44b5-b45a-78aee80be742" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a1b0278b-ab50-44b5-b45a-78aee80be742" start_index="0" end="3e2a001c-4934-464e-8ec9-291ea884834a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="bec47991-256d-46d5-858a-17c00d637c6b" start_index="0" end="faec0c35-d295-45b2-9323-d3fcedd1fc6a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="352ee72d-2b3e-4345-b32e-72ba66a2ee29" start_index="0" end="f54cacb1-fda1-40e0-9ebe-9e2ddce2ee41" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

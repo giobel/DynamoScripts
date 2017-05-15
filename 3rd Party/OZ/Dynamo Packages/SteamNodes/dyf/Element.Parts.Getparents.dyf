@@ -1,0 +1,76 @@
+<Workspace Version="0.7.2.2921" X="30" Y="421.318339793282" zoom="0.705426356589147" Description="Returns parents of selected Parts" Category="SteamNodes.Element" Name="Element.Parts.Getparents" ID="133d6516-1e16-4281-b8f0-8d7ffb4538bb">
+  <Elements>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="4bb00544-8cfe-4b1f-8e15-325cfa799aca" nickname="Python Script" x="484" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="1">
+      <Script>#python nodes in dynamo 0.7
+#proposed by Julien Benoit @jbenoit44 
+#http://aecuandme.wordpress.com/
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+from System.Collections.Generic import *
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+#unwrap all elements to use with API
+elements = []
+for i in IN[0]:
+	elements.append(UnwrapElement(i))
+	
+# "Start" the transaction
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+elementlist = list()
+for item in elements:
+    sourcelist = list()
+    for source in item.GetSourceElementIds():
+        sourcelist.append(doc.GetElement(source.HostElementId))
+    if len(sourcelist) &lt; 2:
+        elementlist.append(sourcelist[0])
+    else:
+        elementlist.append(sourcelist)
+
+
+
+# "End" the transaction
+TransactionManager.Instance.TransactionTaskDone()
+
+
+#Assign your output to the OUT variable
+OUT = (elementlist)</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.CodeBlockNodeModel type="Dynamo.Nodes.CodeBlockNodeModel" guid="b54dcb61-372b-4ad8-9dec-ad884021a2ea" nickname="Code Block" x="176" y="4.21833333333333" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="Flatten({item});" ShouldFocus="false" />
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="a8cb2c4a-54e6-4895-93bb-5f2a95a756cc" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Part(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="7fb2609c-4905-40a7-9396-d30a05dd9a00" nickname="Output" x="708" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="4bb00544-8cfe-4b1f-8e15-325cfa799aca" start_index="0" end="7fb2609c-4905-40a7-9396-d30a05dd9a00" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="b54dcb61-372b-4ad8-9dec-ad884021a2ea" start_index="0" end="4bb00544-8cfe-4b1f-8e15-325cfa799aca" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a8cb2c4a-54e6-4895-93bb-5f2a95a756cc" start_index="0" end="b54dcb61-372b-4ad8-9dec-ad884021a2ea" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

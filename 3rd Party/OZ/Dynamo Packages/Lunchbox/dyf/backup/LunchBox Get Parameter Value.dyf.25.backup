@@ -1,0 +1,69 @@
+<Workspace Version="0.7.5.3566" X="-2.755" Y="145.8175" zoom="1.1575" Description="Gets parameter values from a Revit element." Category="LunchBox.Revit.Parameters" Name="LunchBox Get Parameter Value" ID="0e6286d2-d968-4356-aa39-94cedc339648">
+  <Elements>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="656c4173-704a-42df-8901-39974c260c33" nickname="Python Script" x="361.137666829819" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="2">
+      <Script>#Copyright (c) 2014, Nathan Miller
+#The Proving Ground http://theprovingground.org
+
+# Default imports
+import clr
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+#The input to this node will be stored in the IN[0] variable.
+
+doc =  DocumentManager.Instance.CurrentDBDocument
+app =  DocumentManager.Instance.CurrentUIApplication.Application
+
+elements = UnwrapElement(IN[0])
+parameter = IN[1]
+
+values = []
+if hasattr(elements, "__iter__"):
+	output = []
+	for elem in elements:
+		if hasattr(elem, "__iter__"):
+			vals = []
+			for e in elem:
+				parm = 	elem.Parameter[parameter].AsValueString()
+				vals.append(parm)
+			values.append(vals)
+		else:
+			parm = 	elem.Parameter[parameter].AsValueString()
+			values.append(parm)
+	output.append(values)
+else:
+	parm = 	elements.Parameter[parameter].AsValueString()
+	output = parm
+
+
+
+#Assign your output to the OUT variable
+OUT = output</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="7e28682b-8da5-402b-9372-2fc597d87db5" nickname="Input" x="149" y="-18" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Element" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="7bae5c81-9630-47ff-931e-48931107c426" nickname="Input" x="147.180345572354" y="49.585313174946" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="ParamName" />
+    </Dynamo.Nodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="7e28682b-8da5-402b-9372-2fc597d87db5" start_index="0" end="656c4173-704a-42df-8901-39974c260c33" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="7bae5c81-9630-47ff-931e-48931107c426" start_index="0" end="656c4173-704a-42df-8901-39974c260c33" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

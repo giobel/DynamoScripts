@@ -1,0 +1,73 @@
+<Workspace Version="0.8.2.2392" X="23.3462691832775" Y="306.891585817604" zoom="0.665373081672253" Name="bv Get Category Name" Description="forked from Blackbox" ID="173da02f-e200-4c7a-890b-69b884740f52" Category="Bakery.Forks">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="7e0a6062-1848-4fa2-a07c-b4d3afba8917" type="DSIronPythonNode.PythonNode" nickname="PY-GETCategoryNameOfElement" x="615.412513255568" y="-396.232343584306" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>#Copyright(c) 2014, Jason Andersen, andersen.ja@gmail.com
+import clr
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+clr.ImportExtensions(Revit.GeometryConversion)
+
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+doc =  DocumentManager.Instance.CurrentDBDocument
+app =  DocumentManager.Instance.CurrentUIApplication.Application
+
+
+#The input to this node will be stored in the IN[0] variable.
+elements = UnwrapElement(IN[0])
+
+#variables
+output = []
+catName = []
+
+for item in elements:
+    #print faminst
+	catName.append(item.Category.Name)  	    	
+output.append(catName)
+
+OUT = output
+</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol guid="c40ce3ce-14de-4615-9c4d-cc712a5ab408" type="Dynamo.Nodes.Symbol" nickname="Input" x="-15.0874867444327" y="-373.232343584305" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="Elements" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.DSFunction guid="5208bab8-4085-4f5d-bb00-e80f05381f2e" type="Dynamo.Nodes.DSFunction" nickname="Flatten" x="854.912513255567" y="-397.232343584305" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="BuiltIn" function="Flatten@var[]..[]" />
+    <Dynamo.Nodes.Output guid="dd841ff3-99ef-40d9-ac47-15eb6c4bb418" type="Dynamo.Nodes.Output" nickname="Output" x="993.912513255567" y="-396.232343584305" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="Category Name" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.DSFunction guid="abac02f1-5e59-41ce-89c2-3c94cec4c4ca" type="Dynamo.Nodes.DSFunction" nickname="List.Empty" x="140.412513255567" y="-441.232343584305" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.Empty" />
+    <DSCoreNodesUI.CreateList guid="8098ed33-0714-4f9d-96bf-6a63070acd83" type="DSCoreNodesUI.CreateList" nickname="List.Create" x="286.412513255567" y="-399.232343584305" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2" />
+    <Dynamo.Nodes.DSFunction guid="a667533b-8aa2-441c-bd2a-644c20c473cd" type="Dynamo.Nodes.DSFunction" nickname="Flatten" x="457.412513255566" y="-400.232343584305" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="BuiltIn" function="Flatten@var[]..[]" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="7e0a6062-1848-4fa2-a07c-b4d3afba8917" start_index="0" end="5208bab8-4085-4f5d-bb00-e80f05381f2e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c40ce3ce-14de-4615-9c4d-cc712a5ab408" start_index="0" end="8098ed33-0714-4f9d-96bf-6a63070acd83" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="5208bab8-4085-4f5d-bb00-e80f05381f2e" start_index="0" end="dd841ff3-99ef-40d9-ac47-15eb6c4bb418" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="abac02f1-5e59-41ce-89c2-3c94cec4c4ca" start_index="0" end="8098ed33-0714-4f9d-96bf-6a63070acd83" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="8098ed33-0714-4f9d-96bf-6a63070acd83" start_index="0" end="a667533b-8aa2-441c-bd2a-644c20c473cd" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a667533b-8aa2-441c-bd2a-644c20c473cd" start_index="0" end="7e0a6062-1848-4fa2-a07c-b4d3afba8917" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

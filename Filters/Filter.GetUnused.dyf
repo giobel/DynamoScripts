@@ -1,0 +1,79 @@
+<Workspace Version="1.0.1.1576" X="524.893961216161" Y="377.770773256242" zoom="1.38571068305882" Name="Filter.GetUnused" Description="Returns all unused filters in the project so that they can be used. Use in conjunction with 'Tool.Eraser' from the SteamNodes package or 'Delete.Elements' from Grimshaw package." ID="6b9de690-2683-4fa2-9649-6b78b4e0f6bd" Category="BVN.Selection.Actions">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="ca53aed8-99d9-498f-bcdb-ab94f2194993" type="PythonNodeModels.PythonNode" nickname="Python Script" x="306.432808312386" y="5.27434481574028" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+clr.AddReference("System.Core")
+import System.Linq
+clr.ImportExtensions(System.Linq)
+
+clr.AddReference("RevitAPI")
+import Autodesk.Revit
+from Autodesk.Revit.Exceptions import InvalidOperationException
+from Autodesk.Revit.DB import *
+
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+# Import DocumentManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+def GetFilterIds(view):
+  filterIds = None
+  try:
+    filterIds = view.GetFilters()
+  except InvalidOperationException, e:
+    filterIds = None
+  return filterIds
+
+def GetUsedFilterIds(doc):
+  views = FilteredElementCollector(doc).OfClass(View).ToElements()
+  usedFilterIds = []
+  for view in views:
+    viewFilterIds = []
+    try:
+      viewFilterIds = view.GetFilters()
+    except InvalidOperationException, e:
+      pass # this exception happens when a view doesn't support filters
+    usedFilterIds.extend(viewFilterIds)
+  return usedFilterIds
+
+def GetUnusedFilters(doc):
+  usedFilterIds = GetUsedFilterIds(doc).ToList[ElementId]()
+  unusedFilters = FilteredElementCollector(doc).OfClass(ParameterFilterElement).Excluding(usedFilterIds).ToElements()
+  return list(f.ToDSType(True) for f in unusedFilters)
+
+#The inputs to this node will be stored as a list in the IN variables.
+
+doc = DocumentManager.Instance.CurrentDBDocument
+
+#Assign your output to the OUT variable.
+OUT = GetUnusedFilters(doc)</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="c90a897c-c023-463b-bea3-0eb2ac78c8fb" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="483.456371580135" y="-1.75811493858015" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="element" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="e210bf96-00d6-4d88-a10a-1678afdd63c6" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-137.680367290345" y="2.24579575715001" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="//Boolean toggle to refresh Python script&#xD;&#xA;Toggle : bool" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="ca53aed8-99d9-498f-bcdb-ab94f2194993" start_index="0" end="c90a897c-c023-463b-bea3-0eb2ac78c8fb" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="e210bf96-00d6-4d88-a10a-1678afdd63c6" start_index="0" end="ca53aed8-99d9-498f-bcdb-ab94f2194993" end_index="0" portType="0" />
+  </Connectors>
+  <Notes>
+    <Dynamo.Graph.Notes.NoteModel guid="76559c5d-33b6-417d-b4e4-3b95f115e772" text="Copyright(c) 2016, Paul Wintour&#xD;&#xA;BVN, http://www.bvn.com.au/&#xD;&#xA;Licence: http://creativecommons.org/licenses/by-sa/4.0/" x="-140.130079048212" y="-85.5565025546045" />
+  </Notes>
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

@@ -1,0 +1,316 @@
+<Workspace Version="0.8.2.2392" X="-1489.62890260958" Y="305.354616548779" zoom="0.597507078168004" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="Vector" resolvedName="Autodesk.DesignScript.Geometry.Vector" assemblyName="ProtoGeometry.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="054de8b6-0542-40be-b2d4-b4fdd9d811e6" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="764.839104122395" y="-461.152777330347" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="Vector.ByCoordinates(0,0,0);" ShouldFocus="false" />
+    <DSIronPythonNode.PythonNode guid="9f58116b-d7fe-4817-9ce7-3425ddbef645" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="1501.95632583238" y="-543.688206219262" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>#Copyright(c) 2016, Dimitar Venkov
+# @5devene, dimitar.ven@gmail.com
+
+import clr
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+doc = DocumentManager.Instance.CurrentDBDocument
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+clr.ImportExtensions(Revit.GeometryConversion)
+
+clr.AddReference("RevitAPI")
+from Autodesk.Revit.DB import *
+
+clr.AddReference("System")
+from System.Collections.Generic import List as cList
+
+def tolist(obj1):
+	if hasattr(obj1,"__iter__"): return obj1
+	else: return [obj1]
+
+def output1(l1):
+	if len(l1) == 1: return l1[0]
+	else: return l1
+
+elements = UnwrapElement(tolist(IN[0]))
+vecs = tolist(IN[1])
+
+oldId = []
+
+for i in xrange(len(elements)):
+	try: oldId.append(elements[i].Id)
+	except: pass
+	
+oldId1 = cList[ElementId](oldId)
+
+transforms = []
+for i in xrange(len(vecs)):
+	try: transforms.append(vecs[i].ToXyz(True))
+	except: pass
+	
+def CopyEls(oldId1, transforms):
+	out1 = []
+	for i in xrange(len(transforms)):
+		try:
+			newId = ElementTransformUtils.CopyElements(doc, oldId1, transforms[i])
+			if len(newId) == 1 :
+				out1.append(doc.GetElement(newId[0]).ToDSType(False))
+			else:
+				[out1.append(doc.GetElement(newId[i]).ToDSType(False)) for i in xrange(len(newId))]
+		except: out1.append([])
+	return out1
+	
+TransactionManager.Instance.EnsureInTransaction(doc)
+OUT = output1(CopyEls(oldId1, transforms))
+TransactionManager.Instance.TransactionTaskDone()</Script>
+    </DSIronPythonNode.PythonNode>
+    <DSIronPythonNode.PythonNode guid="98c106a7-afea-4508-8f65-02af59d02d22" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="3599.02897163022" y="-373.582262194666" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="3">
+      <Script>#Copyright(c) 2016, Dimitar Venkov
+# @5devene, dimitar.ven@gmail.com
+
+import clr
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+doc = DocumentManager.Instance.CurrentDBDocument
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+clr.ImportExtensions(Revit.GeometryConversion)
+
+clr.AddReference("RevitAPI")
+from Autodesk.Revit.DB import *
+
+clr.AddReference("System")
+from System.Collections.Generic import List as cList
+
+elements = UnwrapElement(IN[0])
+
+level = UnwrapElement(IN[1])
+
+bslevel = UnwrapElement(IN[2])
+
+LevelPara = []
+
+#toplvl = elements[0].get_Parameter(BuiltInParameter.FAMILY_INSTANCE_TOP_LEVEL_PARAM)
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+for i in range(0, len(elements)):
+	for el,v,z in zip(elements[i],level,bslevel):
+		toplvl = el.get_Parameter("Top Level")
+		toplvl.Set(v.Id)
+		baselvl = el.get_Parameter("Base Level")
+		baselvl.Set(z.Id)
+
+TransactionManager.Instance.TransactionTaskDone()
+"""
+for el,v in zip(elements,level):
+	param = el.get_Parameter("Top Level")
+	LevelPara.append(param.Set(v))
+"""
+OUT = toplvl</Script>
+    </DSIronPythonNode.PythonNode>
+    <DSRevitNodesUI.Levels guid="0b420dfc-d622-4488-adb6-780829569a68" type="DSRevitNodesUI.Levels" nickname="Levels" x="2642.26790627669" y="-409.720867616709" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" index="17:L01 - FIRST FLOOR" />
+    <DSRevitNodesUI.Levels guid="27a56a8a-35e0-4d52-864f-f04084d8f8af" type="DSRevitNodesUI.Levels" nickname="Levels" x="2625.16329992152" y="-321.742285734319" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" index="11:F02 - SECOND FLOOR" />
+    <DSRevitNodesUI.Levels guid="fec7d0b4-f0c6-4f50-b1e0-080c72abd184" type="DSRevitNodesUI.Levels" nickname="Levels" x="2605.39975782612" y="-229.349010783065" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" index="12:F03 - THIRD FLOOR" />
+    <DSRevitNodesUI.Levels guid="db9f8282-f3ae-48c7-92c4-03c101431abe" type="DSRevitNodesUI.Levels" nickname="Levels" x="2618.25301251861" y="-146.945101564693" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" index="13:F04 - ROOF FLOOR" />
+    <DSRevitNodesUI.Levels guid="e6eed0cf-9f75-452b-8c8c-7fd43260e2b4" type="DSRevitNodesUI.Levels" nickname="Levels" x="2649.86947305127" y="-497.168437565747" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" index="1:B01 - TOP SLAB." />
+    <DSCoreNodesUI.CreateList guid="5a047f8a-de46-4604-b65f-fcd73e7e144f" type="DSCoreNodesUI.CreateList" nickname="List.Create" x="2971.10532527158" y="-478.771354477621" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="5" />
+    <DSCoreNodesUI.CreateList guid="9246641f-68b9-4d1c-8685-74321014e7af" type="DSCoreNodesUI.CreateList" nickname="List.Create" x="2959.60217373751" y="-245.593725025325" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="5" />
+    <Dynamo.Nodes.DSModelElementsSelection guid="bd3e70f9-b0c0-4bd9-8cd5-77f6ef05dda2" type="Dynamo.Nodes.DSModelElementsSelection" nickname="Select Model Elements" x="881.962017038241" y="-73.6049427497157" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <instance id="ce6c549a-8f43-452f-8ade-687a9a8c7847-001090e7" />
+      <instance id="ce6c549a-8f43-452f-8ade-687a9a8c7847-00109140" />
+      <instance id="ce6c549a-8f43-452f-8ade-687a9a8c7847-00109167" />
+    </Dynamo.Nodes.DSModelElementsSelection>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="472b1ce6-e11f-4baa-8208-78237c67fc51" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="918.543451090838" y="-222.872269215847" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="4;" ShouldFocus="false" />
+    <Dynamo.Nodes.DSFunction guid="fd47a627-7c1e-4e40-9df5-a474a6c3fb2b" type="Dynamo.Nodes.DSFunction" nickname="List.Chop" x="2052.11638959694" y="-284.018557961317" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.Chop@var[]..[],int" />
+    <Dynamo.Nodes.DSFunction guid="95911998-2e8a-4d1b-9bc1-dd400e3f089e" type="Dynamo.Nodes.DSFunction" nickname="List.Cycle" x="1073.44430275458" y="-390.242879115058" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.Cycle@var[]..[],int" />
+    <DSIronPythonNode.PythonNode guid="9ff36013-9a05-4462-bbfb-c8e0a19f2c47" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="1226.50794082007" y="-930.23962640342" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>#Copyright(c) 2016, Dimitar Venkov
+# @5devene, dimitar.ven@gmail.com
+
+import clr
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+doc = DocumentManager.Instance.CurrentDBDocument
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+clr.ImportExtensions(Revit.GeometryConversion)
+
+clr.AddReference("RevitAPI")
+from Autodesk.Revit.DB import *
+
+clr.AddReference("System")
+from System.Collections.Generic import List as cList
+
+
+elements = UnwrapElement(IN[0])
+vecs = IN[1]
+
+oldId = []
+
+for i in range (0,len(elements)):
+	try: oldId.append(elements[i].Id)
+	except: pass
+
+oldId1 = cList[ElementId](oldId)
+
+
+transforms = vecs.ToXyz(True)
+	
+
+
+def CopyEls(oldId1, transforms):
+	out1 = []
+	for i in range(0,len(elements)):
+		try:
+			newId = ElementTransformUtils.CopyElements(doc, oldId1, transforms)
+			if len(newId) == 1 :
+				out1.append(doc.GetElement(newId[0]).ToDSType(False))
+			else:
+				[out1.append(doc.GetElement(newId[i]).ToDSType(False)) for i in xrange(len(newId))]
+		except: out1.append([])
+	return out1
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+OUT = CopyEls(oldId1, transforms)
+
+TransactionManager.Instance.TransactionTaskDone()
+
+</Script>
+    </DSIronPythonNode.PythonNode>
+    <DSIronPythonNode.PythonNode guid="e35d66ef-9f34-461f-ad3b-a0902b1f0596" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="1246.39489818207" y="-1043.11504964841" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>#Copyright(c) 2016, Dimitar Venkov
+# @5devene, dimitar.ven@gmail.com
+
+import clr
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+doc = DocumentManager.Instance.CurrentDBDocument
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+clr.ImportExtensions(Revit.GeometryConversion)
+
+clr.AddReference("RevitAPI")
+from Autodesk.Revit.DB import *
+
+clr.AddReference("System")
+from System.Collections.Generic import List as cList
+
+
+elements = UnwrapElement(IN[0])
+vecs = IN[1]
+
+oldId = []
+
+for i in range (0,len(elements)):
+	try: oldId.append(elements[i].Id)
+	except: pass
+
+oldId1 = cList[ElementId](oldId)
+
+
+transforms = vecs.ToXyz(True)
+	
+	
+
+
+
+"""
+for i in range (0,len(elements)):
+	newId = (ElementTransformUtils.CopyElements(doc, oldId1, transforms))
+	out1.append(doc.GetElement(newId[i]).ToDSType(False))
+"""
+
+def CopyEls(oldId1, transforms):
+	out1 = []
+	for i in xrange(len(transforms)):
+		try:
+			newId = ElementTransformUtils.CopyElements(doc, oldId1, transforms[i])
+			if len(newId) == 1 :
+				out1.append(doc.GetElement(newId[0]).ToDSType(False))
+			else:
+				[out1.append(doc.GetElement(newId[i]).ToDSType(False)) for i in xrange(len(newId))]
+		except: out1.append([])
+	return out1
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+OUT = CopyEls(oldId1, transforms)
+
+TransactionManager.Instance.TransactionTaskDone()
+
+#for i in range (0,len(newId)):
+#	out1.append(doc.GetElement(newId[i]).ToDSType(False)) 
+
+
+#for i in range (0,len(newId)):
+#	out1.append(doc.GetElement(newId[i]).ToDSType(False)) 
+
+
+"""	</Script>
+    </DSIronPythonNode.PythonNode>
+    <DSRevitNodesUI.Levels guid="c79d35b7-0ec9-4adc-bc72-397403e15b4b" type="DSRevitNodesUI.Levels" nickname="Levels" x="2627.54573968616" y="-62.0108523229777" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" index="14:F05 - PARAPET" />
+    <DSRevitNodesUI.Levels guid="071d7763-fc84-43df-98ad-ba13e19d1043" type="DSRevitNodesUI.Levels" nickname="Levels" x="2658.73684436222" y="19.9815903685054" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" index="15:F06" />
+    <DSCoreNodesUI.CreateList guid="6f24f099-d363-47bb-992e-5cc084e4c0c2" type="DSCoreNodesUI.CreateList" nickname="List.Create" x="3176.07733394054" y="92.7884049324945" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="4" />
+    <DSCoreNodesUI.CreateList guid="4fdb5ee1-e4f9-40a1-ab67-7d38c64d43fe" type="DSCoreNodesUI.CreateList" nickname="List.Create" x="3383.39406538855" y="-207.334038165596" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="4" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="054de8b6-0542-40be-b2d4-b4fdd9d811e6" start_index="0" end="95911998-2e8a-4d1b-9bc1-dd400e3f089e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="054de8b6-0542-40be-b2d4-b4fdd9d811e6" start_index="0" end="9ff36013-9a05-4462-bbfb-c8e0a19f2c47" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9f58116b-d7fe-4817-9ce7-3425ddbef645" start_index="0" end="fd47a627-7c1e-4e40-9df5-a474a6c3fb2b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0b420dfc-d622-4488-adb6-780829569a68" start_index="0" end="5a047f8a-de46-4604-b65f-fcd73e7e144f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="27a56a8a-35e0-4d52-864f-f04084d8f8af" start_index="0" end="5a047f8a-de46-4604-b65f-fcd73e7e144f" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="27a56a8a-35e0-4d52-864f-f04084d8f8af" start_index="0" end="9246641f-68b9-4d1c-8685-74321014e7af" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="27a56a8a-35e0-4d52-864f-f04084d8f8af" start_index="0" end="4fdb5ee1-e4f9-40a1-ab67-7d38c64d43fe" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="fec7d0b4-f0c6-4f50-b1e0-080c72abd184" start_index="0" end="5a047f8a-de46-4604-b65f-fcd73e7e144f" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="fec7d0b4-f0c6-4f50-b1e0-080c72abd184" start_index="0" end="9246641f-68b9-4d1c-8685-74321014e7af" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="fec7d0b4-f0c6-4f50-b1e0-080c72abd184" start_index="0" end="4fdb5ee1-e4f9-40a1-ab67-7d38c64d43fe" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="fec7d0b4-f0c6-4f50-b1e0-080c72abd184" start_index="0" end="6f24f099-d363-47bb-992e-5cc084e4c0c2" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="db9f8282-f3ae-48c7-92c4-03c101431abe" start_index="0" end="9246641f-68b9-4d1c-8685-74321014e7af" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="db9f8282-f3ae-48c7-92c4-03c101431abe" start_index="0" end="5a047f8a-de46-4604-b65f-fcd73e7e144f" end_index="3" portType="0" />
+    <Dynamo.Models.ConnectorModel start="db9f8282-f3ae-48c7-92c4-03c101431abe" start_index="0" end="4fdb5ee1-e4f9-40a1-ab67-7d38c64d43fe" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="db9f8282-f3ae-48c7-92c4-03c101431abe" start_index="0" end="6f24f099-d363-47bb-992e-5cc084e4c0c2" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="bd3e70f9-b0c0-4bd9-8cd5-77f6ef05dda2" start_index="0" end="9f58116b-d7fe-4817-9ce7-3425ddbef645" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="472b1ce6-e11f-4baa-8208-78237c67fc51" start_index="0" end="95911998-2e8a-4d1b-9bc1-dd400e3f089e" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="472b1ce6-e11f-4baa-8208-78237c67fc51" start_index="0" end="fd47a627-7c1e-4e40-9df5-a474a6c3fb2b" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="fd47a627-7c1e-4e40-9df5-a474a6c3fb2b" start_index="0" end="98c106a7-afea-4508-8f65-02af59d02d22" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="95911998-2e8a-4d1b-9bc1-dd400e3f089e" start_index="0" end="9f58116b-d7fe-4817-9ce7-3425ddbef645" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c79d35b7-0ec9-4adc-bc72-397403e15b4b" start_index="0" end="5a047f8a-de46-4604-b65f-fcd73e7e144f" end_index="4" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c79d35b7-0ec9-4adc-bc72-397403e15b4b" start_index="0" end="9246641f-68b9-4d1c-8685-74321014e7af" end_index="3" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c79d35b7-0ec9-4adc-bc72-397403e15b4b" start_index="0" end="4fdb5ee1-e4f9-40a1-ab67-7d38c64d43fe" end_index="3" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c79d35b7-0ec9-4adc-bc72-397403e15b4b" start_index="0" end="6f24f099-d363-47bb-992e-5cc084e4c0c2" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="071d7763-fc84-43df-98ad-ba13e19d1043" start_index="0" end="9246641f-68b9-4d1c-8685-74321014e7af" end_index="4" portType="0" />
+    <Dynamo.Models.ConnectorModel start="071d7763-fc84-43df-98ad-ba13e19d1043" start_index="0" end="6f24f099-d363-47bb-992e-5cc084e4c0c2" end_index="3" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6f24f099-d363-47bb-992e-5cc084e4c0c2" start_index="0" end="98c106a7-afea-4508-8f65-02af59d02d22" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4fdb5ee1-e4f9-40a1-ab67-7d38c64d43fe" start_index="0" end="98c106a7-afea-4508-8f65-02af59d02d22" end_index="2" portType="0" />
+  </Connectors>
+  <Notes>
+    <Dynamo.Models.NoteModel guid="033b1c33-e45c-4695-8bda-4e576341c647" text="Column" x="154.210988212595" y="-101.035104157255" />
+    <Dynamo.Models.NoteModel guid="cc6f6d7e-610b-4102-b221-7062f0aeceee" text="Base Level" x="3001.87110984087" y="-515.964627236583" />
+    <Dynamo.Models.NoteModel guid="8aab940a-9ec4-43a1-8836-ec504f778dec" text="Top Level" x="2996.41770010905" y="-277.106293568108" />
+    <Dynamo.Models.NoteModel guid="2435a484-abfc-499a-8ca6-6199a685e30d" text="Number of Columns" x="896.574612521845" y="-272.130525141056" />
+  </Notes>
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

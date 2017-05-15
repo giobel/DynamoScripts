@@ -1,0 +1,39 @@
+<Workspace Version="0.8.2.2371" X="172" Y="148" zoom="1" Name="Iterate through XML ElementTree" Description="" ID="b907dff1-130b-4ba5-aff8-33a2ca75df75" Category="Bakery.XML">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="5b0a1209-4906-401f-b597-1b8eb1b13e9d" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="250" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+import sys
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+sys.path.append("C:\Program Files (x86)\IronPython 2.7\Lib")
+#from xml.parsers.expat import expat -- can't find this
+import xml.etree.ElementTree as ET
+#The inputs to this node will be stored as a list in the IN variables.
+xmTree = IN[0]
+
+#xmParsed = xmTree.parse(xmlFile)
+#root = xmTree.getroot()
+iterelemlist = []
+for elem in xmTree.iter():
+	iterelemlist.append(elem)
+OUT = iterelemlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol guid="71c03864-d561-4d11-bbaa-db71ab15d310" type="Dynamo.Nodes.Symbol" nickname="Input" x="26" y="19" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="ElementTree" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="d67dd76f-605b-4dd0-b3c0-e5e6eb139f07" type="Dynamo.Nodes.Output" nickname="Output" x="449" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="xml elements" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="5b0a1209-4906-401f-b597-1b8eb1b13e9d" start_index="0" end="d67dd76f-605b-4dd0-b3c0-e5e6eb139f07" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="71c03864-d561-4d11-bbaa-db71ab15d310" start_index="0" end="5b0a1209-4906-401f-b597-1b8eb1b13e9d" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="175.444717407227" eyeY="108.055969238281" eyeZ="66.9599990844727" lookX="-125.331512451172" lookY="-97.2981491088867" lookZ="-125.331512451172" />
+  </Cameras>
+</Workspace>

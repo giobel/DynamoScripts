@@ -1,0 +1,58 @@
+<Workspace Version="0.8.2.2371" X="226.685" Y="370.9925" zoom="0.8425" Name="Two Lists into One Replacing Nulls with Backup Values" Description="" ID="150c8307-0e8f-4854-ae96-3a073f18b516" Category="Bakery.Lists">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Watch guid="2d0f5ae4-57eb-4b65-b9b8-6d584ac3f645" type="Dynamo.Nodes.Watch" nickname="Watch" x="252.815525381563" y="39.7692514338546" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+    <Dynamo.Nodes.Watch guid="d4ad3df6-e23b-4895-9b82-31b66b6c2322" type="Dynamo.Nodes.Watch" nickname="Watch" x="250" y="198.970792263107" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="f1afaf9c-c180-4541-9b8a-98a993537bef" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="643.422744502481" y="62.706112804578" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="null;" ShouldFocus="false" />
+    <Dynamo.Nodes.DSFunction guid="235afce9-acd6-4f04-8d21-a6191eda53c8" type="Dynamo.Nodes.DSFunction" nickname="List.GetItemAtIndex" x="678.848278835423" y="263.37924463858" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.Function guid="25615997-ce8e-4662-9341-45965cf47f73" type="Dynamo.Nodes.Function" nickname="bv All Indices Of that can handle Nulls" x="771.178772280251" y="0" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="4a8f639e-d12f-4f33-8378-0ffad7097f82" />
+      <Name value="bv All Indices Of that can handle Nulls" />
+      <Description value="forked from spring nodes" />
+      <Inputs>
+        <Input value="list" />
+        <Input value="value" />
+      </Inputs>
+      <Outputs>
+        <Output value="indices" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="b9f18a2c-b116-4c18-b791-c82e57672633" type="Dynamo.Nodes.Function" nickname="List.ReplaceItemAtIndex" x="904.05645485586" y="232.823843585978" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="7c6c03d7-a142-4e96-9150-6b3846efa3c2" />
+      <Name value="List.ReplaceItemAtIndex" />
+      <Description value="Replaces the item at a given index (or list of indices) of a list by another item" />
+      <Inputs>
+        <Input value="seq" />
+        <Input value="index" />
+        <Input value="replacement" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="86b64f6a-8060-43f8-953a-e762f24f6802" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="primary list to clean" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="f0841d4a-a1a6-4cea-a992-6aa6baa55533" type="Dynamo.Nodes.Symbol" nickname="Input" x="-179" y="143" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="backup list used for null replacement" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="4b5076ea-59f7-4398-abb1-65de0047c805" type="Dynamo.Nodes.Output" nickname="Output" x="1207.52529758583" y="163.79821958457" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="cleaned list" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="2d0f5ae4-57eb-4b65-b9b8-6d584ac3f645" start_index="0" end="25615997-ce8e-4662-9341-45965cf47f73" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="2d0f5ae4-57eb-4b65-b9b8-6d584ac3f645" start_index="0" end="b9f18a2c-b116-4c18-b791-c82e57672633" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d4ad3df6-e23b-4895-9b82-31b66b6c2322" start_index="0" end="235afce9-acd6-4f04-8d21-a6191eda53c8" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f1afaf9c-c180-4541-9b8a-98a993537bef" start_index="0" end="25615997-ce8e-4662-9341-45965cf47f73" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="235afce9-acd6-4f04-8d21-a6191eda53c8" start_index="0" end="b9f18a2c-b116-4c18-b791-c82e57672633" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="25615997-ce8e-4662-9341-45965cf47f73" start_index="0" end="b9f18a2c-b116-4c18-b791-c82e57672633" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="25615997-ce8e-4662-9341-45965cf47f73" start_index="0" end="235afce9-acd6-4f04-8d21-a6191eda53c8" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="b9f18a2c-b116-4c18-b791-c82e57672633" start_index="0" end="4b5076ea-59f7-4398-abb1-65de0047c805" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="86b64f6a-8060-43f8-953a-e762f24f6802" start_index="0" end="2d0f5ae4-57eb-4b65-b9b8-6d584ac3f645" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f0841d4a-a1a6-4cea-a992-6aa6baa55533" start_index="0" end="d4ad3df6-e23b-4895-9b82-31b66b6c2322" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+</Workspace>

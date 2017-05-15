@@ -1,0 +1,41 @@
+<Workspace Version="0.8.2.2371" X="0" Y="0" zoom="1" Name="Get All Revisions" Description="using python api, get IDs of Revisions" ID="1c0baa1f-5c06-4f05-9eaf-4b02ed8330de" Category="Bakery.DocInfo">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="c9c324c9-0e72-4b95-93d4-4d2d78933bc5" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="427" y="302" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+OUT = Revision.GetAllRevisionIds(doc)</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Output guid="7ecae7ab-19fd-4eb0-a732-38633522abdf" type="Dynamo.Nodes.Output" nickname="Output" x="761" y="310" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="RevisionIds" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Function guid="d43d94f3-bae9-454d-97e8-b905df1ba3d5" type="Dynamo.Nodes.Function" nickname="Get Worksets" x="159" y="331" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="True">
+      <ID value="afaa5c4d-38d4-4dc9-a412-752118db370f" />
+      <Name value="Get Worksets" />
+      <Description value="Retrieves user worksets from specified document" />
+      <Inputs />
+      <Outputs>
+        <Output value="Worksets" />
+        <Output value="Names" />
+        <Output value="Ids" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="c9c324c9-0e72-4b95-93d4-4d2d78933bc5" start_index="0" end="7ecae7ab-19fd-4eb0-a732-38633522abdf" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+</Workspace>

@@ -1,0 +1,136 @@
+<Workspace Version="0.8.1.1942" X="0" Y="0" zoom="1" Name="Export Images using many input variables" ID="b0c439a5-a2e8-4016-953b-cd604e7897ed" Description="code originally from Konrad" Category="Bakery.Images">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="fa70884d-6aa7-4a6a-b440-565bddc548d2" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="531.5" y="418.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="9">
+      <Script>#Copyright(c) 2015, Konrad K Sobon
+# @arch_laboratory, http://archi-lab.net
+
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+# Import Element wrapper extension methods
+clr.AddReference('RevitNodes')
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+# Import geometry conversion extension methods
+clr.ImportExtensions(Revit.GeometryConversion)
+
+# Import DocumentManager and TransactionManager
+clr.AddReference('RevitServices')
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+# Import RevitAPI
+clr.AddReference('RevitAPI')
+import Autodesk
+from Autodesk.Revit.DB import *
+
+import System
+from System import Array
+from System.Collections.Generic import *
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+views = UnwrapElement(IN[0])
+filePath = IN[1]
+exportRange = IN[2]
+fileType = IN[3]
+zoomType = IN[4]
+pixelSize = IN[5]
+imageRes = IN[6]
+zoom = IN[7]
+fitDirection = IN[8]
+
+def CreateViewSet(views):
+	viewSet = List[ElementId]()
+	for i in views:
+		viewSet.Add(i.Id)
+	return viewSet
+
+
+ieo = ImageExportOptions()
+ieo.FilePath = filePath
+
+if fileType != None:
+	ieo.HLRandWFViewsFileType = fileType
+
+if zoomType != None:
+	ieo.ZoomType = zoomType
+	if ieo.ZoomType == ZoomFitType.FitToPage:
+		if imageRes != None:
+			ieo.ImageResolution = imageRes
+		if pixelSize != None:
+			ieo.PixelSize = pixelSize
+		if fitDirection != None:
+			ieo.FitDirection = fitDirection
+	elif ieo.ZoomType == ZoomType.Zoom:
+		if zoom != None:
+			ieo.Zoom = zoom
+
+if len(views) &gt; 1:
+	ieo.ExportRange = ExportRange.SetOfViews
+	ieo.SetViewsAndSheets(CreateViewSet(views))
+else:
+	ieo.ExportRange = exportRange
+
+# "Start" the transaction
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+doc.ExportImage(ieo)
+
+# "End" the transaction
+TransactionManager.Instance.TransactionTaskDone()
+
+#Assign your output to the OUT variable
+OUT = 0</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol guid="a1284f57-aefe-456d-a38f-cfe1545b6386" type="Dynamo.Nodes.Symbol" nickname="Input" x="329" y="245" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="views" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="994abb3f-fef3-43f0-b9f9-810c47684df1" type="Dynamo.Nodes.Symbol" nickname="Input" x="245" y="307" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="filePath" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="796e8443-7b7a-452b-af38-a85cafd9dfa0" type="Dynamo.Nodes.Symbol" nickname="Input" x="279" y="402" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="exportRange" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="f03fd26b-2835-4b9c-807b-4eeda8643e06" type="Dynamo.Nodes.Symbol" nickname="Input" x="270" y="474" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="fileType" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="fc7348b8-c1a6-438c-945d-b9191685c0bf" type="Dynamo.Nodes.Symbol" nickname="Input" x="269" y="539" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="zoomType" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="f8932c9a-4ced-4e18-a4a3-f3257c4380d8" type="Dynamo.Nodes.Symbol" nickname="Input" x="273" y="591" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="pixelSize" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="a728fc0d-24c9-4996-9114-80d7af833b07" type="Dynamo.Nodes.Symbol" nickname="Input" x="268" y="656" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="imageRes" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="fe122d72-6595-4b53-8fb7-778029d89682" type="Dynamo.Nodes.Symbol" nickname="Input" x="290" y="737" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="zoom" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="0090f80e-6358-43b8-b793-852e47a7704b" type="Dynamo.Nodes.Symbol" nickname="Input" x="290" y="806" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="fitDirection" />
+    </Dynamo.Nodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="a1284f57-aefe-456d-a38f-cfe1545b6386" start_index="0" end="fa70884d-6aa7-4a6a-b440-565bddc548d2" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="994abb3f-fef3-43f0-b9f9-810c47684df1" start_index="0" end="fa70884d-6aa7-4a6a-b440-565bddc548d2" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="796e8443-7b7a-452b-af38-a85cafd9dfa0" start_index="0" end="fa70884d-6aa7-4a6a-b440-565bddc548d2" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f03fd26b-2835-4b9c-807b-4eeda8643e06" start_index="0" end="fa70884d-6aa7-4a6a-b440-565bddc548d2" end_index="3" portType="0" />
+    <Dynamo.Models.ConnectorModel start="fc7348b8-c1a6-438c-945d-b9191685c0bf" start_index="0" end="fa70884d-6aa7-4a6a-b440-565bddc548d2" end_index="4" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f8932c9a-4ced-4e18-a4a3-f3257c4380d8" start_index="0" end="fa70884d-6aa7-4a6a-b440-565bddc548d2" end_index="5" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a728fc0d-24c9-4996-9114-80d7af833b07" start_index="0" end="fa70884d-6aa7-4a6a-b440-565bddc548d2" end_index="6" portType="0" />
+    <Dynamo.Models.ConnectorModel start="fe122d72-6595-4b53-8fb7-778029d89682" start_index="0" end="fa70884d-6aa7-4a6a-b440-565bddc548d2" end_index="7" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0090f80e-6358-43b8-b793-852e47a7704b" start_index="0" end="fa70884d-6aa7-4a6a-b440-565bddc548d2" end_index="8" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+</Workspace>

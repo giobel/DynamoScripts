@@ -1,0 +1,71 @@
+<Workspace Version="0.8.2.2371" X="-21" Y="90" zoom="1" Name="Search for Generic Annotation on Sheet and Copy Id to Clipboard" Description="uses Workset to get Sheet, file must be workshared" ID="a22db358-eeaf-42b4-a94f-01e7dec8371d" Category="Bakery.2D">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSRevitNodesUI.Categories guid="13caa1e2-dbd2-4df7-a4e8-e852f6614326" type="DSRevitNodesUI.Categories" nickname="Categories" x="337" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" index="369:GenericAnnotation" />
+    <DSRevitNodesUI.ElementsOfCategory guid="04e4e72c-3f61-4882-bb05-5297c900f247" type="DSRevitNodesUI.ElementsOfCategory" nickname="All Elements of Category" x="369" y="152" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+    <Dynamo.Nodes.Function guid="51270611-0aa2-4f71-94ec-2a0ecaea946b" type="Dynamo.Nodes.Function" nickname="Element.Workset" x="588.537982075865" y="244.231008962068" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="35d5bbd0-79d7-43a9-af54-2b366d290d4a" />
+      <Name value="Element.Workset" />
+      <Description value="Retrieves the workset of a given element" />
+      <Inputs>
+        <Input value="Element(s)" />
+      </Inputs>
+      <Outputs>
+        <Output value="Workset(s)" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="f8f84090-d057-4b9a-be7f-93af7dacae47" type="Dynamo.Nodes.Function" nickname="Element Name Universal" x="827.537982075865" y="277" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="879451ea-d61b-4ff2-bed0-b3020778e187" />
+      <Name value="Element Name Universal" />
+      <Description value="Modified for 0.8.1" />
+      <Inputs>
+        <Input value="Element(s)" />
+      </Inputs>
+      <Outputs>
+        <Output value="Name(s)" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Watch guid="27b7740b-83c4-438d-9ac2-fffacf9b4769" type="Dynamo.Nodes.Watch" nickname="Watch" x="250" y="250" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+    <Dynamo.Nodes.DSFunction guid="4c05e3fb-61bf-4f77-890b-54d013f91348" type="Dynamo.Nodes.DSFunction" nickname="List.FilterByBoolMask" x="677.178041543027" y="697.762611275964" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.FilterByBoolMask@var[]..[],var[]..[]" />
+    <Dynamo.Nodes.Watch guid="0f8e17fb-b5e1-4866-b115-08ef387a8efc" type="Dynamo.Nodes.Watch" nickname="Watch" x="880.145400593472" y="702.510385756676" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+    <Dynamo.Nodes.DSFunction guid="e7ed80cb-6777-4df2-a49d-f2e03515f345" type="Dynamo.Nodes.DSFunction" nickname="String.Contains" x="1176.88130563798" y="401.026706231454" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.String.Contains@string,string,bool">
+      <PortInfo index="2" default="True" />
+    </Dynamo.Nodes.DSFunction>
+    <Dynamo.Nodes.Function guid="675f6e35-9342-47f8-9428-84a76d3dc318" type="Dynamo.Nodes.Function" nickname="Send Element IDs to Clipboard" x="1233.85459940653" y="730.99703264095" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="5bc651a1-623f-44a8-939e-13bcc9fb6d78" />
+      <Name value="Send Element IDs to Clipboard" />
+      <Description value="Can be pasted into Select by ID" />
+      <Inputs>
+        <Input value="elementList" />
+      </Inputs>
+      <Outputs>
+        <Output value="done" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="d3f9ab68-14c5-4c2b-bbb8-ec4c300db7b5" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="searchFor : string" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="2dc8bc7f-862c-4195-aa6b-6b5f5a06cf27" type="Dynamo.Nodes.Output" nickname="Output" x="1508.85459940653" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="done" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="13caa1e2-dbd2-4df7-a4e8-e852f6614326" start_index="0" end="04e4e72c-3f61-4882-bb05-5297c900f247" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="04e4e72c-3f61-4882-bb05-5297c900f247" start_index="0" end="27b7740b-83c4-438d-9ac2-fffacf9b4769" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="51270611-0aa2-4f71-94ec-2a0ecaea946b" start_index="0" end="f8f84090-d057-4b9a-be7f-93af7dacae47" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f8f84090-d057-4b9a-be7f-93af7dacae47" start_index="0" end="e7ed80cb-6777-4df2-a49d-f2e03515f345" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="27b7740b-83c4-438d-9ac2-fffacf9b4769" start_index="0" end="51270611-0aa2-4f71-94ec-2a0ecaea946b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="27b7740b-83c4-438d-9ac2-fffacf9b4769" start_index="0" end="4c05e3fb-61bf-4f77-890b-54d013f91348" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4c05e3fb-61bf-4f77-890b-54d013f91348" start_index="0" end="0f8e17fb-b5e1-4866-b115-08ef387a8efc" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0f8e17fb-b5e1-4866-b115-08ef387a8efc" start_index="0" end="675f6e35-9342-47f8-9428-84a76d3dc318" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e7ed80cb-6777-4df2-a49d-f2e03515f345" start_index="0" end="4c05e3fb-61bf-4f77-890b-54d013f91348" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="675f6e35-9342-47f8-9428-84a76d3dc318" start_index="0" end="2dc8bc7f-862c-4195-aa6b-6b5f5a06cf27" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d3f9ab68-14c5-4c2b-bbb8-ec4c300db7b5" start_index="0" end="e7ed80cb-6777-4df2-a49d-f2e03515f345" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

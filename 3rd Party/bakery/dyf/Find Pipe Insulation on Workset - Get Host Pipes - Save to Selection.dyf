@@ -1,0 +1,133 @@
+<Workspace Version="0.8.2.2371" X="-442.642995617634" Y="473.037207833963" zoom="0.770516848202245" Name="Find Pipe Insulation on Workset - Get Host Pipes - Save to Selection" Description="" ID="747effaf-4d48-4a5e-a4bb-e77b8c579d75" Category="Bakery.Systems">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSRevitNodesUI.Categories guid="8ef10d78-63f2-45ed-a54b-428f328865e2" type="DSRevitNodesUI.Categories" nickname="Categories" x="256.090698509509" y="26.0941369902919" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" index="596:PipeInsulations" />
+    <DSRevitNodesUI.ElementsOfCategory guid="bf49f694-656a-4b0d-8b77-7bdc2d514aec" type="DSRevitNodesUI.ElementsOfCategory" nickname="All Elements of Category" x="491.539031141671" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+    <Dynamo.Nodes.StringInput guid="4247fb1c-d54f-4f6d-b32a-a56a3057ab31" type="Dynamo.Nodes.StringInput" nickname="String" x="627.994251088012" y="240.672468847479" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <System.String>Workset</System.String>
+      <System.String value="Workset" />
+    </Dynamo.Nodes.StringInput>
+    <Dynamo.Nodes.DSFunction guid="d73a3bf1-07b7-4e63-85d7-77204a89da62" type="Dynamo.Nodes.DSFunction" nickname="Element.GetParameterValueByName" x="734.174687496791" y="78.8992689515976" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="RevitNodes.dll" function="Revit.Elements.Element.GetParameterValueByName@string" />
+    <Dynamo.Nodes.Function guid="56be7950-9c5e-4fb0-8c26-b3324eef1194" type="Dynamo.Nodes.Function" nickname="Get Worksets" x="250" y="414.024581119146" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="True">
+      <ID value="afaa5c4d-38d4-4dc9-a412-752118db370f" />
+      <Name value="Get Worksets" />
+      <Description value="Retrieves user worksets from specified document" />
+      <Inputs />
+      <Outputs>
+        <Output value="Worksets" />
+        <Output value="Names" />
+        <Output value="Ids" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="bb558463-83ae-454b-9fab-5a0699f74a31" type="Dynamo.Nodes.Function" nickname="Flat List to List of Strings" x="803.118309537019" y="225.584099950064" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="82b8a446-c4a1-4d64-8736-01c0b01ae798" />
+      <Name value="Flat List to List of Strings" />
+      <Description value="using python methods" />
+      <Inputs>
+        <Input value="Original List" />
+      </Inputs>
+      <Outputs>
+        <Output value="List of Strings" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="57c1e9c3-ef0d-4076-a0ea-133c739bacbb" type="Dynamo.Nodes.Function" nickname="Flat List to List of Strings" x="873.020319452857" y="496.707058808408" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="82b8a446-c4a1-4d64-8736-01c0b01ae798" />
+      <Name value="Flat List to List of Strings" />
+      <Description value="using python methods" />
+      <Inputs>
+        <Input value="Original List" />
+      </Inputs>
+      <Outputs>
+        <Output value="List of Strings" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.DSFunction guid="856b96a5-d902-4beb-9c6e-1516b3d3bdb6" type="Dynamo.Nodes.DSFunction" nickname="List.GetItemAtIndex" x="691.605777390218" y="596.436504340278" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <DSCoreNodesUI.CreateList guid="da4d2739-135b-4d9d-b0e0-58c14b15fcea" type="DSCoreNodesUI.CreateList" nickname="List.Create" x="411.038663021162" y="861.701820976897" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1" />
+    <Dynamo.Nodes.Function guid="70eb5788-7fce-4aa4-853f-2ee0f908c5c0" type="Dynamo.Nodes.Function" nickname="Get Host Pipe ID from Pipe Insulation" x="1387.58297461373" y="436.684909273074" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="04e95718-d70f-49ab-8e19-3a022688be26" />
+      <Name value="Get Host Pipe ID from Pipe Insulation" />
+      <Description value="takes a list of elements (such as Pipe Insulations) and returns a list of their Hosts" />
+      <Inputs>
+        <Input value="Element(s)" />
+      </Inputs>
+      <Outputs>
+        <Output value="out" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.DSFunction guid="f7cfd647-f73b-45e4-8fc7-4c76d86b3f21" type="Dynamo.Nodes.DSFunction" nickname="List.GetItemAtIndex" x="1703.68006009324" y="74.6324475609218" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.Function guid="3c866cd6-6cba-441c-900b-8b2457e73bc3" type="Dynamo.Nodes.Function" nickname="SelectionSet.ByElements" x="1866.16720795981" y="320.292007971162" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="abdd4174-8c8f-45ae-90a4-ffa3b369941b" />
+      <Name value="SelectionSet.ByElements" />
+      <Description value="Creates a selection set of the given elements. Note that if a selection set of the given name already exists in the model, its contents will be replaced. Also, if the selection set is already applied as a view filter, the view filter will have to be manually updated in the visibility / graphic overrides." />
+      <Inputs>
+        <Input value="Name" />
+        <Input value="Element(s)" />
+      </Inputs>
+      <Outputs>
+        <Output value="SelectionSet" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="0d35b3d5-b8dd-48a9-9976-e72de582cbaa" type="Dynamo.Nodes.Symbol" nickname="Input" x="215.572724124253" y="848.817601239248" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="searchForWorkset" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="fb3844a5-dd46-4f74-ac16-9d6b9c333ad2" type="Dynamo.Nodes.Symbol" nickname="Input" x="1583.11219278749" y="347.046943144825" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="SaveToSelectionSet" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="b539ff33-177f-4c42-adc2-8dd77817988a" type="Dynamo.Nodes.Output" nickname="Output" x="2122.95726507316" y="-47.1565334021805" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="PipeInsulationsOnThisWorkset" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="2a471ee7-1328-46a7-9ff4-7d11d27830f2" type="Dynamo.Nodes.Output" nickname="Output" x="2143.16720795981" y="150" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="SelectionSet" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Function guid="838e8a34-fd32-433b-8c23-dbc00cf18139" type="Dynamo.Nodes.Function" nickname="bv If Equal Return Index" x="617.13769994699" y="735.569568473023" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="f98fdd44-ac07-4192-a93a-81c12ca16bcf" />
+      <Name value="bv If Equal Return Index" />
+      <Description value="forked" />
+      <Inputs>
+        <Input value="listA" />
+        <Input value="listB" />
+      </Inputs>
+      <Outputs>
+        <Output value="Index" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="0afc9ecc-080e-49a2-8319-eedc303104e7" type="Dynamo.Nodes.Function" nickname="bv If Equal Return Index" x="1273.15076502033" y="176.195079955644" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="f98fdd44-ac07-4192-a93a-81c12ca16bcf" />
+      <Name value="bv If Equal Return Index" />
+      <Description value="forked" />
+      <Inputs>
+        <Input value="listA" />
+        <Input value="listB" />
+      </Inputs>
+      <Outputs>
+        <Output value="Index" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="8ef10d78-63f2-45ed-a54b-428f328865e2" start_index="0" end="bf49f694-656a-4b0d-8b77-7bdc2d514aec" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="bf49f694-656a-4b0d-8b77-7bdc2d514aec" start_index="0" end="d73a3bf1-07b7-4e63-85d7-77204a89da62" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="bf49f694-656a-4b0d-8b77-7bdc2d514aec" start_index="0" end="f7cfd647-f73b-45e4-8fc7-4c76d86b3f21" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d73a3bf1-07b7-4e63-85d7-77204a89da62" start_index="0" end="bb558463-83ae-454b-9fab-5a0699f74a31" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="56be7950-9c5e-4fb0-8c26-b3324eef1194" start_index="1" end="838e8a34-fd32-433b-8c23-dbc00cf18139" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="56be7950-9c5e-4fb0-8c26-b3324eef1194" start_index="2" end="856b96a5-d902-4beb-9c6e-1516b3d3bdb6" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="bb558463-83ae-454b-9fab-5a0699f74a31" start_index="0" end="0afc9ecc-080e-49a2-8319-eedc303104e7" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="57c1e9c3-ef0d-4076-a0ea-133c739bacbb" start_index="0" end="0afc9ecc-080e-49a2-8319-eedc303104e7" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="856b96a5-d902-4beb-9c6e-1516b3d3bdb6" start_index="0" end="57c1e9c3-ef0d-4076-a0ea-133c739bacbb" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="da4d2739-135b-4d9d-b0e0-58c14b15fcea" start_index="0" end="838e8a34-fd32-433b-8c23-dbc00cf18139" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="70eb5788-7fce-4aa4-853f-2ee0f908c5c0" start_index="0" end="3c866cd6-6cba-441c-900b-8b2457e73bc3" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f7cfd647-f73b-45e4-8fc7-4c76d86b3f21" start_index="0" end="70eb5788-7fce-4aa4-853f-2ee0f908c5c0" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f7cfd647-f73b-45e4-8fc7-4c76d86b3f21" start_index="0" end="b539ff33-177f-4c42-adc2-8dd77817988a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3c866cd6-6cba-441c-900b-8b2457e73bc3" start_index="0" end="2a471ee7-1328-46a7-9ff4-7d11d27830f2" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0d35b3d5-b8dd-48a9-9976-e72de582cbaa" start_index="0" end="da4d2739-135b-4d9d-b0e0-58c14b15fcea" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="fb3844a5-dd46-4f74-ac16-9d6b9c333ad2" start_index="0" end="3c866cd6-6cba-441c-900b-8b2457e73bc3" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="838e8a34-fd32-433b-8c23-dbc00cf18139" start_index="0" end="856b96a5-d902-4beb-9c6e-1516b3d3bdb6" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0afc9ecc-080e-49a2-8319-eedc303104e7" start_index="0" end="f7cfd647-f73b-45e4-8fc7-4c76d86b3f21" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

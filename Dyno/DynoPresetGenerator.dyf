@@ -1,0 +1,49 @@
+<Workspace Version="1.1.0.2094" X="0" Y="0" zoom="1" Name="DynoPresetGenerator" Description="" ID="ab196b28-db17-4265-906e-b1c6f820d03e" Category="Dyno">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="985a793e-ac67-4440-92f1-27fadba9caca" type="PythonNodeModels.PythonNode" nickname="Python Script" x="501.5" y="247.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="2">
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variables.
+dataEnteringNode = IN
+
+name = IN[0]
+input = IN[1]
+
+
+if type(input) == str:
+
+	a='"'+str(name)+'" : {\n\t'+str(input)+'}'
+	OUT = a
+
+elif type(input) == list:
+
+	b=',\n\t'.join(str(input))
+	OUT = '"+str(name)" : {\n\t'+str(b)+'\n\t}'
+
+else: 
+	OUT = "error"</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="ef36115b-6505-4353-917d-15dbdda92d55" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="320.5" y="221.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="Preset Name" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="654207c5-c384-457c-92bd-e5d36b80bdc2" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="278.5" y="338.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="Preset Input(s)" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="93beefc1-5b29-471e-a884-0cd18816f906" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="734.5" y="280.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="Preset Definition" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="985a793e-ac67-4440-92f1-27fadba9caca" start_index="0" end="93beefc1-5b29-471e-a884-0cd18816f906" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="ef36115b-6505-4353-917d-15dbdda92d55" start_index="0" end="985a793e-ac67-4440-92f1-27fadba9caca" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="654207c5-c384-457c-92bd-e5d36b80bdc2" start_index="0" end="985a793e-ac67-4440-92f1-27fadba9caca" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

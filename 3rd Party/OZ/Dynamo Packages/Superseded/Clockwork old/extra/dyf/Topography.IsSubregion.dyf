@@ -1,0 +1,58 @@
+<Workspace Version="0.7.2.2921" X="30" Y="378.555331991952" zoom="1.2897384305835" Description="Filters out everything that is *not* a topo subregion. Needs Revit 2014 or newer to work." Category="Clockwork.Revit.Elements.Topography.Query" Name="Topography.IsSubregion" ID="b88927ec-fb92-40c7-a33e-d16be99809c7">
+  <Elements>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="753cd253-79a4-4c4b-ab10-aee58856bc74" nickname="Input" x="10.8549141965679" y="-114.932917316693" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Toposurface(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="f6da18fc-3327-4d53-9baf-51ebf53e264a" nickname="Turn Into List" x="222" y="13" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="9360058e-8acd-40b3-8a55-a4891ad83340" nickname="Python Script" x="406.840873634945" y="83.3759750390016" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+topos = UnwrapElement(IN[0])
+booleans = list()
+for item in topos:
+	try:
+		if item.IsSiteSubRegion:
+			booleans.append(True)
+		else:
+			booleans.append(False)
+	except:
+		booleans.append(False)
+OUT = booleans</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="28098b6d-689f-4c84-8a2c-02e7596159e0" nickname="Output" x="924.898595943838" y="15.5070202808113" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="bool" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="ca63cfe3-a93f-4bda-9462-5c9093cfde42" nickname="ReturnListOrSingleValue" x="647.898595943838" y="15.5070202808113" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="item #1 (unknown)" />
+        <Input value="item #2 (list)" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="753cd253-79a4-4c4b-ab10-aee58856bc74" start_index="0" end="f6da18fc-3327-4d53-9baf-51ebf53e264a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="753cd253-79a4-4c4b-ab10-aee58856bc74" start_index="0" end="ca63cfe3-a93f-4bda-9462-5c9093cfde42" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f6da18fc-3327-4d53-9baf-51ebf53e264a" start_index="0" end="9360058e-8acd-40b3-8a55-a4891ad83340" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9360058e-8acd-40b3-8a55-a4891ad83340" start_index="0" end="ca63cfe3-a93f-4bda-9462-5c9093cfde42" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ca63cfe3-a93f-4bda-9462-5c9093cfde42" start_index="0" end="28098b6d-689f-4c84-8a2c-02e7596159e0" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

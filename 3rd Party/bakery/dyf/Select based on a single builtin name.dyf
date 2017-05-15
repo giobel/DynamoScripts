@@ -1,0 +1,56 @@
+<Workspace Version="0.9.2.4472" X="0" Y="0" zoom="1" Name="Select based on a single builtin name" Description="use with List.Map for input of Built In Name list" ID="fcc55045-acf7-4e9f-8222-c02f16b19e58" Category="Bakery.Collect">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="1ab3b109-8708-467c-8472-442e94daea0d" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="438" y="324" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false">
+      <Symbol value="builtinName" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <PythonNodeModels.PythonNode guid="96558339-f215-44f4-84c8-32d03549cdff" type="PythonNodeModels.PythonNode" nickname="Python Script" x="755" y="302" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" inputcount="1">
+      <Script>#LSJ
+
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+# Import DocumentManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+from Autodesk.Revit.DB import *
+clr.ImportExtensions(Revit.Elements)
+
+import System
+
+builtInName = IN
+
+#The inputs to this node will be stored as a list in the IN variable.
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+listed = []
+listed.append(FilteredElementCollector(doc).WhereElementIsNotElementType().OfCategory(builtInName[0]).ToElements())
+OUT = listed</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="a8816e3a-68d7-44ca-96c9-2e10a349298d" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1012" y="394" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false">
+      <Symbol value="elements" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="1ab3b109-8708-467c-8472-442e94daea0d" start_index="0" end="96558339-f215-44f4-84c8-32d03549cdff" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="96558339-f215-44f4-84c8-32d03549cdff" start_index="0" end="a8816e3a-68d7-44ca-96c9-2e10a349298d" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

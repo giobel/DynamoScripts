@@ -1,0 +1,71 @@
+<Workspace Version="0.7.1.29946" X="265.701048951049" Y="165.621309246309" zoom="1" Description="Generates a list of Random numbers using a domain, amount, and seed." Category="LunchBox.Math.Random" Name="LunchBox Random Numbers" ID="43cb454f-75d9-480a-bd07-64e779b11744">
+  <Elements>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="e93745d8-8004-4780-b758-63a0dae56cfb" nickname="Input" x="9" y="111" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Min" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="d527160f-a7db-4a90-a199-39c9ef8408b4" nickname="Input" x="7" y="179" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Max" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="6743399f-c471-4167-9925-524d305ce8ca" nickname="Input" x="7" y="247" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Amount" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="6a7e3e4c-ae52-4236-ba41-18620e19eea1" nickname="Output" x="490.325757575758" y="136" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Random List" />
+    </Dynamo.Nodes.Output>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="ce486c94-a49c-4acc-85d8-0ec18fae4330" nickname="Python Script" x="239.325757575758" y="137" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="4">
+      <Script>#Copyright(c) 2014, Nathan Miller
+# The Proving Ground, http://theprovingground.org
+
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+import System
+
+min = IN[0]
+max = IN[1]
+num = IN[2]
+seed = IN[3]
+
+dmin = min
+dmax = max
+drange = dmax - dmin
+
+random = System.Random(seed)
+
+# Generate some random floats
+list = []
+for i in range(0,int(num)):
+	rand = random.NextDouble()
+	list.append(rand)
+
+# Remap numbers
+l = []
+for i in range(0,len(list)):
+	l.append(list[i])
+
+l.sort()
+listMin = l[0]
+listMax = l[(len(list)-1)]
+listRange = listMax-listMin
+
+mapped = []
+for i in range(0,len(list)):
+	scaled = dmin + (((list[i] - listMin) / listRange) * drange)
+	mapped.append(scaled)
+
+#Assign your output to the OUT variable
+OUT = mapped</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="cfc12a3e-f9b9-4715-8648-6d1fd339118e" nickname="Input" x="5" y="315" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Seed" />
+    </Dynamo.Nodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="e93745d8-8004-4780-b758-63a0dae56cfb" start_index="0" end="ce486c94-a49c-4acc-85d8-0ec18fae4330" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d527160f-a7db-4a90-a199-39c9ef8408b4" start_index="0" end="ce486c94-a49c-4acc-85d8-0ec18fae4330" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6743399f-c471-4167-9925-524d305ce8ca" start_index="0" end="ce486c94-a49c-4acc-85d8-0ec18fae4330" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ce486c94-a49c-4acc-85d8-0ec18fae4330" start_index="0" end="6a7e3e4c-ae52-4236-ba41-18620e19eea1" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="cfc12a3e-f9b9-4715-8648-6d1fd339118e" start_index="0" end="ce486c94-a49c-4acc-85d8-0ec18fae4330" end_index="3" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

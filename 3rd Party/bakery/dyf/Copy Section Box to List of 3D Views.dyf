@@ -1,0 +1,126 @@
+<Workspace Version="0.9.1.4062" X="-518.143395486872" Y="188.69840707497" zoom="0.803321593462598" Name="Copy Section Box to List of 3D Views" Description="" ID="e07fb632-f9c9-4cd1-a3ff-3ab38ccf88af" Category="Bakery.Views">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="718fd63a-59c4-4827-8c8a-22f8eda91c03" type="PythonNodeModels.PythonNode" nickname="Python Script" x="727.918581756001" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" inputcount="2">
+      <Script>#Luke Stanley Johnson for Bakery
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+from System.Collections.Generic import *
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+#The inputs to this node will be stored as a list in the IN variable.
+
+#viewlistOne = []
+#for j in IN[0]:
+#	viewlistOne.append(UnwrapElement(j))
+	
+viewlistTwo = []
+for k in IN[1]:
+	viewlistTwo.append(UnwrapElement(k))
+
+#sectionboxsource = []
+viewsource = UnwrapElement(IN[0])
+sectionboxsource = viewsource.GetSectionBox()
+#for v in viewlistOne:
+#	try:
+#		sectionboxsource.append(v.GetSectionBox())
+#	except:
+#		sectionboxsource.append("No Section Box")
+
+#counter = range(len(viewlistTwo))
+TransactionManager.Instance.EnsureInTransaction(doc)
+resultlist = []
+for i in viewlistTwo:
+	try:
+		i.SetSectionBox(sectionboxsource)
+		resultlist.append("Section Box Set OK")
+	except:
+		resultlist.append("Section Box Set FAILED")
+TransactionManager.Instance.TransactionTaskDone()
+
+#Assign your output to the OUT variable
+OUT = viewsource, sectionboxsource, viewlistTwo, resultlist</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="1c50ee04-659f-4659-a201-f9b09fa21ba5" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="TurnIntoList" x="250" y="398.728282518953" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="TurnIntoList" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="e9caf1c8-d674-4f07-b4b1-6ab325e3a90f" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1116.81793982258" y="97.9681643492236" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" CodeText="2;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="2fb436cc-ae0b-406b-84a8-0447cc4cef49" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1152.53315101966" y="233.916387615529" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" CodeText="3;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="8e037ad9-dc68-4326-abfd-00656858a502" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Remove List from List by Item not Value" x="505.328290180741" y="478.405743774814" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false">
+      <ID value="3087d2ac-7716-41e4-bc15-14de29d964f6" />
+      <Name value="Remove List from List by Item not Value" />
+      <Description value="remove the items in ListA from the items in ListB and return whats left" />
+      <Inputs>
+        <Input value="ListOfItemsToRemove" />
+        <Input value="ListToRemoveFrom" />
+      </Inputs>
+      <Outputs>
+        <Output value="reducedList" />
+        <Output value="unmatched" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <CoreNodeModels.Watch guid="31964064-c744-47f6-814b-fe63c70f7f11" type="CoreNodeModels.Watch" nickname="Watch" x="858.680108354667" y="477.241670186731" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="867070c7-0240-4be2-9bcd-af9f0e11bd35" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.GetItemAtIndex" x="1278.83369417002" y="19.6492668794285" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="fa89da01-ce19-4786-9972-a5c4055d22d8" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.GetItemAtIndex" x="1314.54890536709" y="155.597490145734" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="9181b3a3-d17c-4289-bc66-1fc09c514e3e" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false">
+      <Symbol value="getSectionBoxFromThisView" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="2336e819-a9ba-4dad-944c-44cf1bff2ce3" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="47.4777448071217" y="574.183976261128" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false">
+      <Symbol value="setToThese3Dviews" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="c2c3e60c-cbbf-4e99-980b-1a6ccfd4616a" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1524.54890536709" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false">
+      <Symbol value="views modified" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="52f38f1b-8851-4203-b318-44b7aa546a96" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1524.54890536709" y="150" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false">
+      <Symbol value="success?" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="718fd63a-59c4-4827-8c8a-22f8eda91c03" start_index="0" end="867070c7-0240-4be2-9bcd-af9f0e11bd35" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="718fd63a-59c4-4827-8c8a-22f8eda91c03" start_index="0" end="fa89da01-ce19-4786-9972-a5c4055d22d8" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="1c50ee04-659f-4659-a201-f9b09fa21ba5" start_index="0" end="8e037ad9-dc68-4326-abfd-00656858a502" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="e9caf1c8-d674-4f07-b4b1-6ab325e3a90f" start_index="0" end="867070c7-0240-4be2-9bcd-af9f0e11bd35" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="2fb436cc-ae0b-406b-84a8-0447cc4cef49" start_index="0" end="fa89da01-ce19-4786-9972-a5c4055d22d8" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="8e037ad9-dc68-4326-abfd-00656858a502" start_index="0" end="31964064-c744-47f6-814b-fe63c70f7f11" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="31964064-c744-47f6-814b-fe63c70f7f11" start_index="0" end="718fd63a-59c4-4827-8c8a-22f8eda91c03" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="867070c7-0240-4be2-9bcd-af9f0e11bd35" start_index="0" end="c2c3e60c-cbbf-4e99-980b-1a6ccfd4616a" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="fa89da01-ce19-4786-9972-a5c4055d22d8" start_index="0" end="52f38f1b-8851-4203-b318-44b7aa546a96" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9181b3a3-d17c-4289-bc66-1fc09c514e3e" start_index="0" end="718fd63a-59c4-4827-8c8a-22f8eda91c03" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9181b3a3-d17c-4289-bc66-1fc09c514e3e" start_index="0" end="1c50ee04-659f-4659-a201-f9b09fa21ba5" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="2336e819-a9ba-4dad-944c-44cf1bff2ce3" start_index="0" end="8e037ad9-dc68-4326-abfd-00656858a502" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

@@ -1,0 +1,63 @@
+<Workspace Version="0.7.2.2921" X="-110.06250191181" Y="202.601267796944" zoom="0.830032543524113" Description="from Viewschedule input, returns columns header values as text" Category="SteamNodes.Schedule" Name="Schedule.GetTextFromHeader" ID="4564a64b-8f8f-4d7d-94b8-12bcbfad93c6">
+  <Elements>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="b69c1798-2c2d-43f1-b910-31ea6a0938e9" nickname="Python Script" x="538" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="1">
+      <Script>#python nodes in dynamo 0.7
+#proposed by Julien Benoit @jbenoit44 
+#http://aecuandme.wordpress.com/
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+# Import geometry conversion extension methods
+clr.ImportExtensions(Revit.GeometryConversion)
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+from System.Collections.Generic import *
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+uidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+
+elt = []
+for i in IN[0]:
+	elt.append(UnwrapElement(i))
+list=[]
+
+# Start Transaction
+TransactionManager.Instance.EnsureInTransaction(doc)
+for v in elt:
+	b=SectionType.Header
+	a=v.GetCellText(b,0,0)
+	list.append(a)
+
+# End Transaction
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT=list</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.CodeBlockNodeModel type="Dynamo.Nodes.CodeBlockNodeModel" guid="4575c7af-afce-4c4a-89b6-3ee1f8ec7476" nickname="Code Block" x="230" y="4.21833333333333" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="Flatten({item});" ShouldFocus="false" />
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="35d97d60-1c14-4702-a69c-f78e29459963" nickname="Output" x="762" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Header(s)" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="262867d2-9e85-4f52-a9e8-11b3683fe762" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="ViewSchedule(s)" />
+    </Dynamo.Nodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="b69c1798-2c2d-43f1-b910-31ea6a0938e9" start_index="0" end="35d97d60-1c14-4702-a69c-f78e29459963" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4575c7af-afce-4c4a-89b6-3ee1f8ec7476" start_index="0" end="b69c1798-2c2d-43f1-b910-31ea6a0938e9" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="262867d2-9e85-4f52-a9e8-11b3683fe762" start_index="0" end="4575c7af-afce-4c4a-89b6-3ee1f8ec7476" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

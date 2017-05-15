@@ -1,0 +1,101 @@
+<Workspace Version="0.8.0.950" X="271.648539135982" Y="105.479684389468" zoom="1.545620359375" Name="LunchBox Create Room by Name and Number" ID="92039ed4-bee4-4437-8d41-d5a3d4d307c6" Description="Creates an unplaced room element using a name and number." Category="LunchBox.Revit.Elements.Create">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="2f13c9a7-5131-4c1f-ac18-58da58005dba" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="250" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="3">
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+clr.ImportExtensions(Revit.GeometryConversion)
+
+#The inputs to this node will be stored as a list in the IN variable.
+doc =  DocumentManager.Instance.CurrentDBDocument
+app =  DocumentManager.Instance.CurrentUIApplication.Application
+
+bool = IN[0]
+rmnumbers = IN[1]
+rmnames = IN[2]
+
+rooms = []
+
+existrooms = []
+existnames = []
+existnumbers = []
+collector = FilteredElementCollector(doc)
+collector.OfCategory(BuiltInCategory.OST_Rooms)
+for roomexist in collector:
+	existrooms.append(roomexist)
+	existnames.append(roomexist.Parameter['Name'].AsString())
+	existnumbers.append(roomexist.Number)
+
+if bool == True:
+	
+	# "Start" the transaction
+	TransactionManager.Instance.EnsureInTransaction(doc)
+	for i in range(0,len(rmnumbers)):
+		num = rmnumbers[i]
+		name = rmnames[i]
+	
+		v = doc.ActiveView
+		p = v.get_Parameter(BuiltInParameter.VIEW_PHASE).AsElementId()
+		phase = doc.GetElement(p)
+		
+		#search for matching rooms
+		match = False
+		for i in range(0, len(existrooms)):
+			rm = existrooms[i]
+			rmnm = existnames[i]
+			rmnum = existnumbers[i]
+			if rmnm == name and rmnum == num:
+				rooms.append(rm)
+				match = True
+				break
+
+		if match == False:
+			room = doc.Create.NewRoom(phase)
+			room.Name = name
+			room.Number = num
+			rooms.append(room)
+	
+# "End" the transaction
+TransactionManager.Instance.TransactionTaskDone()
+
+#Assign your output to the OUT variable
+OUT = rooms</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol guid="f01e985f-04c3-4be4-a749-2a873f472e6a" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Toggle" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="865f308d-8e6d-4013-98a0-2d33d81b5125" type="Dynamo.Nodes.Symbol" nickname="Input" x="1.72786177105831" y="148.272138228942" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Number" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="71fc9fc3-22cd-4c51-bc53-f39dbb5260a0" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="300" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Name" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="c7fe7d7e-803d-419b-9ff5-af4e98c1ccdc" type="Dynamo.Nodes.Output" nickname="Output" x="449" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Room" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="2f13c9a7-5131-4c1f-ac18-58da58005dba" start_index="0" end="c7fe7d7e-803d-419b-9ff5-af4e98c1ccdc" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f01e985f-04c3-4be4-a749-2a873f472e6a" start_index="0" end="2f13c9a7-5131-4c1f-ac18-58da58005dba" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="865f308d-8e6d-4013-98a0-2d33d81b5125" start_index="0" end="2f13c9a7-5131-4c1f-ac18-58da58005dba" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="71fc9fc3-22cd-4c51-bc53-f39dbb5260a0" start_index="0" end="2f13c9a7-5131-4c1f-ac18-58da58005dba" end_index="2" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

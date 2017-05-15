@@ -1,0 +1,151 @@
+<Workspace Version="1.2.0.2514" X="178.209852761647" Y="-252.729907706565" zoom="1.06060772236021" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.DSModelElementsSelection guid="ca64be2b-c808-44cf-a019-a52e00143e2d" type="Dynamo.Nodes.DSModelElementsSelection" nickname="Select Model Elements" x="-115.5" y="325.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <instance id="7344a0d0-7e00-4c4a-bda1-74e018f0a05c-00000dcd" />
+      <instance id="7344a0d0-7e00-4c4a-bda1-74e018f0a05c-00000de0" />
+      <instance id="7344a0d0-7e00-4c4a-bda1-74e018f0a05c-00000df9" />
+      <instance id="7344a0d0-7e00-4c4a-bda1-74e018f0a05c-00000e0c" />
+      <instance id="7344a0d0-7e00-4c4a-bda1-74e018f0a05c-00000e36" />
+      <instance id="7344a0d0-7e00-4c4a-bda1-74e018f0a05c-00000e52" />
+      <instance id="7344a0d0-7e00-4c4a-bda1-74e018f0a05c-00000e67" />
+      <instance id="7344a0d0-7e00-4c4a-bda1-74e018f0a05c-00000e7c" />
+      <instance id="7344a0d0-7e00-4c4a-bda1-74e018f0a05c-00000e91" />
+      <instance id="7344a0d0-7e00-4c4a-bda1-74e018f0a05c-00000ea5" />
+      <instance id="7344a0d0-7e00-4c4a-bda1-74e018f0a05c-00000eba" />
+      <instance id="7344a0d0-7e00-4c4a-bda1-74e018f0a05c-00000ef0" />
+    </Dynamo.Nodes.DSModelElementsSelection>
+    <PythonNodeModels.PythonNode guid="4055a909-ac0e-4591-bac3-de35445edcbb" type="PythonNodeModels.PythonNode" nickname="Py - Miter" x="270" y="581" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>#Copyright(c) 2015, Dimitar Venkov
+# @5devene, dimitar.ven@gmail.com
+
+import clr
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+doc = DocumentManager.Instance.CurrentDBDocument
+uidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+clr.AddReference("RevitAPI")
+from Autodesk.Revit.DB import ElementId
+from Autodesk.Revit.DB.Structure import StructuralFramingUtils
+
+clr.AddReference("System")
+from System.Collections.Generic import List as cList
+
+
+beams = UnwrapElement(IN[0])
+
+ExUt = []
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+for b in beams:
+	ExUt = b.ExtensionUtility
+	ExUt.set_Extended(0, True)
+	ExUt.set_Extended(1, True)
+	#StructuralFramingUtils.DisallowJoinAtEnd(b,0)
+	#StructuralFramingUtils.DisallowJoinAtEnd(b,1)
+ids1 = [e.Id for e in beams]
+ids2 = cList[ElementId](ids1)
+uidoc.Selection.SetElementIds(ids2)
+OUT = "%s beams corrected in Revit." %ids2.Count
+TransactionManager.Instance.TransactionTaskDone()</Script>
+    </PythonNodeModels.PythonNode>
+    <PythonNodeModels.PythonNode guid="dd13d6f8-8dde-40d4-a8fe-fb0210c084ed" type="PythonNodeModels.PythonNode" nickname="Py-Disallow Join" x="274" y="336" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>#Copyright(c) 2015, Dimitar Venkov
+# @5devene, dimitar.ven@gmail.com
+
+import clr
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+doc = DocumentManager.Instance.CurrentDBDocument
+uidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+clr.AddReference("RevitAPI")
+from Autodesk.Revit.DB import ElementId
+from Autodesk.Revit.DB.Structure import StructuralFramingUtils
+
+clr.AddReference("System")
+from System.Collections.Generic import List as cList
+
+
+beams = UnwrapElement(IN[0])
+
+ExUt = []
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+for b in beams:
+	StructuralFramingUtils.DisallowJoinAtEnd(b,0)
+	StructuralFramingUtils.DisallowJoinAtEnd(b,1)
+ids1 = [e.Id for e in beams]
+ids2 = cList[ElementId](ids1)
+uidoc.Selection.SetElementIds(ids2)
+OUT = "%s beams corrected in Revit." %ids2.Count
+TransactionManager.Instance.TransactionTaskDone()</Script>
+    </PythonNodeModels.PythonNode>
+    <PythonNodeModels.PythonNode guid="135b8e86-e5be-4d6b-a171-3451d3d41340" type="PythonNodeModels.PythonNode" nickname="Py-Allow Join" x="271" y="458" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>#Copyright(c) 2015, Dimitar Venkov
+# @5devene, dimitar.ven@gmail.com
+
+import clr
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+doc = DocumentManager.Instance.CurrentDBDocument
+uidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+clr.AddReference("RevitAPI")
+from Autodesk.Revit.DB import ElementId
+from Autodesk.Revit.DB.Structure import StructuralFramingUtils
+
+clr.AddReference("System")
+from System.Collections.Generic import List as cList
+
+
+beams = UnwrapElement(IN[0])
+
+ExUt = []
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+for b in beams:
+	StructuralFramingUtils.AllowJoinAtEnd(b,0)
+	StructuralFramingUtils.AllowJoinAtEnd(b,1)
+ids1 = [e.Id for e in beams]
+ids2 = cList[ElementId](ids1)
+uidoc.Selection.SetElementIds(ids2)
+OUT = "%s beams corrected in Revit." %ids2.Count
+TransactionManager.Instance.TransactionTaskDone()</Script>
+    </PythonNodeModels.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="ca64be2b-c808-44cf-a019-a52e00143e2d" start_index="0" end="4055a909-ac0e-4591-bac3-de35445edcbb" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

@@ -1,0 +1,63 @@
+<Workspace Version="0.8.2.2371" X="-97.8732708827894" Y="221.261993063798" zoom="0.70823125" Name="Find Nearest Revit Level for a Given Z value" Description="" ID="db1c5431-bfdd-4333-8221-846326574966" Category="Bakery.Geometry">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSRevitNodesUI.Categories guid="5943d71d-fca3-4eb1-bc32-c067a2b5dddc" type="DSRevitNodesUI.Categories" nickname="Categories" x="293.026282213641" y="145.478946973598" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" index="477:Levels" />
+    <DSCoreNodesUI.Formula guid="4bf2792e-e182-4b50-b272-4e6ab9a95127" type="DSCoreNodesUI.Formula" nickname="Formula" x="1162.50316061225" y="150.971338294137" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <FormulaText>abs(x)</FormulaText>
+    </DSCoreNodesUI.Formula>
+    <Dynamo.Nodes.DSFunction guid="9d61fdc2-c1da-477e-b183-9249ad3611ea" type="Dynamo.Nodes.DSFunction" nickname="-" x="999.055453923738" y="209.602555052779" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="Operators" function="-@var[]..[],var[]..[]" />
+    <DSRevitNodesUI.ElementsOfCategory guid="a545d1eb-2967-4773-ad0f-90aa7ea5189e" type="DSRevitNodesUI.ElementsOfCategory" nickname="All Elements of Category" x="250" y="268.900078732119" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+    <Dynamo.Nodes.Function guid="ad99cc67-d6db-405d-b909-f4497f2c17e0" type="Dynamo.Nodes.Function" nickname="List of float double to list of Int" x="725.471750838967" y="245.313278278499" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="07886f46-cd5b-4530-8833-28ca7956cdbc" />
+      <Name value="List of float double to list of Int" />
+      <Description value="no decimals" />
+      <Inputs>
+        <Input value="double" />
+      </Inputs>
+      <Outputs>
+        <Output value="int" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.DSFunction guid="d99ef4fe-cf66-45b6-91cf-f9ceb46353f6" type="Dynamo.Nodes.DSFunction" nickname="List.MinimumItem" x="1161.15794575578" y="255.869738207628" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.MinimumItem@var[]" />
+    <Dynamo.Nodes.Function guid="dd384db7-a7f9-4a4a-be93-29b325948efe" type="Dynamo.Nodes.Function" nickname="If Equal Return Index using IndexOf" x="1403.1257129858" y="142.373777698675" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="ca92b390-30de-4023-886c-cb172a3025bf" />
+      <Name value="If Equal Return Index using IndexOf" />
+      <Description value="" />
+      <Inputs>
+        <Input value="searchForThese" />
+        <Input value="inThisList" />
+      </Inputs>
+      <Outputs>
+        <Output value="indices" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.DSFunction guid="952f8c50-4e2a-4f8e-abad-2da88fccb00f" type="Dynamo.Nodes.DSFunction" nickname="List.GetItemAtIndex" x="1546.73660141053" y="0" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.DSFunction guid="116d0d64-1c43-452d-8be6-724ad8252742" type="Dynamo.Nodes.DSFunction" nickname="Level.Elevation" x="537.040219670632" y="286.010075405492" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="RevitNodes.dll" function="Revit.Elements.Level.Elevation" />
+    <Dynamo.Nodes.Output guid="7011d3d2-ec7a-4b55-938b-25c480baa9d7" type="Dynamo.Nodes.Output" nickname="Output" x="1756.73660141053" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="nearestLevel" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Symbol guid="32a9175d-8807-4238-8bd2-4b8137d88a18" type="Dynamo.Nodes.Symbol" nickname="Input" x="930" y="97" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="z value" />
+    </Dynamo.Nodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="5943d71d-fca3-4eb1-bc32-c067a2b5dddc" start_index="0" end="a545d1eb-2967-4773-ad0f-90aa7ea5189e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4bf2792e-e182-4b50-b272-4e6ab9a95127" start_index="0" end="d99ef4fe-cf66-45b6-91cf-f9ceb46353f6" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4bf2792e-e182-4b50-b272-4e6ab9a95127" start_index="0" end="dd384db7-a7f9-4a4a-be93-29b325948efe" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9d61fdc2-c1da-477e-b183-9249ad3611ea" start_index="0" end="4bf2792e-e182-4b50-b272-4e6ab9a95127" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a545d1eb-2967-4773-ad0f-90aa7ea5189e" start_index="0" end="116d0d64-1c43-452d-8be6-724ad8252742" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a545d1eb-2967-4773-ad0f-90aa7ea5189e" start_index="0" end="952f8c50-4e2a-4f8e-abad-2da88fccb00f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ad99cc67-d6db-405d-b909-f4497f2c17e0" start_index="0" end="9d61fdc2-c1da-477e-b183-9249ad3611ea" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d99ef4fe-cf66-45b6-91cf-f9ceb46353f6" start_index="0" end="dd384db7-a7f9-4a4a-be93-29b325948efe" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="dd384db7-a7f9-4a4a-be93-29b325948efe" start_index="0" end="952f8c50-4e2a-4f8e-abad-2da88fccb00f" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="952f8c50-4e2a-4f8e-abad-2da88fccb00f" start_index="0" end="7011d3d2-ec7a-4b55-938b-25c480baa9d7" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="116d0d64-1c43-452d-8be6-724ad8252742" start_index="0" end="ad99cc67-d6db-405d-b909-f4497f2c17e0" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="32a9175d-8807-4238-8bd2-4b8137d88a18" start_index="0" end="9d61fdc2-c1da-477e-b183-9249ad3611ea" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="98.7155609130859" eyeY="101.215065002441" eyeZ="98.7155609130859" lookX="-98.7155609130859" lookY="-98.7155609130859" lookZ="-98.7155609130859" />
+  </Cameras>
+</Workspace>

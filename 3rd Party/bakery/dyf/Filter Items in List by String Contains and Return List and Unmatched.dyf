@@ -1,0 +1,68 @@
+<Workspace Version="0.8.2.2392" X="30" Y="102.447159124445" zoom="0.620881589470733" Name="Filter Items in List by String Contains and Return List and Unmatched" Description="the two lists are items that contain the string, and everything that is left" ID="ae3ab7c9-a3c7-4636-9c73-735edc385768" Category="Bakery.Lists">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.DSFunction guid="e970a3d3-bab8-41e7-879d-3c3cf6bd5a40" type="Dynamo.Nodes.DSFunction" nickname="String.Contains" x="299.963736224654" y="0" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.String.Contains@string,string,bool">
+      <PortInfo index="2" default="True" />
+    </Dynamo.Nodes.DSFunction>
+    <Dynamo.Nodes.DSFunction guid="dbfc6e35-dfa9-45d5-8b35-8542025e02e3" type="Dynamo.Nodes.DSFunction" nickname="List.FilterByBoolMask" x="535.461699142222" y="31.0250032173165" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.FilterByBoolMask@var[]..[],var[]..[]" />
+    <Dynamo.Nodes.Function guid="d9f6d9c0-1ad4-4312-ae31-d411eb8f0d05" type="Dynamo.Nodes.Function" nickname="Remove List from List by Item not Value" x="614.753996626803" y="196.217702522116" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="3087d2ac-7716-41e4-bc15-14de29d964f6" />
+      <Name value="Remove List from List by Item not Value" />
+      <Description value="remove the items in ListA from the items in ListB and return whats left" />
+      <Inputs>
+        <Input value="ListOfItemsToRemove" />
+        <Input value="ListToRemoveFrom" />
+      </Inputs>
+      <Outputs>
+        <Output value="reducedList" />
+        <Output value="unmatched" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Watch guid="ac02d13f-1b20-486d-bcc3-24d847e27609" type="Dynamo.Nodes.Watch" nickname="Watch" x="257.333333333333" y="217.448550756903" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+    <Dynamo.Nodes.Symbol guid="6ab17d4c-6b7c-4b1d-88bf-b925f26a7f6a" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="ListOfStringItems" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="ed75cb4b-5c32-47e8-b50d-bd3499a46ce8" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="150" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="searchForString" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="ad78a26e-d27e-404b-9178-34e321081cdd" type="Dynamo.Nodes.Output" nickname="Output" x="939.753996626803" y="140" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="allTheRest" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="0038e602-c4c4-408c-914e-6db0560e0612" type="Dynamo.Nodes.Output" nickname="Output" x="838.666666666667" y="44" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="itemsThatContainString" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Function guid="15c4389f-d90d-41b3-be7b-9f3fabcc9131" type="Dynamo.Nodes.Function" nickname="Turn Into List" x="32.6666666666666" y="64" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Output guid="3f51a568-68be-40ee-9442-666720acbc18" type="Dynamo.Nodes.Output" nickname="Output" x="870.067376865217" y="362.540931992325" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="unmatched" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="e970a3d3-bab8-41e7-879d-3c3cf6bd5a40" start_index="0" end="dbfc6e35-dfa9-45d5-8b35-8542025e02e3" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="dbfc6e35-dfa9-45d5-8b35-8542025e02e3" start_index="0" end="ac02d13f-1b20-486d-bcc3-24d847e27609" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="dbfc6e35-dfa9-45d5-8b35-8542025e02e3" start_index="0" end="0038e602-c4c4-408c-914e-6db0560e0612" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d9f6d9c0-1ad4-4312-ae31-d411eb8f0d05" start_index="0" end="ad78a26e-d27e-404b-9178-34e321081cdd" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d9f6d9c0-1ad4-4312-ae31-d411eb8f0d05" start_index="1" end="3f51a568-68be-40ee-9442-666720acbc18" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ac02d13f-1b20-486d-bcc3-24d847e27609" start_index="0" end="d9f6d9c0-1ad4-4312-ae31-d411eb8f0d05" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6ab17d4c-6b7c-4b1d-88bf-b925f26a7f6a" start_index="0" end="15c4389f-d90d-41b3-be7b-9f3fabcc9131" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ed75cb4b-5c32-47e8-b50d-bd3499a46ce8" start_index="0" end="e970a3d3-bab8-41e7-879d-3c3cf6bd5a40" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="15c4389f-d90d-41b3-be7b-9f3fabcc9131" start_index="0" end="e970a3d3-bab8-41e7-879d-3c3cf6bd5a40" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="15c4389f-d90d-41b3-be7b-9f3fabcc9131" start_index="0" end="dbfc6e35-dfa9-45d5-8b35-8542025e02e3" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="15c4389f-d90d-41b3-be7b-9f3fabcc9131" start_index="0" end="d9f6d9c0-1ad4-4312-ae31-d411eb8f0d05" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

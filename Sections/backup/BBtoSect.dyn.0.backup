@@ -1,0 +1,50 @@
+<Workspace Version="0.7.4.3105" X="-501.093011463698" Y="422.477389912728" zoom="1.04563046564592" Description="" Category="" Name="Home">
+  <Elements>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="42282e41-a7da-4693-9478-b1a0669b78a9" nickname="Python Script" x="1001.03696475044" y="-257.213831204056" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.GeometryConversion)
+clr.ImportExtensions(Revit.Elements)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+BB = IN[0]
+
+doc = DocumentManager.Instance.CurrentDBDocument
+view = doc.ActiveView
+try:
+	TransactionManager.Instance.EnsureInTransaction(doc)
+	
+	newmax = UnwrapElement(BB.MaxPoint).ToRevitType()
+	newmin = UnwrapElement(BB.MinPoint).ToRevitType()
+	newbox = BoundingBoxXYZ()
+	newbox.Max = newmax
+	newbox.Min = newmin
+	
+	z = view.SetSectionBox(newbox)
+	
+	TransactionManager.Instance.TransactionTaskDone()
+
+	OUT = "Success!"
+except:
+	OUT = "Failed!"</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="52104c6c-b2a9-4faa-b62d-c76ac1162717" nickname="BoundingBox.ByCorners" x="789.031080688862" y="-259.044946880059" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.BoundingBox.ByCorners@Autodesk.DesignScript.Geometry.Point,Autodesk.DesignScript.Geometry.Point" />
+    <Dynamo.Nodes.CodeBlockNodeModel type="Dynamo.Nodes.CodeBlockNodeModel" guid="2187aa58-00d6-432b-aa6f-5a8d63a01bdc" nickname="Code Block" x="485.770265209408" y="-249" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="Point.Origin();&#xA;Point.ByCoordinates(10,10,10);" ShouldFocus="false" />
+    <Dynamo.Nodes.Watch type="Dynamo.Nodes.Watch" guid="4081f7ef-ee88-4741-bd96-f870425d4ea6" nickname="Watch" x="1175.90107823434" y="-253.938891073179" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="42282e41-a7da-4693-9478-b1a0669b78a9" start_index="0" end="4081f7ef-ee88-4741-bd96-f870425d4ea6" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="52104c6c-b2a9-4faa-b62d-c76ac1162717" start_index="0" end="42282e41-a7da-4693-9478-b1a0669b78a9" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="2187aa58-00d6-432b-aa6f-5a8d63a01bdc" start_index="0" end="52104c6c-b2a9-4faa-b62d-c76ac1162717" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="2187aa58-00d6-432b-aa6f-5a8d63a01bdc" start_index="1" end="52104c6c-b2a9-4faa-b62d-c76ac1162717" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

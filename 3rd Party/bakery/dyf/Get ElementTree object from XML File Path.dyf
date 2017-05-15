@@ -1,0 +1,46 @@
+<Workspace Version="0.8.2.2392" X="0" Y="0" zoom="1" Name="Get ElementTree object from XML File Path" Description="this may break with utf8" ID="8f5d579c-f889-43f0-a502-eb1f1fb21352" Category="Bakery.XML">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="6da3aa63-22df-4571-b77b-61c2cb8dd33a" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="250" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+import sys
+sys.path.append("C:\Program Files (x86)\IronPython 2.7\Lib")
+#from xml.parsers.expat import expat -- can't find this
+import xml.etree.ElementTree as ET
+import json
+from io import StringIO, BytesIO
+#import os
+#import datetime
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variables.
+#tree = ElementTree()
+xmlFile = IN[0]
+#xmlObj = IN[1]
+#xmStr = str(xmlFile)
+#xmlparser.ParseFile(xmlObj) - needs expat
+#tree.parse(xmStr)
+#parser = ElementTree.XMLParser(ns_clean=True)
+xmTree = ET()
+xmParsed = xmTree.parse(xmlFile)
+#root = xmTree.getroot()
+
+OUT = xmTree</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol guid="01aeaa24-32eb-477d-8560-8a78674c48b9" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="xml File Path" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="cb568ed5-1630-4b5f-b7af-cf7eedef194c" type="Dynamo.Nodes.Output" nickname="Output" x="449.8" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="ElementTree" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Watch guid="77ceb901-f5b9-47a4-958e-dce96522aa61" type="Dynamo.Nodes.Watch" nickname="Watch" x="272.8" y="152.8" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="6da3aa63-22df-4571-b77b-61c2cb8dd33a" start_index="0" end="cb568ed5-1630-4b5f-b7af-cf7eedef194c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="01aeaa24-32eb-477d-8560-8a78674c48b9" start_index="0" end="6da3aa63-22df-4571-b77b-61c2cb8dd33a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="01aeaa24-32eb-477d-8560-8a78674c48b9" start_index="0" end="77ceb901-f5b9-47a4-958e-dce96522aa61" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+</Workspace>

@@ -1,0 +1,150 @@
+<Workspace Version="0.9.2.4472" X="-1018.63760150229" Y="-764.503005363862" zoom="0.576312207538748" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="c93be49e-5195-44d9-921a-6fa210d10325" type="PythonNodeModels.PythonNode" nickname="Python Script" x="3210.76421611686" y="1883.37397991607" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" inputcount="10">
+      <Script># Based on K. Sobon work from Archi-Lab.net
+
+import clr
+clr.AddReference('RevitServices')
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+doc = DocumentManager.Instance.CurrentDBDocument
+clr.AddReference('RevitAPI')
+import Autodesk
+from Autodesk.Revit.DB import *
+import System
+from System.Collections.Generic import *
+
+dataEnteringNode = IN
+
+def GetBuiltInParam(paramName):
+	builtInParams = System.Enum.GetValues(BuiltInParameter)
+	test = []
+	for i in builtInParams:
+		if i.ToString() == paramName:
+			try:
+				test.append(i)
+			except:
+				pass
+	return test[0]
+
+def tolist(obj1):
+	if hasattr(obj1,"__iter__"):
+		return obj1
+	else:
+		return [obj1]
+
+
+cats = IN[0]  #categories
+paramName = IN[1] #builtInParameters
+pValue = IN[2] #builtInParameters value
+view = UnwrapElement(IN[3]) #view
+fillPattern = UnwrapElement(IN[4]) #fillPattern
+resetFilters = UnwrapElement(tolist(IN[5])) #in order to override filter we need to recreate it
+filterName = IN[6] #filterName
+colorR = IN[7] #colour R
+colorG = IN[8] #colour G
+colorB = IN[9] #colour B
+
+
+filtersIdToReset = List[ElementId]()
+for i in resetFilters:
+	if i.ToString() == filterName.ToString():
+		pass
+	else:
+			filtersIdToReset.Add(i.Id)
+	
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+catList = []
+for i in cats:
+	catList.append(ElementId(i.Id))
+
+typedCatList = List[ElementId](catList)
+rules = []
+
+bip = GetBuiltInParam(paramName)
+
+rules.append(ParameterFilterRuleFactory.CreateEqualsRule(ElementId(bip), pValue, True))
+
+try:
+	reset = doc.Delete(filtersIdToReset)
+	filter = ParameterFilterElement.Create(doc, filterName, typedCatList, rules)
+	view.AddFilter(filter.Id)
+	ogs = OverrideGraphicSettings()
+	ogs.SetProjectionFillColor(Color(colorR,colorG,colorB)).SetProjectionFillPatternId(fillPattern.Id)
+	view.SetFilterOverrides(filter.Id, ogs)
+except:
+	pass
+
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = [view]</Script>
+    </PythonNodeModels.PythonNode>
+    <CoreNodeModels.CreateList guid="84c2f6eb-d1af-4e69-a68e-12964a2bc5e8" type="CoreNodeModels.CreateList" nickname="List.Create" x="2499.75830712355" y="1428.86397168524" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" inputcount="2" />
+    <DSRevitNodesUI.Categories guid="8971d050-8990-45df-8c19-343cecf3eaf6" type="DSRevitNodesUI.Categories" nickname="Categories" x="2223.25783385099" y="1434.76735564716" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" index="240:DuctFitting" />
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="83c0df2f-2624-4da0-be28-067573b99350" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Document.ListBuiltInParameters" x="2045.17775142242" y="1651.40689746955" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="True" IsFrozen="false">
+      <ID value="9e744762-ad3f-4e45-8e4e-1e77204584e6" />
+      <Name value="Document.ListBuiltInParameters" />
+      <Description value="List all the available BuiltInParameters" />
+      <Inputs />
+      <Outputs>
+        <Output value="BuiltInParameters" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="51ef5f9c-eb67-435b-90be-1abfce8d00bd" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="RBS_DUCT_SYSTEM_PARAM" x="2477.59265549771" y="1569.6610360994" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" CodeText="IN[1441];" ShouldFocus="false" />
+    <DSRevitNodesUI.ElementTypes guid="282dda90-8e44-4115-874b-c8db9a159b85" type="DSRevitNodesUI.ElementTypes" nickname="Element Types" x="2006.43471368813" y="2025.99605586221" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" index="114:FillPatternElement" />
+    <DSRevitNodesUI.ElementsOfType guid="00df70b1-a7bf-4679-a11f-9cfab31a3636" type="DSRevitNodesUI.ElementsOfType" nickname="All Elements of Type" x="2241.38377290378" y="2016.17815536689" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="1e369e48-ed31-452c-82e8-ef7c5454d372" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="2497.04682475768" y="2006.64463995824" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" CodeText="x[0];" ShouldFocus="false" />
+    <DSRevitNodesUI.ElementsOfType guid="f036121c-9247-42cc-8332-a021d98892dd" type="DSRevitNodesUI.ElementsOfType" nickname="All Elements of Type" x="2241.19350491743" y="2096.43554525703" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" />
+    <DSRevitNodesUI.ElementTypes guid="2136a08d-6aa4-4e97-add5-455517b8eb11" type="DSRevitNodesUI.ElementTypes" nickname="Element Types" x="2000.71968576495" y="2121.72277357546" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" index="115:FilterElement" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="47fda1ec-7a20-475f-87fd-9a308b6ea253" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Filter Name" x="2237.8821501062" y="2256.97659832305" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" CodeText="&quot;M - Ventilation - Supply Air - General&quot;;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="c18ed944-559c-4f77-830f-fd9969dcb0bf" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.Name" x="2480.55925580121" y="2100.45847839486" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" assembly="RevitNodes.dll" function="Revit.Elements.Element.Name" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="a0dcf46c-42a1-401b-a08c-53040fad1956" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.FilterByBoolMask" x="2837.74214409401" y="2129.57714529405" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" assembly="DSCoreNodes.dll" function="DSCore.List.FilterByBoolMask@var[]..[],var[]..[]" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="fb5106db-355a-43df-b5f2-7feb0800dd99" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="==" x="2673.55083659266" y="2162.08936521107" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" assembly="Operators" function="==@var[]..[],var[]..[]" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="9592fef4-5b1a-46b8-a12a-003ced2ee280" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="2889.24549108057" y="2315.59665033468" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" CodeText="100;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="62595f73-2061-4983-8290-667acd9df3f1" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="2881.66529903003" y="2401.4362662336" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" CodeText="000;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="31bb3eb3-5816-46b3-a787-e39e17e29d20" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="2883.96833051198" y="2488.49169834732" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" CodeText="100;" ShouldFocus="false" />
+    <archilabUI.ViewTemplatesUI guid="bf0a5f7a-a0a9-4f92-9044-e61279843a22" type="archilabUI.ViewTemplatesUI" nickname="View template" x="2492.83342302352" y="1916.03558824535" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" index="102:70 - Sh - M - Ventilation Double Line - Layout" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="46da973a-ef5d-4a1e-a8d0-d8fd123856ed" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="pValue" x="2582.70480660793" y="1789.58037116801" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" CodeText="&quot;M - Supply Air - General&quot;;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="b8dd05c7-108a-41e9-92d1-19d4e5f751c1" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="2476.46367602428" y="1697.28116297922" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" CodeText="IN[1734];" ShouldFocus="false" />
+    <DSRevitNodesUI.Categories guid="548f565c-f0ac-4888-8300-669cb66e1b28" type="DSRevitNodesUI.Categories" nickname="Categories" x="2217.40587288162" y="1534.25069212632" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" index="233:DuctCurves" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="84c2f6eb-d1af-4e69-a68e-12964a2bc5e8" start_index="0" end="c93be49e-5195-44d9-921a-6fa210d10325" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="8971d050-8990-45df-8c19-343cecf3eaf6" start_index="0" end="84c2f6eb-d1af-4e69-a68e-12964a2bc5e8" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="83c0df2f-2624-4da0-be28-067573b99350" start_index="0" end="51ef5f9c-eb67-435b-90be-1abfce8d00bd" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="83c0df2f-2624-4da0-be28-067573b99350" start_index="0" end="b8dd05c7-108a-41e9-92d1-19d4e5f751c1" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="51ef5f9c-eb67-435b-90be-1abfce8d00bd" start_index="0" end="c93be49e-5195-44d9-921a-6fa210d10325" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="282dda90-8e44-4115-874b-c8db9a159b85" start_index="0" end="00df70b1-a7bf-4679-a11f-9cfab31a3636" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="00df70b1-a7bf-4679-a11f-9cfab31a3636" start_index="0" end="1e369e48-ed31-452c-82e8-ef7c5454d372" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="1e369e48-ed31-452c-82e8-ef7c5454d372" start_index="0" end="c93be49e-5195-44d9-921a-6fa210d10325" end_index="4" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="f036121c-9247-42cc-8332-a021d98892dd" start_index="0" end="a0dcf46c-42a1-401b-a08c-53040fad1956" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="f036121c-9247-42cc-8332-a021d98892dd" start_index="0" end="c18ed944-559c-4f77-830f-fd9969dcb0bf" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="2136a08d-6aa4-4e97-add5-455517b8eb11" start_index="0" end="f036121c-9247-42cc-8332-a021d98892dd" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="47fda1ec-7a20-475f-87fd-9a308b6ea253" start_index="0" end="fb5106db-355a-43df-b5f2-7feb0800dd99" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="47fda1ec-7a20-475f-87fd-9a308b6ea253" start_index="0" end="c93be49e-5195-44d9-921a-6fa210d10325" end_index="6" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c18ed944-559c-4f77-830f-fd9969dcb0bf" start_index="0" end="fb5106db-355a-43df-b5f2-7feb0800dd99" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="a0dcf46c-42a1-401b-a08c-53040fad1956" start_index="0" end="c93be49e-5195-44d9-921a-6fa210d10325" end_index="5" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="fb5106db-355a-43df-b5f2-7feb0800dd99" start_index="0" end="a0dcf46c-42a1-401b-a08c-53040fad1956" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9592fef4-5b1a-46b8-a12a-003ced2ee280" start_index="0" end="c93be49e-5195-44d9-921a-6fa210d10325" end_index="7" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="62595f73-2061-4983-8290-667acd9df3f1" start_index="0" end="c93be49e-5195-44d9-921a-6fa210d10325" end_index="8" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="31bb3eb3-5816-46b3-a787-e39e17e29d20" start_index="0" end="c93be49e-5195-44d9-921a-6fa210d10325" end_index="9" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="bf0a5f7a-a0a9-4f92-9044-e61279843a22" start_index="0" end="c93be49e-5195-44d9-921a-6fa210d10325" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="46da973a-ef5d-4a1e-a8d0-d8fd123856ed" start_index="0" end="c93be49e-5195-44d9-921a-6fa210d10325" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="548f565c-f0ac-4888-8300-669cb66e1b28" start_index="0" end="84c2f6eb-d1af-4e69-a68e-12964a2bc5e8" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="405c633a-e08f-4558-ad71-a4386adf4604" annotationText="Kolor" left="2871.66529903003" top="2285.59665033468" width="106.58019205054" height="295.89504801264" fontSize="14" InitialTop="2315.59665033468" InitialHeight="295.895048012635" TextblockHeight="20" backgrouund="#FFC1D676">
+      <Models ModelGuid="9592fef4-5b1a-46b8-a12a-003ced2ee280" />
+      <Models ModelGuid="62595f73-2061-4983-8290-667acd9df3f1" />
+      <Models ModelGuid="31bb3eb3-5816-46b3-a787-e39e17e29d20" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+  </Annotations>
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

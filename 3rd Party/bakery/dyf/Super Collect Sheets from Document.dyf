@@ -1,0 +1,188 @@
+<Workspace Version="0.8.2.2371" X="-96.791309792962" Y="175.953412356168" zoom="1.78359936238281" Name="Super Collect Sheets from Document" Description="" ID="4aa3c8b4-7a68-4920-9cf0-fbce8ac6a853" Category="Bakery.Views">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Symbol guid="8b583769-19e9-4ebd-b06f-069d98e76707" type="Dynamo.Nodes.Symbol" nickname="Input" x="68.9067544771194" y="10" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="name(s)/number(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="4698fc95-0729-47e5-b852-9fbef2b2a0be" type="Dynamo.Nodes.Symbol" nickname="Input" x="-24.2005056104678" y="77.3779145231763" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="NameOrNumber:bool = true" />
+    </Dynamo.Nodes.Symbol>
+    <DSIronPythonNode.PythonNode guid="199bf134-f59c-42ef-97b9-3bb9c499b05a" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="268.717278119107" y="24.4060412023416" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="3">
+      <Script>#Copyright(c) 2015, Dimitar Venkov
+# @5devene, dimitar.ven@gmail.com
+
+import clr
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+
+clr.AddReference("RevitAPI")
+from Autodesk.Revit.DB import *
+
+doc = IN[2]
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+
+def tolist(obj1):
+	if hasattr(obj1,"__iter__"):
+		return obj1
+	else:
+		return [obj1]
+
+dataEnteringNode = IN
+fn = tolist(IN[0])
+fn = [str(n) for n in fn]
+NameNumber = IN[1]
+
+
+fec = FilteredElementCollector(doc).OfClass(View).GetElementIterator()
+fec.Reset()
+result = []
+similar = []
+names = []
+
+for i in fec:
+	if i.ViewType == ViewType.DrawingSheet:
+		if NameNumber:
+			n1 = i.ViewName
+		else:
+			n1 = i.SheetNumber
+		names.append(n1)
+		if any(fn1 == n1 for fn1 in fn):
+			result.append(i.ToDSType(True))
+		elif any(fn1.lower() in n1.lower() for fn1 in fn):
+			similar.append(i.ToDSType(True))
+if len(result) &gt; 0:
+	OUT = result,similar
+if len(result) == 0 and len(similar) &gt; 0:
+	OUT = "No exact match found. Check partial below:",similar
+if len(result) == 0 and len(similar) == 0:
+	OUT = "No match found! Check values below:", names</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="ab5f2166-71da-468c-b2e8-dace91fa00c7" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="413.182651187362" y="27.8594055911211" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="v[0];&#xA;v[1];" ShouldFocus="false" />
+    <Dynamo.Nodes.Output guid="33e86c6b-663a-464a-9c89-2d1092c6234a" type="Dynamo.Nodes.Output" nickname="Output" x="549.923647837994" y="12.2202469817898" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="exact match sheets" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="ac7500b3-74bb-40d2-ad7c-65755d3e872b" type="Dynamo.Nodes.Output" nickname="Output" x="552.120625783504" y="73.2559467877923" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="partial match sheets" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Symbol guid="a3c31695-0759-433a-8a6c-acc9fe7bb968" type="Dynamo.Nodes.Symbol" nickname="Input" x="125.4717368221" y="190.091224965947" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="DOC" />
+    </Dynamo.Nodes.Symbol>
+    <DSIronPythonNode.PythonNode guid="d84eb658-579a-4a84-9b41-676cfe23a9dd" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="774.790688635901" y="356.663871830236" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>#Copyright(c) 2015, Dimitar Venkov
+# @5devene, dimitar.ven@gmail.com
+
+import clr
+
+clr.AddReference("RevitServices")
+from RevitServices.Persistence import DocumentManager
+doc = IN[1]
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+def tolist(obj1):
+	if hasattr(obj1,"__iter__"):
+		return obj1
+	else:
+		return [obj1]
+
+def output1(l1):
+	if len(l1) == 1: return l1[0]
+	else: return l1
+
+sheets = UnwrapElement(tolist(IN[0]))
+sheetviews = []
+
+if app.VersionName == "Autodesk Revit 2014":
+	for s in sheets:
+		viewports = [doc.GetElement(v1) for v1 in s.GetAllViewports()]
+		views = [doc.GetElement(v1.ViewId) for v1 in viewports]
+		sheetviews.append(views)
+	OUT = output1(sheetviews)
+else:
+	for s in sheets:
+		viewsid = s.GetAllPlacedViews()
+		views = [doc.GetElement(v).ToDSType(True) for v in viewsid]
+		sheetviews.append(views)
+	OUT = output1(sheetviews)</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Output guid="831d545e-d8bc-45de-8f20-9645cc1fb4b7" type="Dynamo.Nodes.Output" nickname="Output" x="959.266546061561" y="359.624535856637" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="partial match view(s) from sheets" />
+    </Dynamo.Nodes.Output>
+    <DSIronPythonNode.PythonNode guid="396f628c-9cb9-4093-afe0-0e57f08057d8" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="763.415446391344" y="220.275129916388" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>#Copyright(c) 2015, Dimitar Venkov
+# @5devene, dimitar.ven@gmail.com
+
+import clr
+
+clr.AddReference("RevitServices")
+from RevitServices.Persistence import DocumentManager
+doc = IN[1]
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+def tolist(obj1):
+	if hasattr(obj1,"__iter__"):
+		return obj1
+	else:
+		return [obj1]
+
+def output1(l1):
+	if len(l1) == 1: return l1[0]
+	else: return l1
+
+sheets = UnwrapElement(tolist(IN[0]))
+sheetviews = []
+
+if app.VersionName == "Autodesk Revit 2014":
+	for s in sheets:
+		viewports = [doc.GetElement(v1) for v1 in s.GetAllViewports()]
+		views = [doc.GetElement(v1.ViewId) for v1 in viewports]
+		sheetviews.append(views)
+	OUT = output1(sheetviews)
+else:
+	for s in sheets:
+		viewsid = s.GetAllPlacedViews()
+		views = [doc.GetElement(v).ToDSType(True) for v in viewsid]
+		sheetviews.append(views)
+	OUT = output1(sheetviews)</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Output guid="cd0ece6b-ff27-4bfe-8311-f39472ae5c79" type="Dynamo.Nodes.Output" nickname="Output" x="947.891303817004" y="223.235793942789" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="exact match view(s) from sheets" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="8b583769-19e9-4ebd-b06f-069d98e76707" start_index="0" end="199bf134-f59c-42ef-97b9-3bb9c499b05a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4698fc95-0729-47e5-b852-9fbef2b2a0be" start_index="0" end="199bf134-f59c-42ef-97b9-3bb9c499b05a" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="199bf134-f59c-42ef-97b9-3bb9c499b05a" start_index="0" end="ab5f2166-71da-468c-b2e8-dace91fa00c7" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ab5f2166-71da-468c-b2e8-dace91fa00c7" start_index="0" end="33e86c6b-663a-464a-9c89-2d1092c6234a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ab5f2166-71da-468c-b2e8-dace91fa00c7" start_index="0" end="396f628c-9cb9-4093-afe0-0e57f08057d8" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ab5f2166-71da-468c-b2e8-dace91fa00c7" start_index="1" end="ac7500b3-74bb-40d2-ad7c-65755d3e872b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ab5f2166-71da-468c-b2e8-dace91fa00c7" start_index="1" end="d84eb658-579a-4a84-9b41-676cfe23a9dd" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a3c31695-0759-433a-8a6c-acc9fe7bb968" start_index="0" end="199bf134-f59c-42ef-97b9-3bb9c499b05a" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a3c31695-0759-433a-8a6c-acc9fe7bb968" start_index="0" end="d84eb658-579a-4a84-9b41-676cfe23a9dd" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a3c31695-0759-433a-8a6c-acc9fe7bb968" start_index="0" end="396f628c-9cb9-4093-afe0-0e57f08057d8" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d84eb658-579a-4a84-9b41-676cfe23a9dd" start_index="0" end="831d545e-d8bc-45de-8f20-9645cc1fb4b7" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="396f628c-9cb9-4093-afe0-0e57f08057d8" start_index="0" end="cd0ece6b-ff27-4bfe-8311-f39472ae5c79" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

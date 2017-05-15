@@ -1,0 +1,69 @@
+<Workspace Version="0.7.2.2921" X="30" Y="248.849814585909" zoom="0.754017305315204" Description="create rooms from center points at Level" Category="JBE" Name="Tool.CreateRoomAtPointAndLevel" ID="3165d8db-576e-4038-bdd2-b89c5085e228">
+  <Elements>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="847d9a09-27e1-4b17-b7b8-2308f62fb311" nickname="Python Script" x="490" y="29" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="2">
+      <Script>#python nodes in dynamo 0.7
+#proposed by Julien Benoit @jbenoit44 
+#http://aecuandme.wordpress.com/
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+# Import geometry conversion extension methods
+clr.ImportExtensions(Revit.GeometryConversion)
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+from System.Collections.Generic import *
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+uidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+
+uvs =[]
+for i in IN[0]:
+	uvs.append(UnwrapElement(i).ToXyz())
+level=UnwrapElement(IN[1])
+roomlist=[]
+
+# Start Transaction
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+for item in uvs:
+	uv=UV(item.X,item.Y)
+	a=doc.Create.NewRoom(level,uv)
+	roomlist.append(a)
+
+# End Transaction
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = roomlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="712fe8fb-bf47-4386-bade-3703da1d9fc5" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Point(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="202d4b8b-edc2-4909-a690-4015eaaa2b6a" nickname="Output" x="714" y="29" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Room List" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.CodeBlockNodeModel type="Dynamo.Nodes.CodeBlockNodeModel" guid="0ac523a1-dd6a-4930-81d2-4898dda84271" nickname="Code Block" x="182" y="33.2183333333333" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="Flatten({item});" ShouldFocus="false" />
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="cef19b3a-7926-4c5f-b882-9cfffce7c906" nickname="Input" x="0" y="84" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Level" />
+    </Dynamo.Nodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="847d9a09-27e1-4b17-b7b8-2308f62fb311" start_index="0" end="202d4b8b-edc2-4909-a690-4015eaaa2b6a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="712fe8fb-bf47-4386-bade-3703da1d9fc5" start_index="0" end="0ac523a1-dd6a-4930-81d2-4898dda84271" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0ac523a1-dd6a-4930-81d2-4898dda84271" start_index="0" end="847d9a09-27e1-4b17-b7b8-2308f62fb311" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="cef19b3a-7926-4c5f-b882-9cfffce7c906" start_index="0" end="847d9a09-27e1-4b17-b7b8-2308f62fb311" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

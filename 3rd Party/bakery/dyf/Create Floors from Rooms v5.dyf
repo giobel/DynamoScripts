@@ -1,0 +1,103 @@
+<Workspace Version="0.8.2.2371" X="171.55108434375" Y="240.937602735441" zoom="0.593767140625" Name="Create Floors from Rooms v5" Description="" ID="8a4135cb-c0bf-416e-99bd-5b9c2a2bbdb3" Category="Bakery.Rooms">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="FloorType" resolvedName="Revit.Elements.FloorType" assemblyName="RevitNodes.dll" />
+    <ClassMap partialName="Level" resolvedName="Revit.Elements.Level" assemblyName="RevitNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Nodes.Symbol guid="2a2751bf-c8ea-417d-9ec0-e5ea54eed750" type="Dynamo.Nodes.Symbol" nickname="Input" x="10" y="272.073640647752" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="roomList : var[]..[]" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Function guid="624be080-862f-48a8-923f-bd5837d7c387" type="Dynamo.Nodes.Function" nickname="Rooms to Closed Polycurves without Nulls" x="300.971616161049" y="258.363149697715" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="481784e3-5734-4c4d-b1bb-21b32ad80dea" />
+      <Name value="Rooms to Closed Polycurves without Nulls" />
+      <Description value="" />
+      <Inputs>
+        <Input value="roomList" />
+      </Inputs>
+      <Outputs>
+        <Output value="cleaned Room List" />
+        <Output value="closed Polycurves" />
+        <Output value="room Numbers" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Watch guid="dc4644e2-a4f0-461d-a48e-3d3524ead706" type="Dynamo.Nodes.Watch" nickname="Watch" x="944.539902414473" y="143.515636441192" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+    <Dynamo.Nodes.Watch guid="431b767f-f5c9-42d0-8c64-e74b85165d6d" type="Dynamo.Nodes.Watch" nickname="Watch" x="891.865488515053" y="9.99999999999983" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+    <Dynamo.Nodes.Watch guid="447e7cca-5162-4b42-9add-f4946b0fb5d3" type="Dynamo.Nodes.Watch" nickname="Watch" x="1503.33722737876" y="757.530623770507" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="0d29f90f-3023-48eb-9c98-49131fb2944a" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1596.45159867024" y="534.82687020756" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="null;" ShouldFocus="false" />
+    <Dynamo.Nodes.Function guid="b90d4053-c9a1-4981-a8f1-28fda7f119e0" type="Dynamo.Nodes.Function" nickname="bv All Indices Of that can handle Nulls" x="1662.80783592854" y="414.099087021028" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="4a8f639e-d12f-4f33-8378-0ffad7097f82" />
+      <Name value="bv All Indices Of that can handle Nulls" />
+      <Description value="forked from spring nodes" />
+      <Inputs>
+        <Input value="list" />
+        <Input value="value" />
+      </Inputs>
+      <Outputs>
+        <Output value="indices" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.DSFunction guid="939cc80b-3085-46d1-98c2-38339cbd29cb" type="Dynamo.Nodes.DSFunction" nickname="Floor.ByOutlineTypeAndLevel" x="1270.98363059325" y="854.45114444411" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="RevitNodes.dll" function="Revit.Elements.Floor.ByOutlineTypeAndLevel@Autodesk.DesignScript.Geometry.Curve[],Revit.Elements.FloorType,Revit.Elements.Level" />
+    <Dynamo.Nodes.DSFunction guid="fb1c3646-71fc-4831-b402-9f38ab624267" type="Dynamo.Nodes.DSFunction" nickname="List.RemoveItemAtIndex" x="1904.80665860631" y="232.567944779428" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.RemoveItemAtIndex@var[]..[],int[]" />
+    <Dynamo.Nodes.DSFunction guid="8a8a4e12-3162-437b-87b2-97fb7d031bb4" type="Dynamo.Nodes.DSFunction" nickname="List.RemoveItemAtIndex" x="1917.08619149193" y="633.502916945401" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.RemoveItemAtIndex@var[]..[],int[]" />
+    <Dynamo.Nodes.StringInput guid="0a97a5e4-7816-41d0-b607-c421596e92f3" type="Dynamo.Nodes.StringInput" nickname="String" x="2043.84759962015" y="391.759312071042" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <System.String>Comments</System.String>
+      <System.String value="Comments" />
+    </Dynamo.Nodes.StringInput>
+    <Dynamo.Nodes.Symbol guid="8485f0b3-40d4-4827-8aa2-7343493471bc" type="Dynamo.Nodes.Symbol" nickname="Input" x="845.565231113443" y="1055.08036993611" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="floorType : FloorType" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="8ceae322-45ea-4281-aed1-02db7a59663b" type="Dynamo.Nodes.Symbol" nickname="Input" x="1031.95161314992" y="1127.72514844016" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="level : Level" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Function guid="0a107e68-df0a-44d6-8a45-560a0f875109" type="Dynamo.Nodes.Function" nickname="Set List of Values to List of Elements for One Parameter" x="2242.50036537476" y="481.945623651572" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="a3431d3e-7aa0-4789-ba3c-76466695e6f9" />
+      <Name value="Set List of Values to List of Elements for One Parameter" />
+      <Description value="as described" />
+      <Inputs>
+        <Input value="elementList" />
+        <Input value="parameterNameAsString" />
+        <Input value="valuesToSet" />
+      </Inputs>
+      <Outputs>
+        <Output value="elementsOut" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Output guid="b21c4baa-3229-4f93-a601-58f79cf2452b" type="Dynamo.Nodes.Output" nickname="Output" x="2661.34519774674" y="183.367655404478" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="floors made" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="2a2751bf-c8ea-417d-9ec0-e5ea54eed750" start_index="0" end="624be080-862f-48a8-923f-bd5837d7c387" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="624be080-862f-48a8-923f-bd5837d7c387" start_index="0" end="431b767f-f5c9-42d0-8c64-e74b85165d6d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="624be080-862f-48a8-923f-bd5837d7c387" start_index="1" end="939cc80b-3085-46d1-98c2-38339cbd29cb" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="624be080-862f-48a8-923f-bd5837d7c387" start_index="2" end="dc4644e2-a4f0-461d-a48e-3d3524ead706" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="dc4644e2-a4f0-461d-a48e-3d3524ead706" start_index="0" end="fb1c3646-71fc-4831-b402-9f38ab624267" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="447e7cca-5162-4b42-9add-f4946b0fb5d3" start_index="0" end="b90d4053-c9a1-4981-a8f1-28fda7f119e0" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="447e7cca-5162-4b42-9add-f4946b0fb5d3" start_index="0" end="8a8a4e12-3162-437b-87b2-97fb7d031bb4" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0d29f90f-3023-48eb-9c98-49131fb2944a" start_index="0" end="b90d4053-c9a1-4981-a8f1-28fda7f119e0" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="b90d4053-c9a1-4981-a8f1-28fda7f119e0" start_index="0" end="fb1c3646-71fc-4831-b402-9f38ab624267" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="b90d4053-c9a1-4981-a8f1-28fda7f119e0" start_index="0" end="8a8a4e12-3162-437b-87b2-97fb7d031bb4" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="939cc80b-3085-46d1-98c2-38339cbd29cb" start_index="0" end="447e7cca-5162-4b42-9add-f4946b0fb5d3" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="fb1c3646-71fc-4831-b402-9f38ab624267" start_index="0" end="0a107e68-df0a-44d6-8a45-560a0f875109" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="8a8a4e12-3162-437b-87b2-97fb7d031bb4" start_index="0" end="0a107e68-df0a-44d6-8a45-560a0f875109" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0a97a5e4-7816-41d0-b607-c421596e92f3" start_index="0" end="0a107e68-df0a-44d6-8a45-560a0f875109" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="8485f0b3-40d4-4827-8aa2-7343493471bc" start_index="0" end="939cc80b-3085-46d1-98c2-38339cbd29cb" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="8ceae322-45ea-4281-aed1-02db7a59663b" start_index="0" end="939cc80b-3085-46d1-98c2-38339cbd29cb" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0a107e68-df0a-44d6-8a45-560a0f875109" start_index="0" end="b21c4baa-3229-4f93-a601-58f79cf2452b" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations>
+    <Dynamo.Models.AnnotationModel guid="da4ff032-0303-40ec-a9c8-651721f90387" annotationText="clean and set param" left="1586.45159867024" top="202.567944779428" width="1022.04876670452" height="549.934972165973" fontSize="14" InitialTop="232.567944779428" InitialHeight="549.934972165973" TextblockHeight="20" backgrouund="#FFC1D676">
+      <Models ModelGuid="0d29f90f-3023-48eb-9c98-49131fb2944a" />
+      <Models ModelGuid="b90d4053-c9a1-4981-a8f1-28fda7f119e0" />
+      <Models ModelGuid="fb1c3646-71fc-4831-b402-9f38ab624267" />
+      <Models ModelGuid="8a8a4e12-3162-437b-87b2-97fb7d031bb4" />
+      <Models ModelGuid="0a97a5e4-7816-41d0-b607-c421596e92f3" />
+      <Models ModelGuid="0a107e68-df0a-44d6-8a45-560a0f875109" />
+    </Dynamo.Models.AnnotationModel>
+  </Annotations>
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="-118468.109375" eyeY="56431.02734375" eyeZ="-82956.578125" lookX="-1495.96362304688" lookY="-1495.96362304688" lookZ="-1495.96362304688" />
+  </Cameras>
+</Workspace>

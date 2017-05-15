@@ -1,0 +1,73 @@
+<Workspace Version="1.0.0.1180" X="202" Y="104" zoom="1" Name="Get Connectors from ConnectorManager" Description="" ID="4753d5a0-f88d-4382-b2da-54fda7a86aa5" Category="Bakery.MEP">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="15377bd1-3b8d-4527-8814-327ef35f9d87" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="TurnIntoList" x="250" y="35.9726922307229" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="TurnIntoList" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <PythonNodeModels.PythonNode guid="09fbeca9-4c5f-40ed-a400-d4fa562efb5c" type="PythonNodeModels.PythonNode" nickname="Python Script" x="467.902884187891" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <Script>#Created by Luke Johnson for Bakery
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+
+from System.Collections.Generic import *
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+#The inputs to this node will be stored as a list in the IN variable.
+ctrayelems = UnwrapElement(IN[0])
+
+#curvenrmls = []
+cncters = []
+
+for y in ctrayelems:
+#	curvenrmls.append(y.CurveNormal)
+	cncters.append(y.Connectors)
+#Assign your output to the OUT variable
+OUT = cncters</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="32184188-263a-4a65-ab92-4a582ef66a3e" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="connectorManagerObject" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="96e44598-941a-4a07-88a7-1b89dbc93b45" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="664.902884187891" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="connectors" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="15377bd1-3b8d-4527-8814-327ef35f9d87" start_index="0" end="09fbeca9-4c5f-40ed-a400-d4fa562efb5c" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="09fbeca9-4c5f-40ed-a400-d4fa562efb5c" start_index="0" end="96e44598-941a-4a07-88a7-1b89dbc93b45" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="32184188-263a-4a65-ab92-4a582ef66a3e" start_index="0" end="15377bd1-3b8d-4527-8814-327ef35f9d87" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

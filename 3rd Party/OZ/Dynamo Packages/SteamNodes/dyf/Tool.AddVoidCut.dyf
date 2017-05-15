@@ -1,0 +1,77 @@
+<Workspace Version="0.7.2.2921" X="30" Y="222.265799256506" zoom="0.755885997521685" Description="Add void cut for a Set of elements. In combination with Get surrounding elements node." Category="SteamNodes.Tool" Name="Tool.AddVoidCut" ID="44b7bf4d-92a2-40ad-806d-23a4034416f1">
+  <Elements>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="58fc84ce-0891-4534-a6f8-3e56c719d149" nickname="Python Script" x="517" y="42" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="2">
+      <Script>#python nodes in dynamo 0.7
+#proposed by Julien Benoit @jbenoit44 
+#http://aecuandme.wordpress.com/
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+# Import geometry conversion extension methods
+clr.ImportExtensions(Revit.GeometryConversion)
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+from System.Collections.Generic import *
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+uidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+
+host = []
+for i in IN[0]:
+	host.append(UnwrapElement(i))
+
+cutins=[]
+
+cutfam = UnwrapElement(IN[1])
+
+# Start Transaction
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+for h in host:
+	for list in cutfam:
+		for c in list:
+			try:
+				InstanceVoidCutUtils.AddInstanceVoidCut(doc,h,c)	
+				cutted.append(h.Id)
+			except:
+				0		
+# End Transaction
+TransactionManager.Instance.TransactionTaskDone()
+doc.Regenerate()
+#Assign your output to the OUT variable
+OUT = 0</Script>
+    </DSIronPythonNode.PythonNode>
+    <DSCore.Map type="DSCore.Map" guid="15788c33-36ee-4a58-b746-84984ef75cf1" nickname="List.Map" x="283" y="110" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <DSCore.Map type="DSCore.Map" guid="6dcdda3d-4f5e-4ec0-b914-cd399fe95208" nickname="List.Map" x="283" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="36fdc0ab-97b4-4dfe-ad0d-96c779fb883b" nickname="List.Deconstruct" x="0" y="103" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.Deconstruct@var[]..[]" />
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="fc1fee56-4d0d-4417-9029-59ca822345f5" nickname="Input" x="0" y="20" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="List from GetSurrounding" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="01b518c0-cb5e-471c-ab98-fc43af0c66ed" nickname="Output" x="741" y="42" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="58fc84ce-0891-4534-a6f8-3e56c719d149" start_index="0" end="01b518c0-cb5e-471c-ab98-fc43af0c66ed" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="15788c33-36ee-4a58-b746-84984ef75cf1" start_index="0" end="58fc84ce-0891-4534-a6f8-3e56c719d149" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6dcdda3d-4f5e-4ec0-b914-cd399fe95208" start_index="0" end="58fc84ce-0891-4534-a6f8-3e56c719d149" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="36fdc0ab-97b4-4dfe-ad0d-96c779fb883b" start_index="0" end="6dcdda3d-4f5e-4ec0-b914-cd399fe95208" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="36fdc0ab-97b4-4dfe-ad0d-96c779fb883b" start_index="1" end="15788c33-36ee-4a58-b746-84984ef75cf1" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="fc1fee56-4d0d-4417-9029-59ca822345f5" start_index="0" end="15788c33-36ee-4a58-b746-84984ef75cf1" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="fc1fee56-4d0d-4417-9029-59ca822345f5" start_index="0" end="6dcdda3d-4f5e-4ec0-b914-cd399fe95208" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

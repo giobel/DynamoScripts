@@ -1,0 +1,70 @@
+<Workspace Version="1.0.0.1180" X="421.522014053781" Y="399.817840377999" zoom="1.40972876398001" Name="List Elements in View across Revit Links" Description="not working yet" ID="7a0e541b-4a48-4f69-8e54-c3b6b0c881f0" Category="Bakery.BETA">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="8b897dec-b856-40ff-ac2a-08bac0d91c3a" type="PythonNodeModels.PythonNode" nickname="Python Script" x="12.5756281464637" y="10" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="2">
+      <Script>#LSJ
+
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+# Import DocumentManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+from Autodesk.Revit.DB import *
+clr.ImportExtensions(Revit.Elements)
+
+import System
+
+views = UnwrapElement(IN[0])
+
+elementlist = []
+doc = UnwrapElement(IN[1])
+
+for view in views:
+	collector = FilteredElementCollector(doc, view.Id)
+	elementlist.append(collector.ToElements())
+
+#Assign your output to the OUT variable
+OUT = elementlist</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="116b1667-edb3-41a8-9174-cab8f9a1dd63" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-180.89437180456" y="-55.4891120106637" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="view" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="c07ccee0-a2b5-439b-ace3-e785c85b7e7e" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-158.953403583093" y="55.0894049911514" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="doc" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="f21f1abd-27b6-40da-99f9-a616ba56081a" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="209.163090093466" y="50.5441306566755" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="output" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="7f542892-ee25-4d44-803d-11cfd0ff4a2e" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="TurnIntoList" x="-101.524504366154" y="-139.47210655112" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="TurnIntoList" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="8b897dec-b856-40ff-ac2a-08bac0d91c3a" start_index="0" end="f21f1abd-27b6-40da-99f9-a616ba56081a" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="116b1667-edb3-41a8-9174-cab8f9a1dd63" start_index="0" end="7f542892-ee25-4d44-803d-11cfd0ff4a2e" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c07ccee0-a2b5-439b-ace3-e785c85b7e7e" start_index="0" end="8b897dec-b856-40ff-ac2a-08bac0d91c3a" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="7f542892-ee25-4d44-803d-11cfd0ff4a2e" start_index="0" end="8b897dec-b856-40ff-ac2a-08bac0d91c3a" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+</Workspace>

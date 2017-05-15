@@ -1,0 +1,106 @@
+<Workspace Version="0.7.2.2921" X="64.5217744596926" Y="35.0470780326963" zoom="0.955560480647112" Description="Collects LineStyle from string.contains" Category="SteamNodes.Tool" Name="Tool.GetLineStyleByName" ID="b92ba696-f7f7-4044-9e98-39c7bf557791">
+  <Elements>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="d0af3c38-e093-4df1-b17f-5f497ad3485e" nickname="List.FilterByBoolMask" x="977" y="158" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.FilterByBoolMask@var[]..[],var[]..[]" />
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="d8e99a99-54f4-4bc9-bfec-449af1b9d7f7" nickname="String.Contains" x="718" y="251" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.String.Contains@string,string,bool">
+      <PortInfo index="2" default="True" />
+    </Dynamo.Nodes.DSFunction>
+    <Dynamo.Nodes.CodeBlockNodeModel type="Dynamo.Nodes.CodeBlockNodeModel" guid="933b6684-140d-4762-8f47-c847815bb972" nickname="Code Block" x="486" y="162.218333333333" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="list[0];&#xA;list[1];" ShouldFocus="false" />
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="4acc5df4-c061-410e-a306-8aea8cc1b8b1" nickname="Python Script" x="262" y="158" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="1">
+      <Script>#python nodes in dynamo 0.7
+#proposed by Julien Benoit @jbenoit44 
+#http://aecuandme.wordpress.com/
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+# Import geometry conversion extension methods
+clr.ImportExtensions(Revit.GeometryConversion)
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+from System.Collections.Generic import *
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+uidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+
+elt = []
+#for i in IN[0]:
+#	elt.append(UnwrapElement(i))
+#cat=[]
+# Start Transaction
+TransactionManager.Instance.EnsureInTransaction(doc)
+list=[]
+#for e in elt:
+a=UnwrapElement(IN[0])
+a=doc.Settings.Categories.get_Item(BuiltInCategory.OST_Lines)
+b=a.SubCategories
+
+for i in b:
+	c=i.Name.ToString()
+	list.append(c)
+	#elt.append(d)
+
+#for i in elt:
+#	if UnwrapElement(IN[0]).CanAddSubcategory == True:
+#		b=i.Name
+#		list.append(b)
+#cat.append(a)
+#Assign your output to the OUT variable
+
+
+# End Transaction
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = b,list</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="45bc4eac-0be5-4fa9-83eb-690c788593be" nickname="List.Empty" x="0" y="146" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.Empty" />
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="b5be06b1-fdc6-4154-8956-8d6544315e8f" nickname="Output" x="1222" y="167" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="LineStyle (Internal)" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="a1259d24-3208-44a3-8fc0-b5bfb57fe439" nickname="Output" x="1222" y="250" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="LineStyle(Name)" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="a1e3fc71-ca9f-440a-857f-e31a75f96517" nickname="Input" x="0" y="338" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Ignore Case (boolean)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="44badea6-a041-445d-a4a6-687ab553f87f" nickname="Input" x="0" y="254" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Contains String" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="831a8c0b-2401-4506-ae72-5a225c31f4e5" nickname="List.FilterByBoolMask" x="977" y="292" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.FilterByBoolMask@var[]..[],var[]..[]" />
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="48999863-ef4f-4dea-a560-77b2c5e0d9b8" nickname="Output" x="1222" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="All LineStyle" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="ba2277f9-3764-4fe2-a847-139be89fd246" nickname="Output" x="1222" y="83" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="All LS Names" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="2fea34e5-4da1-48db-8e13-ec0eb55ccbde" nickname="List.Sort" x="977" y="50" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.Sort@var[]" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="d0af3c38-e093-4df1-b17f-5f497ad3485e" start_index="0" end="b5be06b1-fdc6-4154-8956-8d6544315e8f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d8e99a99-54f4-4bc9-bfec-449af1b9d7f7" start_index="0" end="d0af3c38-e093-4df1-b17f-5f497ad3485e" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d8e99a99-54f4-4bc9-bfec-449af1b9d7f7" start_index="0" end="831a8c0b-2401-4506-ae72-5a225c31f4e5" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="933b6684-140d-4762-8f47-c847815bb972" start_index="0" end="d0af3c38-e093-4df1-b17f-5f497ad3485e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="933b6684-140d-4762-8f47-c847815bb972" start_index="0" end="48999863-ef4f-4dea-a560-77b2c5e0d9b8" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="933b6684-140d-4762-8f47-c847815bb972" start_index="1" end="d8e99a99-54f4-4bc9-bfec-449af1b9d7f7" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="933b6684-140d-4762-8f47-c847815bb972" start_index="1" end="831a8c0b-2401-4506-ae72-5a225c31f4e5" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="933b6684-140d-4762-8f47-c847815bb972" start_index="1" end="2fea34e5-4da1-48db-8e13-ec0eb55ccbde" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4acc5df4-c061-410e-a306-8aea8cc1b8b1" start_index="0" end="933b6684-140d-4762-8f47-c847815bb972" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="45bc4eac-0be5-4fa9-83eb-690c788593be" start_index="0" end="4acc5df4-c061-410e-a306-8aea8cc1b8b1" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a1e3fc71-ca9f-440a-857f-e31a75f96517" start_index="0" end="d8e99a99-54f4-4bc9-bfec-449af1b9d7f7" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="44badea6-a041-445d-a4a6-687ab553f87f" start_index="0" end="d8e99a99-54f4-4bc9-bfec-449af1b9d7f7" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="831a8c0b-2401-4506-ae72-5a225c31f4e5" start_index="0" end="a1259d24-3208-44a3-8fc0-b5bfb57fe439" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="2fea34e5-4da1-48db-8e13-ec0eb55ccbde" start_index="0" end="ba2277f9-3764-4fe2-a847-139be89fd246" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

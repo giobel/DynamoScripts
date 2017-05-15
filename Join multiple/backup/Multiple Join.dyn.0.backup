@@ -1,0 +1,105 @@
+<Workspace Version="0.8.2.2392" X="150.585585667205" Y="-168.108974985448" zoom="0.717322426435808" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="95d988e3-49e3-4f47-89c2-c622b2d1f3ff" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="359.294485556292" y="96.7537104185313" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+from System.Collections.Generic import *
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+
+#The inputs to this node will be stored as a list in the IN variables.
+dataEnteringNode = IN
+
+items1 = UnwrapElement(IN[0])
+items2 = UnwrapElement(IN[1])
+i = 0
+booleans=[]
+TransactionManager.Instance.EnsureInTransaction(doc)
+for item1 in items1:
+	try:
+		JoinGeometryUtils.JoinGeometry(doc,item1,items2)
+		booleans.append(True)
+	except:
+		booleans.append(False)
+	i += 1
+TransactionManager.Instance.TransactionTaskDone()
+
+#Assign your output to the OUT variable.
+OUT = booleans</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSModelElementSelection guid="d3d7c7fc-0081-4813-9cdc-a8998f6b47bc" type="Dynamo.Nodes.DSModelElementSelection" nickname="Select Model Element" x="-6.62151839149664" y="159.201201618581" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <instance id="8ccce7b4-6a25-4b22-a663-b9052e0693eb-000f869c" />
+    </Dynamo.Nodes.DSModelElementSelection>
+    <Dynamo.Nodes.DSModelElementsSelection guid="e7e4594c-ac1b-4db0-a169-2f260daeac16" type="Dynamo.Nodes.DSModelElementsSelection" nickname="Select Model Elements" x="-40.0421623066394" y="12.082002161712" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <instance id="8ccce7b4-6a25-4b22-a663-b9052e0693eb-000f86d6" />
+      <instance id="8ccce7b4-6a25-4b22-a663-b9052e0693eb-000f870a" />
+      <instance id="8ccce7b4-6a25-4b22-a663-b9052e0693eb-000f8729" />
+    </Dynamo.Nodes.DSModelElementsSelection>
+    <DSIronPythonNode.PythonNode guid="abb9b009-e4d6-4178-855c-ec6d2b4bc24d" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="443.583571160013" y="417.132052398054" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+from System.Collections.Generic import *
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+
+#The inputs to this node will be stored as a list in the IN variables.
+dataEnteringNode = IN
+
+items1 = UnwrapElement(IN[0])
+items2 = UnwrapElement(IN[1])
+i = 0
+booleans=[]
+TransactionManager.Instance.EnsureInTransaction(doc)
+for item1 in items1:
+	for item2 in items2:
+		try:
+			JoinGeometryUtils.JoinGeometry(doc,item1,item2)
+			booleans.append(True)
+		except:
+			booleans.append(False)
+		i += 1
+TransactionManager.Instance.TransactionTaskDone()
+
+#Assign your output to the OUT variable.
+OUT = booleans</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSModelElementsSelection guid="c9cf3dfe-3778-4417-b967-b6dcfd648c95" type="Dynamo.Nodes.DSModelElementsSelection" nickname="Select Model Elements" x="36.2983401999606" y="348.966929392363" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <instance id="8ccce7b4-6a25-4b22-a663-b9052e0693eb-000f86d6" />
+      <instance id="8ccce7b4-6a25-4b22-a663-b9052e0693eb-000f870a" />
+      <instance id="8ccce7b4-6a25-4b22-a663-b9052e0693eb-000f8729" />
+    </Dynamo.Nodes.DSModelElementsSelection>
+    <Dynamo.Nodes.DSModelElementsSelection guid="2ce30ab8-260b-46fe-8660-718330dd75d0" type="Dynamo.Nodes.DSModelElementsSelection" nickname="Select Model Elements" x="112.18161256982" y="495.622948761841" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <instance id="8ccce7b4-6a25-4b22-a663-b9052e0693eb-000f8673" />
+      <instance id="8ccce7b4-6a25-4b22-a663-b9052e0693eb-000f8768" />
+      <instance id="8ccce7b4-6a25-4b22-a663-b9052e0693eb-000f877a" />
+    </Dynamo.Nodes.DSModelElementsSelection>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="d3d7c7fc-0081-4813-9cdc-a8998f6b47bc" start_index="0" end="95d988e3-49e3-4f47-89c2-c622b2d1f3ff" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e7e4594c-ac1b-4db0-a169-2f260daeac16" start_index="0" end="95d988e3-49e3-4f47-89c2-c622b2d1f3ff" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c9cf3dfe-3778-4417-b967-b6dcfd648c95" start_index="0" end="abb9b009-e4d6-4178-855c-ec6d2b4bc24d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="2ce30ab8-260b-46fe-8660-718330dd75d0" start_index="0" end="abb9b009-e4d6-4178-855c-ec6d2b4bc24d" end_index="1" portType="0" />
+  </Connectors>
+  <Notes>
+    <Dynamo.Models.NoteModel guid="a01d456f-37a8-4943-a9a3-4ebb20b3a38d" text="Select Multiple Walls" x="11.3303456155843" y="-27.0011908967846" />
+    <Dynamo.Models.NoteModel guid="e53cb033-8315-4c95-ab61-889e0ad34770" text="Select One Floor" x="48.0925424397688" y="123.028315061374" />
+    <Dynamo.Models.NoteModel guid="34a1fd92-8f9a-4515-94e7-cdd3c66e525d" text="Select Multiple Floors" x="154.973709212855" y="459.669592656534" />
+    <Dynamo.Models.NoteModel guid="a3c1a456-7e50-40fd-8138-951bde44b3c9" text="Select Multiple Walls" x="118.21151238867" y="308.719448080254" />
+  </Notes>
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

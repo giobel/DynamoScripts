@@ -1,0 +1,124 @@
+<Workspace Version="1.2.0.2514" X="847.684232906711" Y="-1056.04172311717" zoom="0.979064674908968" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="Point" resolvedName="Autodesk.DesignScript.Geometry.Point" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Line" resolvedName="Autodesk.DesignScript.Geometry.Line" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="DSCore.Object.Identity" resolvedName="DSCore.Object" assemblyName="DSCoreNodes.dll" />
+    <ClassMap partialName="DSCore.Object" resolvedName="DSCore.Object" assemblyName="DSCoreNodes.dll" />
+    <ClassMap partialName="Vector" resolvedName="Autodesk.DesignScript.Geometry.Vector" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="CoordinateSystem" resolvedName="Autodesk.DesignScript.Geometry.CoordinateSystem" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="CoordinateSystem.Identity" resolvedName="Autodesk.DesignScript.Geometry.CoordinateSystem" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Vector.ZAxis" resolvedName="Autodesk.DesignScript.Geometry.Vector" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Geometry" resolvedName="Autodesk.DesignScript.Geometry.Geometry" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Geometry.Transform" resolvedName="Autodesk.DesignScript.Geometry.Geometry" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Rectangle" resolvedName="Autodesk.DesignScript.Geometry.Rectangle" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Geometry.cop" resolvedName="Autodesk.DesignScript.Geometry.Geometry" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Geometry.base" resolvedName="Autodesk.DesignScript.Geometry.Geometry" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Vector.ByTwoPoints" resolvedName="Autodesk.DesignScript.Geometry.Vector" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Rectangle.Center" resolvedName="Autodesk.DesignScript.Geometry.Rectangle" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Plane" resolvedName="Autodesk.DesignScript.Geometry.Plane" assemblyName="ProtoGeometry.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <PythonNodeModels.PythonNode guid="058a1ac7-89e0-4e16-9d38-644ef9c6d71b" type="PythonNodeModels.PythonNode" nickname="Py - For math" x="-1245.38624563886" y="1540.38897264282" isVisible="false" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+import math
+#The inputs to this node will be stored as a list in the IN variables.
+
+PtA = Point.ByCoordinates(-5,-5,0)
+PtB = Point.ByCoordinates(5,-5,0)
+PtC = Point.ByCoordinates(5,5,0)
+PtD = Point.ByCoordinates(-5,5,0)
+
+Rect = Rectangle.ByCornerPoints(PtA,PtB,PtC,PtD)
+
+hFactor = 1
+
+Vct = []
+
+TransRect = []
+sFactor = []
+ScaleRect = []
+RotRect = []
+old_cs = []
+new_cs = []
+Bplane = []
+BplaneOr = []
+RecCent = []
+TransVect = []
+newBPlane = []
+
+for i in range (0,20):
+	Vct.append(Vector.ByCoordinates(0,0,i*hFactor))
+	
+	TransRect.append(Geometry.Translate(Rect,Vct[i]))
+	
+	RecCent.append(Rectangle.Center(TransRect[i]))
+	
+	sFactor.append(1+abs(math.sin(math.pi*i/10))/3)
+	
+	Bplane.append(Rectangle.BasePlane(TransRect[i]))
+	BplaneOr.append(Bplane[i].Origin)
+	TransVect.append(Vector.ByTwoPoints(BplaneOr[i],RecCent[i]))
+	newBPlane.append(Geometry.Translate(Bplane[i],TransVect[i]))
+	
+	ScaleRect.append(Geometry.Scale(TransRect[i],newBPlane[i],sFactor[i],sFactor[i],sFactor[i]))
+	
+	RotRect.append(Geometry.Rotate(ScaleRect[i],Rectangle.Center(TransRect[i]),Vct[i],360*i/80))
+
+	#Assign your output to the OUT variable.
+OUT = RotRect</Script>
+    </PythonNodeModels.PythonNode>
+    <PythonNodeModels.PythonNode guid="07defa19-235f-4e6a-9b59-9d771fcfa5e5" type="PythonNodeModels.PythonNode" nickname="Py - For math" x="5.85703026563806" y="1671.51223949381" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+import math
+#The inputs to this node will be stored as a list in the IN variables.
+
+PtA = Point.ByCoordinates(-5,-5,0)
+PtB = Point.ByCoordinates(5,-5,0)
+PtC = Point.ByCoordinates(5,5,0)
+PtD = Point.ByCoordinates(-5,5,0)
+
+Rect = Rectangle.ByCornerPoints(PtA,PtB,PtC,PtD)
+
+hFactor = 4
+
+Vct = []
+TransRect = []
+BPlane = []
+scaleFactor = []
+ScaleRect = []
+RotRect = []
+
+
+for i in range (0,20):
+	Vct.append(Vector.ByCoordinates(0,0,i*hFactor))
+	
+	TransRect.append(Geometry.Translate(Rect,Vct[i]))
+	
+	BPlane.append(Plane.ByOriginNormal(Rectangle.Center(TransRect[i]),Vector.ZAxis()))
+	
+	scaleFactor.append(1+abs(math.sin(math.pi*i/10))/3)
+	
+	ScaleRect.append(Geometry.Scale(TransRect[i],BPlane[i],scaleFactor[i],scaleFactor[i],scaleFactor[i]))
+	
+	RotRect.append(Geometry.Rotate(ScaleRect[i],Rectangle.Center(TransRect[i]),Vct[i],360*i/80))
+
+#Assign your output to the OUT variable.
+OUT = RotRect</Script>
+    </PythonNodeModels.PythonNode>
+  </Elements>
+  <Connectors />
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-40.8676727715663" eyeY="120.750169639459" eyeZ="64.3219430234589" lookX="-3.01960756265392" lookY="-78.6391027416799" lookZ="-52.200977338211" upX="-0.0401160028660358" upY="0.719339842793858" upZ="-0.693499115929531" />
+  </Cameras>
+</Workspace>

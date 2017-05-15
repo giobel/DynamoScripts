@@ -1,0 +1,47 @@
+<Workspace Version="0.8.2.2371" X="520" Y="318" zoom="1" Name="Get View Dependency as Internal not String" Description="" ID="0c0b73b2-5566-4660-89bb-5940c9ead8b5" Category="Bakery.Parameters">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Symbol guid="7d2c939b-9b7b-4f7b-ab03-dd77ddb301f0" type="Dynamo.Nodes.Symbol" nickname="Input" x="10" y="10" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="View(s)" />
+    </Dynamo.Nodes.Symbol>
+    <DSIronPythonNode.PythonNode guid="e153b538-527d-4915-a3bf-32296f541079" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="352.458658346334" y="97.1809672386898" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+views = UnwrapElement(IN[0])
+elementlist = list()
+for view in views:
+	try:
+		elementlist.append(view.Dependency)
+	except:
+		elementlist.append(list())
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="03562a7d-49e9-4fa1-b190-17c548a1dc68" type="Dynamo.Nodes.Function" nickname="Turn Into List" x="145.233229329173" y="97.5335413416539" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Output guid="2ee51bbc-a5cb-42a1-b2e3-e3fa5588661a" type="Dynamo.Nodes.Output" nickname="Output" x="842.33151326053" y="11.836193447738" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="Scale(s) 1:X" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="7d2c939b-9b7b-4f7b-ab03-dd77ddb301f0" start_index="0" end="03562a7d-49e9-4fa1-b190-17c548a1dc68" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e153b538-527d-4915-a3bf-32296f541079" start_index="0" end="2ee51bbc-a5cb-42a1-b2e3-e3fa5588661a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="03562a7d-49e9-4fa1-b190-17c548a1dc68" start_index="0" end="e153b538-527d-4915-a3bf-32296f541079" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

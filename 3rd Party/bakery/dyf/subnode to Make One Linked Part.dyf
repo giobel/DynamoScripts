@@ -1,0 +1,86 @@
+<Workspace Version="0.8.2.2371" X="885.159884603894" Y="654.427358814322" zoom="1.27771698410772" Name="subnode to Make One Linked Part" Description="" ID="2a2543da-947a-4d19-a783-7537c6ed00d8" Category="Bakery.Parts">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="51ccff2c-82b3-4d95-b7e1-a22ca385e999" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="253.397353723311" y="-103.311508245634" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="3">
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+# Import geometry conversion extension methods
+clr.ImportExtensions(Revit.GeometryConversion)
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+from System.Collections.Generic import *
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+docs = UnwrapElement(IN[1])
+instId = IN[2]
+elts = []
+Ids = []
+for i in IN[0]:
+	elts.append(UnwrapElement(i))
+for e in elts:
+	y = LinkElementId(instId, e.Id)
+	Ids.append(y)
+IDS = List[Autodesk.Revit.DB.LinkElementId](Ids)
+TransactionManager.Instance.EnsureInTransaction(doc)
+#created = []
+try:
+	a=PartUtils.CreateParts(doc,IDS)
+	result = True
+except:
+	result = False
+#if PartUtils.AreElementsValidForCreateParts(doc, IDS):
+
+#	results.append("should work")
+#try:
+#	PartUtils.CreateParts(docs, IDS)
+#	results.append("success")
+#except:
+#	results.append("failure")
+
+
+TransactionManager.Instance.TransactionTaskDone()
+#TransactionManager.Instance.ForceCloseTransaction()
+
+OUT = result</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol guid="d547954f-8e92-4fa4-9149-84fe680ec4f4" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="oneElement" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="64b14085-33c1-4ad7-b667-90e51b94d889" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="150" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="oneLinkDoc" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="bf4916e8-1d20-4395-9bf9-82b8956a074f" type="Dynamo.Nodes.Symbol" nickname="Input" x="84.4398156148275" y="309.714315070732" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="oneLinkInstanceId" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="8541165d-f611-4b0d-b70a-956e39095ba4" type="Dynamo.Nodes.Output" nickname="Output" x="585.88768646572" y="69.590946750729" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="OUT" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="51ccff2c-82b3-4d95-b7e1-a22ca385e999" start_index="0" end="8541165d-f611-4b0d-b70a-956e39095ba4" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d547954f-8e92-4fa4-9149-84fe680ec4f4" start_index="0" end="51ccff2c-82b3-4d95-b7e1-a22ca385e999" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="64b14085-33c1-4ad7-b667-90e51b94d889" start_index="0" end="51ccff2c-82b3-4d95-b7e1-a22ca385e999" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="bf4916e8-1d20-4395-9bf9-82b8956a074f" start_index="0" end="51ccff2c-82b3-4d95-b7e1-a22ca385e999" end_index="2" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

@@ -1,0 +1,52 @@
+<Workspace Version="0.8.2.2371" X="104" Y="109" zoom="1" Name="Element Type for Linked File Element Lists" Description="" ID="e6b66612-ba79-4542-8aac-1dc80b2e7645" Category="Bakery.Links">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Symbol guid="01d20a55-fa25-48f5-addf-b77356ca91d0" type="Dynamo.Nodes.Symbol" nickname="Input" x="10" y="13.5846027753928" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="Element(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Function guid="5ded8af7-304b-49a5-a7f8-8fb9ea3040ca" type="Dynamo.Nodes.Function" nickname="Turn Into List" x="186.36129364858" y="80.6367263957431" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="var[]" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="55a1ca26-7030-4364-82b6-cf7faec1b803" type="Dynamo.Nodes.Symbol" nickname="Input" x="164.235199973417" y="156.47656217221" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="Link Document" />
+    </Dynamo.Nodes.Symbol>
+    <DSIronPythonNode.PythonNode guid="19fb9e26-dfb4-4033-ad8b-c4f49caedd3e" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="367.891783062879" y="103.896448377031" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+items = UnwrapElement(IN[0])
+doc = UnwrapElement(IN[1])
+typelist = list()
+for item in items:
+	try: 
+		typelist.append(doc.GetElement(item.GetTypeId()))
+	except:
+		typelist.append(list())
+OUT = typelist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Output guid="7e88c444-dc42-497d-a231-206a7c7f9768" type="Dynamo.Nodes.Output" nickname="Output" x="790.955048678886" y="10" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="Type(s)" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="01d20a55-fa25-48f5-addf-b77356ca91d0" start_index="0" end="5ded8af7-304b-49a5-a7f8-8fb9ea3040ca" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="5ded8af7-304b-49a5-a7f8-8fb9ea3040ca" start_index="0" end="19fb9e26-dfb4-4033-ad8b-c4f49caedd3e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="55a1ca26-7030-4364-82b6-cf7faec1b803" start_index="0" end="19fb9e26-dfb4-4033-ad8b-c4f49caedd3e" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="19fb9e26-dfb4-4033-ad8b-c4f49caedd3e" start_index="0" end="7e88c444-dc42-497d-a231-206a7c7f9768" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

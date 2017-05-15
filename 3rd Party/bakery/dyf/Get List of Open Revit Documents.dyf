@@ -1,0 +1,91 @@
+<Workspace Version="1.0.0.1180" X="7.207829967603" Y="277.659772178726" zoom="1.33823125" Name="Get List of Open Revit Documents" Description="BETA!! crashes next dynamo instance. https://github.com/DynamoDS/Dynamo/issues/6083" ID="e3e4163c-e04c-4aa2-9dab-3ec44b1683dd" Category="Bakery.BETA">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="0decd3f1-6270-4a68-9707-fae227b22677" type="PythonNodeModels.PythonNode" nickname="Python Script" x="249.252744994559" y="120.246844602804" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="0">
+      <Script>#LSJ
+
+import clr
+#clr.AddReference('ProtoGeometry')
+#from Autodesk.DesignScript.Geometry import *
+
+# Import DocumentManager
+clr.AddReference("RevitServices")
+#import RevitServices
+from RevitServices.Persistence import DocumentManager
+#from RevitServices.Transactions import TransactionManager
+
+# Import RevitAPI
+#clr.AddReference("RevitAPI")
+#import Autodesk
+
+# Import ToDSType(bool) extension method
+#clr.AddReference("RevitNodes")
+#import Revit
+#from Autodesk.Revit.DB import *
+#clr.ImportExtensions(Revit.Elements)
+
+#import System
+
+#The inputs to this node will be stored as a list in the IN variable.
+#doc = docToUse
+#uiapp = DocumentManager.Instance.CurrentUIApplication
+doc = DocumentManager.Instance.CurrentDBDocument
+app = DocumentManager.Instance.CurrentUIApplication.Application
+
+#TransactionManager.Instance.EnsureInTransaction(doc)
+docList = app.Documents
+for z in app.Documents:
+	try:
+		Dispose(z)
+	except:
+		pass
+stringlist = []
+pathlist = []
+for d in docList:
+	try:
+		stringlist.append(d.Title)
+	except:
+		stringlist.append("Title not found")
+for e in docList:
+	try:
+		pathlist.append(d.PathName)
+	except:
+		pathlist.append("Path not found")
+#TransactionManager.Instance.TransactionTaskDone()
+try:
+	Dispose(app)
+except:
+	pass
+try:
+	Dispose(doc)
+except:
+	pass
+OUT = docList, stringlist, pathlist#.DocumentSet
+del docList
+</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="c6c12fe9-b43e-47d9-9bbc-b5826e55166f" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="473.011828644492" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="list[0];" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="ed056120-1757-4743-9691-868e50b0e026" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="488.425962956077" y="123.068403383586" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="list[1];" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="0f3b330d-1eb3-4937-8d56-82005f39dd27" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="490.015100663052" y="216.530036906687" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="list[2];" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="f1832439-1e56-4fb4-a5a9-a1529c95c982" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="697.015100663052" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="doc objects" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="387e4108-edf0-4e73-bff4-335c4b8ca8d2" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="697.015100663052" y="150" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="Titles" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="6cd50bd9-dbab-46db-b157-7c0b963660cb" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="697.015100663052" y="300" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="Path Names" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="0decd3f1-6270-4a68-9707-fae227b22677" start_index="0" end="c6c12fe9-b43e-47d9-9bbc-b5826e55166f" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0decd3f1-6270-4a68-9707-fae227b22677" start_index="0" end="ed056120-1757-4743-9691-868e50b0e026" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0decd3f1-6270-4a68-9707-fae227b22677" start_index="0" end="0f3b330d-1eb3-4937-8d56-82005f39dd27" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c6c12fe9-b43e-47d9-9bbc-b5826e55166f" start_index="0" end="f1832439-1e56-4fb4-a5a9-a1529c95c982" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="ed056120-1757-4743-9691-868e50b0e026" start_index="0" end="387e4108-edf0-4e73-bff4-335c4b8ca8d2" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0f3b330d-1eb3-4937-8d56-82005f39dd27" start_index="0" end="6cd50bd9-dbab-46db-b157-7c0b963660cb" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+</Workspace>

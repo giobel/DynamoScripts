@@ -1,0 +1,70 @@
+<Workspace Version="0.9.2.4472" X="-460.702822994236" Y="-173.103120418116" zoom="0.803321593462598" Name="Family Instance By Point in Transaction" Description="this is to skip binding problems with the core node, it was based on a clockwork node&#xD;&#xA;" ID="6bad299e-eaa5-4d0c-9041-7df07d67c210" Category="Bakery.Families">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="Autodesk.Point" resolvedName="Autodesk.DesignScript.Geometry.Point" assemblyName="ProtoGeometry.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="54c4e185-d43b-4ae9-9647-7d66876e81d1" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="704" y="488.4" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false">
+      <Symbol value="points" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="ab977921-84eb-4c44-8bb9-7f88c40b1f69" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="900.8" y="630.8" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false">
+      <Symbol value="familyType" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="e76bacf1-c18c-4e35-85cc-82e46a00f64c" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1443.74914832749" y="605.2" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false">
+      <Symbol value="familyInstance" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <PythonNodeModels.PythonNode guid="92ca624f-001f-44f1-8260-a9efc3fe027a" type="PythonNodeModels.PythonNode" nickname="Python Script" x="1091.19751394211" y="544.639061925173" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" inputcount="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+clr.ImportExtensions(Revit.GeometryConversion)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+from Autodesk.Revit.DB.Structure import *
+
+doc = DocumentManager.Instance.CurrentDBDocument
+points = UnwrapElement(IN[0])
+famtype = UnwrapElement(IN[1])
+
+elementlist = list()
+
+ST = StructuralType.NonStructural
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+for point in points:
+	newobj = doc.Create.NewFamilyInstance(point.ToXyz(),famtype,ST)
+	elementlist.append(newobj)
+TransactionManager.Instance.TransactionTaskDone()
+OUT = elementlist</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="4bff22c0-1b3e-45a2-bc87-4d6b7441d82d" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="TurnIntoList" x="866.281734062009" y="504.285112854964" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="TurnIntoList" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="54c4e185-d43b-4ae9-9647-7d66876e81d1" start_index="0" end="4bff22c0-1b3e-45a2-bc87-4d6b7441d82d" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="ab977921-84eb-4c44-8bb9-7f88c40b1f69" start_index="0" end="92ca624f-001f-44f1-8260-a9efc3fe027a" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="92ca624f-001f-44f1-8260-a9efc3fe027a" start_index="0" end="e76bacf1-c18c-4e35-85cc-82e46a00f64c" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="4bff22c0-1b3e-45a2-bc87-4d6b7441d82d" start_index="0" end="92ca624f-001f-44f1-8260-a9efc3fe027a" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

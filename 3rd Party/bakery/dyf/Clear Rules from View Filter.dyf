@@ -1,0 +1,53 @@
+<Workspace Version="1.1.0.2094" X="0" Y="0" zoom="1" Name="Clear Rules from View Filter" Description="wipes rules leaving only category selection" ID="3b03d423-0145-45d2-ab8f-60bd684e3082" Category="Bakery.Views">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="f5041a83-b448-4bbf-bfb7-4645b6aa960f" type="PythonNodeModels.PythonNode" nickname="Python Script" x="250" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <Script>#from the forum originally
+import clr
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+import System
+from System.Collections.Generic import *
+
+dataEnteringNode = IN
+
+filter = UnwrapElement(IN[0])
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+try:
+	filter.ClearRules()
+except:
+	filter = "Sorry, failed. Please check that you have a unique filter name."
+
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = filter</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="f9904376-bed3-42ae-a402-f67648f32390" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="parameterFilterElement" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="e5da08bd-abb5-49d3-8507-ad7d305865a6" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="447.4" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="withRulesCleared" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="f5041a83-b448-4bbf-bfb7-4645b6aa960f" start_index="0" end="e5da08bd-abb5-49d3-8507-ad7d305865a6" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="f9904376-bed3-42ae-a402-f67648f32390" start_index="0" end="f5041a83-b448-4bbf-bfb7-4645b6aa960f" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

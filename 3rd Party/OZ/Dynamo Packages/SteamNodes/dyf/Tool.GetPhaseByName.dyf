@@ -1,0 +1,85 @@
+<Workspace Version="0.7.2.2921" X="80.7374993547684" Y="11.8414953463649" zoom="0.985131331992199" Description="Get Document Phases by String" Category="SteamNodes.Tool" Name="Tool.GetPhaseByName" ID="2f649339-7439-4d21-9ffe-a4f39e98cbe6">
+  <Elements>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="1188cace-5d42-472e-ac84-f1c5098ec985" nickname="List.FilterByBoolMask" x="967" y="77.7816666666667" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.FilterByBoolMask@var[]..[],var[]..[]" />
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="a68131fd-faa7-4a40-b4ed-21e7427d197d" nickname="List.FilterByBoolMask" x="967" y="213.781666666667" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.FilterByBoolMask@var[]..[],var[]..[]" />
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="d262eabd-7750-4c9f-8d5a-fa7af1013fb5" nickname="String.Contains" x="708" y="191.781666666667" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.String.Contains@string,string,bool">
+      <PortInfo index="2" default="True" />
+    </Dynamo.Nodes.DSFunction>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="838fe28a-834d-4f7c-b5df-183e38bce20d" nickname="List.GetItemAtIndex" x="708" y="57.7816666666667" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="4527a3cd-d9f1-43a6-89fb-50dc67673cca" nickname="List.GetItemAtIndex" x="473" y="202.781666666667" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <DSCoreNodesUI.BoolSelector type="DSCoreNodesUI.BoolSelector" guid="1ed36cf2-56f6-4878-aa2b-c2925353b849" nickname="Boolean" x="0" y="359.781666666667" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Boolean>True</System.Boolean>
+    </DSCoreNodesUI.BoolSelector>
+    <Dynamo.Nodes.CodeBlockNodeModel type="Dynamo.Nodes.CodeBlockNodeModel" guid="cf95ab4e-ef99-407e-b6c6-caeb160cd22e" nickname="Code Block" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="0;" ShouldFocus="false" />
+    <Dynamo.Nodes.CodeBlockNodeModel type="Dynamo.Nodes.CodeBlockNodeModel" guid="f5c9ffd3-4c90-4019-923a-ef6873a1a01e" nickname="Code Block" x="0" y="276" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="1;" ShouldFocus="false" />
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="9f074774-76c0-4fc1-b595-fcb019283c7d" nickname="Python Script" x="249" y="130.281666666667" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="1">
+      <Script>#python nodes in dynamo 0.7
+#proposed by Julien Benoit @jbenoit44 
+#http://aecuandme.wordpress.com/
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+# Import geometry conversion extension methods
+clr.ImportExtensions(Revit.GeometryConversion)
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+from System.Collections.Generic import *
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+uidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+
+phases=[]
+names=[]
+phaseslist=doc.Phases
+# Start Transaction
+TransactionManager.Instance.EnsureInTransaction(doc)
+for p in phaseslist:
+	phases.append(p.ToDSType(False))
+	names.append(p.Name)
+
+# End Transaction
+TransactionManager.Instance.TransactionTaskDone()
+OUT =phases,names</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="d64d9287-49f4-49fa-9e39-a019d650e0a7" nickname="List.Empty" x="0" y="84.2816666666667" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.Empty" />
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="62fc8b24-39e4-4bfb-b92c-5e8d7a26b7c6" nickname="Output" x="1212" y="103.781666666667" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Phase" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="917555e9-f014-4f30-a255-0fade8861185" nickname="Input" x="0" y="192.781666666667" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Phase Name(string)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="ca12c2e5-cb49-4f68-856d-c35c6cbb5451" nickname="Output" x="1212" y="187.781666666667" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Phase Name" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="1188cace-5d42-472e-ac84-f1c5098ec985" start_index="0" end="62fc8b24-39e4-4bfb-b92c-5e8d7a26b7c6" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a68131fd-faa7-4a40-b4ed-21e7427d197d" start_index="0" end="ca12c2e5-cb49-4f68-856d-c35c6cbb5451" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d262eabd-7750-4c9f-8d5a-fa7af1013fb5" start_index="0" end="1188cace-5d42-472e-ac84-f1c5098ec985" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d262eabd-7750-4c9f-8d5a-fa7af1013fb5" start_index="0" end="a68131fd-faa7-4a40-b4ed-21e7427d197d" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="838fe28a-834d-4f7c-b5df-183e38bce20d" start_index="0" end="1188cace-5d42-472e-ac84-f1c5098ec985" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4527a3cd-d9f1-43a6-89fb-50dc67673cca" start_index="0" end="d262eabd-7750-4c9f-8d5a-fa7af1013fb5" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4527a3cd-d9f1-43a6-89fb-50dc67673cca" start_index="0" end="a68131fd-faa7-4a40-b4ed-21e7427d197d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1ed36cf2-56f6-4878-aa2b-c2925353b849" start_index="0" end="d262eabd-7750-4c9f-8d5a-fa7af1013fb5" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="cf95ab4e-ef99-407e-b6c6-caeb160cd22e" start_index="0" end="838fe28a-834d-4f7c-b5df-183e38bce20d" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f5c9ffd3-4c90-4019-923a-ef6873a1a01e" start_index="0" end="4527a3cd-d9f1-43a6-89fb-50dc67673cca" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9f074774-76c0-4fc1-b595-fcb019283c7d" start_index="0" end="838fe28a-834d-4f7c-b5df-183e38bce20d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9f074774-76c0-4fc1-b595-fcb019283c7d" start_index="0" end="4527a3cd-d9f1-43a6-89fb-50dc67673cca" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d64d9287-49f4-49fa-9e39-a019d650e0a7" start_index="0" end="9f074774-76c0-4fc1-b595-fcb019283c7d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="917555e9-f014-4f30-a255-0fade8861185" start_index="0" end="d262eabd-7750-4c9f-8d5a-fa7af1013fb5" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

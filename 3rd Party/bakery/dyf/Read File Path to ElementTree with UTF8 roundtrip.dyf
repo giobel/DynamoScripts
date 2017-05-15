@@ -1,0 +1,40 @@
+<Workspace Version="0.8.2.2371" X="373" Y="126" zoom="1" Name="Read File Path to ElementTree with UTF8 roundtrip" Description="to clean unsupported characters..." ID="b223cace-86e4-435e-8e6c-94a60e29ecb6" Category="Bakery.XML">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Symbol guid="daaadd11-b063-4fb8-a61f-0f99cc7b0793" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="filePath" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="eec9a8e1-c5dc-4b93-bf7c-226ea894d0e5" type="Dynamo.Nodes.Output" nickname="Output" x="449" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="ElementTree" />
+    </Dynamo.Nodes.Output>
+    <DSIronPythonNode.PythonNode guid="cee7e3dd-449a-4ed3-a5f5-c88f2b9d9a1c" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="272.000000000005" y="66.9999999999973" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+import sys
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+sys.path.append("C:\Program Files (x86)\IronPython 2.7\Lib")
+#from xml.parsers.expat import expat -- can't find this
+import xml.etree.ElementTree as ET
+#The inputs to this node will be stored as a list in the IN variables.
+filePath = IN[0]
+uniStr = unicode(open(filePath, 'r').read())
+#fixed = uniStr.encode('utf-8', 'replace')
+fixed = uniStr.encode('ascii', 'replace')
+fixed.decode('utf-8', 'replace')
+tree = ET.ElementTree(ET.fromstring(fixed))
+#start tree code
+#Assign your output to the OUT variable.
+OUT = tree</Script>
+    </DSIronPythonNode.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="daaadd11-b063-4fb8-a61f-0f99cc7b0793" start_index="0" end="cee7e3dd-449a-4ed3-a5f5-c88f2b9d9a1c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="cee7e3dd-449a-4ed3-a5f5-c88f2b9d9a1c" start_index="0" end="eec9a8e1-c5dc-4b93-bf7c-226ea894d0e5" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="235.502838134766" eyeY="450.097564697266" eyeZ="-91.9787826538086" lookX="-188.653900146484" lookY="-146.456985473633" lookZ="-188.653900146484" />
+  </Cameras>
+</Workspace>

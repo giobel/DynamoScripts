@@ -1,0 +1,46 @@
+<Workspace Version="0.8.2.2392" X="0" Y="0" zoom="1" Name="bv Remove Nulls" Description="forked from Lunchbox" ID="a8b0f382-e8bc-4198-93af-a93c1afcf265" Category="Bakery.Forks">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Symbol guid="92c941b4-c020-46d7-86d2-e2a60d85b0dc" type="Dynamo.Nodes.Symbol" nickname="Input" x="10" y="10" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="List" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="312feb43-0bd5-4207-883d-25806f97b486" type="Dynamo.Nodes.Output" nickname="Output" x="276.476477796838" y="13.432869279186" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="Cleaned" />
+    </Dynamo.Nodes.Output>
+    <DSIronPythonNode.PythonNode guid="7b2fd4b2-238b-44a9-89dc-a3bc560032bc" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="123.297021978018" y="10.938052377757" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script># Copyright (c) 2014, Nathan Miller
+# The Proving Ground, http://TheProvingGround.org
+
+# Default imports
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+#The input to this node will be stored in the IN[0] variable.
+list = IN[0]
+
+cleanlist = []
+for i in list:
+	if hasattr(i, "__iter__"):
+		for ii in i:
+			if not (i is None):
+				cleanlist.append(i)	
+	else:
+		if not (i is None):
+			cleanlist.append(i)	
+
+#Assign your output to the OUT variable
+OUT = cleanlist</Script>
+    </DSIronPythonNode.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="92c941b4-c020-46d7-86d2-e2a60d85b0dc" start_index="0" end="7b2fd4b2-238b-44a9-89dc-a3bc560032bc" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="7b2fd4b2-238b-44a9-89dc-a3bc560032bc" start_index="0" end="312feb43-0bd5-4207-883d-25806f97b486" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

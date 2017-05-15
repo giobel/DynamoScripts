@@ -1,0 +1,87 @@
+<Workspace Version="0.8.0.950" X="122.954807100226" Y="140.427023504579" zoom="1.47618023926362" Name="Get Element Room parameter from API" ID="d516e6fa-5ba5-478f-aeca-7e5599766c86" Description="" Category="Bakery.Parameters">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Output guid="4e804386-0afd-4db9-9621-e94ba7655485" type="Dynamo.Nodes.Output" nickname="Output" x="440.269961793375" y="-6.58583670474749" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Room Elements" />
+    </Dynamo.Nodes.Output>
+    <DSIronPythonNode.PythonNode guid="a796a576-cb2e-4f03-807f-a9a82a7178e3" type="DSIronPythonNode.PythonNode" nickname="Python_GetRoomsFromElements" x="120.52007818148" y="206.675345573043" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="2">
+      <Script>#Copyright(c) 2014, Case-Inc Jason Andersen, j.andersen@case-inc.com
+
+# Default imports
+import clr
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+import System.Collections.Generic
+from System.Collections.Generic import List
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+doc =  DocumentManager.Instance.CurrentDBDocument
+app =  DocumentManager.Instance.CurrentUIApplication.Application
+
+#phase coming in
+elementz = IN[0]
+phaseProject = IN[1]
+
+phase = []
+collector = FilteredElementCollector(doc)
+phase_collector = collector.OfClass(Phase)
+
+for i in phase_collector:
+	if i.Name == phaseProject:
+  		phase = i
+  	else:
+ 		print("Phase not found")
+
+#unwrapelements
+elements = []
+for i in elementz:
+    elements.append(UnwrapElement(i))
+
+#variables
+output = []
+roomelems = []
+elemNotInRooms = []
+
+#work
+failure = 'failed'
+for f in elements:
+	fi = (f)
+	fs = fi.Symbol
+	fm = fi.Symbol.Family
+	room = fi.Room[phase]
+
+	if room != None:
+		roomelems.append(room)
+	else:
+		roomelems.append(failure)
+		continue
+	
+output.append(roomelems)
+output.append(elemNotInRooms)
+	
+#Assign your output to the OUT variable
+OUT = roomelems</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol guid="d95637b9-6621-4768-9a65-98aa0c02ff53" type="Dynamo.Nodes.Symbol" nickname="Input" x="-76.6796639711524" y="251.123690801704" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Phase [string]" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="36578581-5d10-49f5-8aad-973e815e24c9" type="Dynamo.Nodes.Symbol" nickname="Input" x="-76.2270659225494" y="191.994471170361" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Elements" />
+    </Dynamo.Nodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="a796a576-cb2e-4f03-807f-a9a82a7178e3" start_index="0" end="4e804386-0afd-4db9-9621-e94ba7655485" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d95637b9-6621-4768-9a65-98aa0c02ff53" start_index="0" end="a796a576-cb2e-4f03-807f-a9a82a7178e3" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="36578581-5d10-49f5-8aad-973e815e24c9" start_index="0" end="a796a576-cb2e-4f03-807f-a9a82a7178e3" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

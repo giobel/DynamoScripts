@@ -1,0 +1,51 @@
+<Workspace Version="0.8.2.2371" X="0" Y="0" zoom="1" Name="Get Info from a Linked Element Tag" Description="use with List.Map" ID="7cec3415-12f0-440e-a32c-95ff2ff724db" Category="Bakery.Tags">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="7908a628-1ae4-4d5a-b914-f3e7877149e6" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="453.48706037747" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>#Copyright(c) 2015, Konrad K Sobon
+# @arch_laboratory, http://archi-lab.net
+
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+#The inputs to this node will be stored as a list in the IN variable.
+elt = IN[0]
+temp = UnwrapElement(elt)
+tei = temp.TaggedElementId
+tel = tei.LinkedElementId
+teinst = tei.LinkInstanceId
+elteq = elt
+
+OUT = tei, tel, teinst, elteq</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol guid="5e4f6a4e-1e89-4f7d-a439-a5ac37691122" type="Dynamo.Nodes.Symbol" nickname="Input" x="250" y="20.4274440969488" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="oneLinkTag" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="fb3d163e-4362-4703-9ac8-fce4d743cf04" type="Dynamo.Nodes.Output" nickname="Output" x="573.881538314498" y="95.1047936046959" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="tagProps" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="7908a628-1ae4-4d5a-b914-f3e7877149e6" start_index="0" end="fb3d163e-4362-4703-9ac8-fce4d743cf04" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="5e4f6a4e-1e89-4f7d-a439-a5ac37691122" start_index="0" end="7908a628-1ae4-4d5a-b914-f3e7877149e6" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+</Workspace>

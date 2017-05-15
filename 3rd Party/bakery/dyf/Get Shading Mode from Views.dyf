@@ -1,0 +1,58 @@
+<Workspace Version="0.9.1.4062" X="49.9370276054098" Y="177.691584719651" zoom="0.803321593462598" Name="Get Shading Mode from Views" Description="using built in parameter name" ID="c925d04a-cacf-4d4c-a8ec-4013edef8099" Category="Bakery.Views">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="9d470523-af90-4c66-8e9e-4f8d0381d9ca" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="785" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false">
+      <Symbol value="Shading Mode(s)" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="e37594d2-4497-4731-97e0-0c2670b311f7" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="ReturnListOrSingleValue" x="508" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <PythonNodeModels.PythonNode guid="c17cd6ed-1675-4a7b-b2d8-902c9654c0f1" type="PythonNodeModels.PythonNode" nickname="Python Script" x="285.684161907221" y="26" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+views = UnwrapElement(IN[0])
+elementlist = list()
+for view in views:
+	try:
+		elementlist.append(str(view.DisplayStyle))
+	except:
+		elementlist.append('Undefined')
+OUT = elementlist</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="65d70d14-82f2-45a9-b528-38b857e60615" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="TurnIntoList" x="79" y="13" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="0bd5a46a-2fb9-469c-b8e8-6a2e8156bf57" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-100" y="13" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false">
+      <Symbol value="View(s)" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="e37594d2-4497-4731-97e0-0c2670b311f7" start_index="0" end="9d470523-af90-4c66-8e9e-4f8d0381d9ca" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c17cd6ed-1675-4a7b-b2d8-902c9654c0f1" start_index="0" end="e37594d2-4497-4731-97e0-0c2670b311f7" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="65d70d14-82f2-45a9-b528-38b857e60615" start_index="0" end="e37594d2-4497-4731-97e0-0c2670b311f7" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="65d70d14-82f2-45a9-b528-38b857e60615" start_index="0" end="c17cd6ed-1675-4a7b-b2d8-902c9654c0f1" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0bd5a46a-2fb9-469c-b8e8-6a2e8156bf57" start_index="0" end="65d70d14-82f2-45a9-b528-38b857e60615" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+</Workspace>

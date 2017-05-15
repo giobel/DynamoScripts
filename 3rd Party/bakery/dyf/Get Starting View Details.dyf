@@ -1,0 +1,51 @@
+<Workspace Version="0.9.1.4062" X="0" Y="0" zoom="1" Name="Get Starting View Details" Description="like name etc" ID="f7290224-47c9-4a5a-ae66-a5594b8faf27" Category="Bakery.Views">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="26ef15b3-3e0a-42e1-9315-a241d586f7f7" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="259.727272727273" y="190.672727272727" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false">
+      <Symbol value="param" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <PythonNodeModels.PythonNode guid="7d1df260-b410-4bba-9e51-bc7245af88da" type="PythonNodeModels.PythonNode" nickname="Python Script" x="103.225966540589" y="198.68828131378" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" inputcount="1">
+      <Script>#LSJ
+
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+# Import DocumentManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+from Autodesk.Revit.DB import *
+clr.ImportExtensions(Revit.Elements)
+
+import System
+
+#The inputs to this node will be stored as a list in the IN variable.
+#doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+doc = DocumentManager.Instance.CurrentDBDocument
+
+#create workset collector
+#userCategories = doc.Settings.Categories
+
+strtview = doc.StartingViewSettings.GetStartingViewSettings()
+OUT = strtview
+</Script>
+    </PythonNodeModels.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="7d1df260-b410-4bba-9e51-bc7245af88da" start_index="0" end="26ef15b3-3e0a-42e1-9315-a241d586f7f7" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+</Workspace>

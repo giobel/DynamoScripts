@@ -1,0 +1,404 @@
+Option Explicit
+'Script written by <insert name>
+'Script copyrighted by <insert company name>
+'Script version 01 August 2007 15:59:47
+
+Call Main()
+Sub Main()
+	Dim numU, numV, centreL, arrCPlane, arrXform, oldLayer, roofDepth
+	Dim i, j
+	
+	oldLayer = rhino.CurrentLayer
+	
+	rhino.AddLayer "RS_uCurves", RGB(0, 100, 100)
+	rhino.AddLayer "RS_vCurves", RGB(206, 61, 61)
+	rhino.AddLayer "RS_UCurves_BSTR", RGB(140, 210, 140)
+	rhino.AddLayer "RS_Construction", RGB(0, 0, 0)
+	
+	rhino.CurrentLayer "RS_Construction"
+	
+	Dim idsurface : idsurface = rhino.GetObject("select surface..",8)
+	numU = rhino.GetInteger("Number of U direction subdivisions...",20)
+	numV = rhino.GetInteger("Number of Iso Curve subdivisions...",10)
+	roofDepth = Rhino.GetReal("Roof Offset in metres: ", 0.5, 0.1, 1.0)
+		
+	If Rhino.IsSurfaceTrimmed(idsurface) Then
+
+		Rhino.Print "The surface is trimmed. Shrinking surface..."
+		Rhino.ShrinkTrimmedSurface (idsurface )
+
+	Else
+
+		Rhino.Print "The surface is not trimmed."
+
+	End If
+
+
+	'===========================================================
+	' extract CentreLine from surface and project to Cplane 
+	'===========================================================
+
+	centreL = Rhino.ExtractIsoCurve (idSurface, array(0,0), 1)
+	If IsArray(centreL) Then
+		arrCPlane = Rhino.ViewCPlane
+		arrXform = Rhino.XformPlanarProjection(arrCPlane)
+		centreL = Rhino.TransformObjects (centreL, arrXform, False)
+		rhino.HideObject centreL(0)
+	End If 
+
+	
+	'===========================================================
+	'add V Curves by extracting iso lines
+	'===========================================================
+	
+	Dim Varrpoint, Varrparameter,tmpVc, Vcurve()
+	Dim  numC :	numC = Array ("1st","2nd","3rd","4th","5th","6th","7th","8th","9th","10th","11th","12th")
+	For i = 0 To numV - 1
+		VarrPoint = Rhino.GetPointOnSurface(idSurface, "Select" & numC(i) &" location For Iso Curve.. ")
+		VarrParameter = Rhino.SurfaceClosestPoint(idSurface, VarrPoint)
+		tmpVc = Rhino.ExtractIsoCurve (idSurface, VarrParameter, 1)
+		ReDim Preserve Vcurve(i)
+		Vcurve(i) = tmpVc(0)
+	Next
+	Rhino.EnableRedraw(False)
+	
+	'==================================================================
+	' Create offest points for temp surface
+	'==================================================================
+	
+	Dim Uarrpoint, Uarrparameter, Uarrcentre, Uarrcentrept()
+	
+	Uarrpoint = rhino.DivideCurve(centreL(0), numU)
+	For i = 0 To numU
+		Uarrparameter = rhino.CurveClosestPoint(centreL(0), Uarrpoint(i))
+		Uarrcentre = rhino.CurveCurvature(centreL(0),Uarrparameter)
+		ReDim Preserve Uarrcentrept(i)
+		Uarrcentrept(i) = Uarrcentre(2)
+	Next
+	
+	Dim Uarrvector, UarrvectorN, UarrvectorD, Uarrpoint1(), Uarrpoint2()
+	
+	For i =0 To numU
+		Uarrvector = rhino.Vectorsubtract(Uarrpoint(i), Uarrcentrept(i))
+		UarrvectorN = rhino.VectorUnitize(Uarrvector)
+		
+		UarrvectorD = rhino.Vectorscale (UarrvectorN, 30)
+		ReDim Preserve Uarrpoint1(i)
+		Uarrpoint1(i) = rhino.VectorAdd(Uarrpoint(i), UarrvectorD)
+		
+		UarrvectorD = rhino.Vectorscale (UarrvectorN, -30)
+		ReDim Preserve Uarrpoint2(i)
+		Uarrpoint2(i) = rhino.VectorAdd(Uarrpoint(i), UarrvectorD)
+	Next
+	rhino.DeleteObject centreL(0)
+	
+	Dim Uarrpoint3, Uarrpoint4
+
+	Uarrpoint3 = Uarrpoint2
+	Uarrpoint4 = Uarrpoint1
+	
+	For i = 0 To numU
+		Uarrpoint3 (i)(2) = 60
+		Uarrpoint4 (i)(2) = 60
+	Next
+	
+	'===========================================================
+	'add U Curves by intersection of Roof Surface by temp Surface
+	'===========================================================
+
+	Dim tempsurf, tmpUc,Ucurve()
+		
+	For i = 0 To numU
+		tempsurf = rhino.AddSrfPt(Array (Uarrpoint1(i),Uarrpoint2(i),Uarrpoint3(i),Uarrpoint4(i)))
+		tmpUc = rhino.SurfaceSurfaceIntersection (idsurface, tempsurf,,True)
+		ReDim Preserve Ucurve(i)
+		Ucurve(i) = tmpUc(0,1)
+		rhino.DeleteObject tempsurf
+	Next
+	
+	'===========================================================
+	'Add point at Ucurve and Vcurve Intersections
+	'===========================================================
+	
+	Dim temp_pt
+	ReDim curvept (Ubound(UCurve),Ubound(vCurve))
+	ReDim Ucurvept (Ubound(UCurve),Ubound(vCurve))
+	ReDim Vcurvept (Ubound(UCurve),Ubound(vCurve))
+	
+	
+	For i = 0 To Ubound(Ucurve)
+		For j = 0 To Ubound(Vcurve)
+			temp_pt = rhino.CurveCurveIntersection(Ucurve(i), Vcurve(j))
+			If Not Isarray(temp_Pt) Then
+				If j = 0 Then 
+					curvept(i,j) = Rhino.CurveStartPoint (Ucurve(i))
+					'Call rhino.addpoint(curvept(i,j))
+					'Call rhino.AddTextDot (i, curvept(i,j))
+				End If
+				If j = Ubound(Vcurve) Then 
+					curvept(i,j) = Rhino.CurveEndPoint (Ucurve(i))
+					'Call rhino.addpoint(curvept(i,j))
+					'Call rhino.AddTextDot (i, curvept(i,j))
+				End If
+				'Rhino.Print ("Curve intersection problem")
+			Else
+				curvept(i,j) = temp_pt(0,1)
+				'Call rhino.addpoint(curvept(i,j))
+				'Call rhino.AddTextDot (i, curvept(i,j))
+			End If 
+		Next
+	Next
+	
+	'===========================================================
+	'check direction of U Curves by comparing start/end points
+	'===========================================================
+	
+	Dim arrEnd, arrStart, dblend, dblstart
+	
+	For i = 0 To Ubound(Ucurve)
+		arrEnd = rhino.CurveEndPoint (Ucurve(i))
+		dblEnd = rhino.Distance (arrEnd, curvept(i,0))
+		arrStart = rhino.CurveStartPoint (Ucurve(i))
+		dblStart = rhino.Distance (arrStart, curvept(i,0))
+		If dblEnd < dblStart Then
+			rhino.ReverseCurve Ucurve(i)
+		End If
+	Next
+	
+	'===========================================================
+	'Divide Ucurve at Intersections
+	'===========================================================
+	
+	Dim t0, t1	
+	ReDim splitUcurve (Ubound(Ucurve),Ubound(Vcurve)-1)
+	
+	For i = 0 To Ubound(Ucurve)
+		For j = 0 To Ubound(Vcurve)-1
+			t0 = Rhino.CurveClosestPoint(ucurve(i), curvept(i,j))
+			t1 = Rhino.CurveClosestPoint(ucurve(i), curvept(i,j+1))
+			splitUcurve(i,j) = Rhino.TrimCurve (ucurve(i), Array(t0, t1), vbFalse)
+		Next
+	Next
+
+	'===========================================================
+	'Divide Ucurve by points
+	'===========================================================
+	
+	Dim dblLength, dblnum, intnum, arrpts, tmparrpts, countj, ptcountj()
+	ReDim Uarrpts(Ubound (Ucurve))
+	ReDim Ptcount(Ubound (Ucurve))
+	Dim intdiv : intdiv = 2.0 ' assume 2.0m subdivision
+
+	For i = 0 To Ubound(Ucurve)
+		For j = 0 To Ubound(Vcurve)-1
+			dblLength = rhino.CurveLength (splitUcurve(i,j))
+			dblnum = dblLength / intdiv 
+			If dblnum <= intdiv Then
+				If dbllength <= intdiv Then
+					intnum = 1
+				Else
+					intnum = intdiv
+				End If
+			Else
+				intnum = Int (dblnum)
+			End If
+			' add counter for placing V curves
+			If j = 0 Then
+				countj = intnum 
+				ReDim Preserve ptcountj(j)
+				ptcountj(j) = 0
+				ReDim Preserve ptcountj(j+1)
+				ptcountj(j+1) = countj
+			Else
+				countj = countj + intnum
+				ReDim Preserve ptcountj(j+1)
+				ptcountj(j+1) = countj
+			End If
+			If intnum < 2 Then 
+				arrStart = rhino.CurveStartPoint (splitUcurve(i,j))
+				arrEnd = rhino.CurveEndPoint (splitUcurve(i,j))
+				arrpts = array(arrStart, arrEnd)
+			Else
+				arrpts = rhino.DivideCurve (splitUcurve(i,j),intnum)
+			End If
+			' add points to array
+			If Not j = Ubound(Vcurve)-1 Then
+				ReDim Preserve arrpts (Ubound(arrpts)-1)
+			End If
+				If j = 0 Then
+				tmparrpts = arrpts
+			Else
+				tmparrpts = rhino.JoinArrays (tmparrpts,arrpts)
+			End If
+			'rhino.DeleteObject splitUcurve(i,j)
+		Next
+		Ptcount(i) = ptcountj
+		Uarrpts(i) = tmparrpts
+	Next
+	
+	'===========================================================
+	' Offset points in plane of curve
+	'===========================================================
+	
+	Dim Uarrplane, VectorD, Utemparrpts1(), tempOffpt 
+	ReDim  Uarrpts1 (Ubound(Ucurve))
+	
+	For i = 0 To Ubound(Ucurve)
+		For j = 0 To Ubound (Uarrpts(i))
+			Uarrparameter = rhino.CurveClosestPoint(Ucurve(i), Uarrpts(i)(j))
+			
+			UarrPlane = Rhino.CurvePerpFrame(Ucurve(i), Uarrparameter)
+			VectorD = rhino.VectorScale(Uarrplane(2),RoofDepth)
+			VectorD = rhino.VectorReverse (VectorD)
+			
+			ReDim Preserve Utemparrpts1(j)
+			Utemparrpts1(j) = rhino.VectorAdd(Uarrpts(i)(j), VectorD)
+			rhino.addpoint Utemparrpts1(j)
+		Next
+		
+		Uarrpts1(i) = Utemparrpts1
+		Erase Utemparrpts1
+	Next
+
+	For i = 0 To Ubound(Ucurve)
+		rhino.HideObject Ucurve(i)
+	Next
+	
+	For i = 0 To Ubound(Vcurve)
+		rhino.HideObject Vcurve(i)
+	Next
+
+	'============================================================
+	' add straight line segemnts in u direction 
+	'============================================================
+	
+	For i = 0 To Ubound(Ucurve)
+		For j = 0 To Ubound (Uarrpts1(i))
+			If Not j = Ubound (uarrpts1(i)) Then
+				rhino.CurrentLayer "RS_uCurves"
+				Call rhino.AddLine (Uarrpts1(i)(j),Uarrpts1(i)(j+1))
+			End If
+		Next
+	Next
+	
+	'============================================================
+	' add straight line segemnts in v direction 
+	'============================================================
+	Dim k, k1
+	
+	For i = 0 To Ubound(Ucurve)-1
+		For j = 0 To Ubound (ptcount(i))
+			k = ptcount(i)(j)
+			k1 = ptcount(i + 1)(j)
+			rhino.CurrentLayer "RS_vCurves"
+			Call rhino.AddLine (Uarrpts1(i)(k),Uarrpts1(i+1)(k1))
+		Next
+	Next
+	
+	'============================================================
+	' Offset curved segments in U Direction for Bentley 
+	'============================================================
+	Dim curvePlaneN
+	
+	For i = 0 To Ubound(Ucurve)
+		'For j = 0 To Ubound (Vcurve)-1
+		arrStart = rhino.CurveStartPoint (Ucurve(i))
+		curvePlaneN = rhino.CurveNormal (Ucurve(i))
+		rhino.CurrentLayer "RS_UCurves_BSTR"
+		Call rhino.OffsetCurve (Ucurve(i),arrstart,roofDepth,curvePlaneN,2)
+		'rhino.DeleteObject splitUcurve(i,j)
+		'Next
+	Next
+
+	
+'	For i = 0 To Ubound(Ucurve)
+'		For j = 0 To Ubound (Vcurve)-1
+'			arrStart = rhino.CurveStartPoint (splitUcurve(i,j))
+'			curvePlaneN = rhino.CurveNormal (splitUcurve(i,j))
+'			rhino.CurrentLayer "RS_UCurves_BSTR"
+'			Call rhino.OffsetCurve (splitUcurve(i,j),arrstart,roofDepth,curvePlaneN,2)
+'			rhino.DeleteObject splitUcurve(i,j)
+'		Next
+'	Next
+	
+	
+	Rhino.EnableRedraw(True)
+
+	
+	Call Generate_GSA(uarrpts1, ptcount)
+
+	
+End Sub
+Sub Generate_GSA(ByVal knots, ByVal counter)
+
+	'Create GWA file
+	Dim strFileName, strFilter, objFSO, objStream
+	Dim Unode, UnodeCount0, UnodeCount1
+	Dim i, j
+
+	strFilter = "gwa File (*.gwa)|*.gwa|All Files (*.*)|*.*||"
+	strFileName = rhino.SaveFileName("Save GSA Input Data as", strFilter)
+
+	Set objFSO = CreateObject("Scripting.FileSystemObject")
+	On Error Resume Next
+
+	' Get a new text file
+	Set objStream = objFSO.CreateTextFile(strFileName, True)
+	If Err Then
+		MsgBox Err.Description
+		Exit Sub
+	End If
+
+	'general GSA
+
+	objStream.writeline ("TITLE" & vbTab & "Abu Dhabi Airport" & vbTab & "122222")
+	objStream.writeline ("SPEC" & vbTab & "SPACE" & vbTab & "0" & vbTab & "0" & vbTab & "0" & vbTab & "0" & vbTab & "0" & vbTab & "0")
+	objStream.writeline ("UNIT_DATA" & vbTab & "FORCE" & vbTab & "kN" & vbTab & "0.00100000")
+	objStream.writeline ("UNIT_DATA" & vbTab & "STRESS" & vbTab & "N/mm²" & vbTab & "0.00100000")
+	objStream.writeline ("UNIT_DATA" & vbTab & "LENGTH" & vbTab & "m" & vbTab & "0.001000")
+
+
+	'Generate GSA nodes
+
+	For j = 0 To n
+		For i = 1 To m
+			objStream.writeline ("NODE" & vbTab & m * j + i & vbTab & knots(j, i - 1)(0) & vbTab & knots(j, i - 1)(1) & vbTab & knots(j, i - 1)(2) & vbTab & "Global")
+		Next
+	Next
+
+	'Generate Orientation nodes
+
+
+	'Generate GSA Sections
+
+	objStream.writeline ("SEC_BEAM" & vbTab & 3 & vbTab & "UCURVE" & vbTab & "Steel" & vbTab & "CAT%HE%HE200.A" & vbTab & "NA" & vbTab & "0")
+	objStream.writeline ("SEC_BEAM" & vbTab & 4 & vbTab & "VCURVE" & vbTab & "Steel" & vbTab & "CAT%HE%HE200.A" & vbTab & "NA" & vbTab & "0")
+
+	'Generate GSA elements
+
+	'Ucurve
+	
+	For i = 0 To Ubound(knots)
+		For j = 0 To Ubound (knots(i))
+			Unode = knots(i)(j)
+			'orinode = GSA_orient_node(midnode, surf_object)
+			objStream.writeline ("NODE" & vbTab & (i + 1) * 100 + j & vbTab & Unode(0) & vbTab & Unode(1) & vbTab & Unode(2) & vbTab & "Global")
+			If Not j = Ubound (knots(i)) Then
+				objStream.writeline ("EL_BEAM" & vbTab & (i + 1) * 100 + j + 100 & vbTab & "4" & vbTab & "1" & vbTab & (i + 1) * 100 + j & vbTab & (i + 1) * 100 + j + 1)
+			End If
+		Next
+	Next
+
+	'Vcurve
+
+	
+	For i = 0 To Ubound(knots) - 1
+		For j = 0 To Ubound (counter(i)) 
+			'Unode = knots(i)(j)
+			UnodeCount0 = counter(i)(j)
+			UnodeCount1 = counter(i + 1)(j)
+			objStream.writeline ("EL_BEAM" & vbTab & (i + 1) * 100 + j + 5000 & vbTab & "4" & vbTab & "1" & vbTab & (i + 1) * 100 + UnodeCount0 & vbTab & (i + 1 + 1) * 100 + UnodeCount1)
+		Next
+	Next
+
+End Sub

@@ -1,0 +1,67 @@
+<Workspace Version="0.8.2.2371" X="-50.9635899729744" Y="231.442678331506" zoom="1.78359936238281" Name="Collect All View Crop Boxes in Document" Description="" ID="abd3a42b-eb56-4a9c-8e27-1f4a9fadbbd6" Category="Bakery.Views">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="c632051b-b8bd-4f63-ac20-e6cbdc3c793c" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="250" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" inputcount="0">
+      <Script>#LSJ
+
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+# Import DocumentManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+from Autodesk.Revit.DB import *
+clr.ImportExtensions(Revit.Elements)
+
+import System
+
+#The inputs to this node will be stored as a list in the IN variable.
+#doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+doc = DocumentManager.Instance.CurrentDBDocument
+
+elements = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Viewers)
+
+OUT = [z.ToDSType(True) for z in elements]</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Output guid="0b95fe1e-f4bf-4273-886c-a7f28a08d738" type="Dynamo.Nodes.Output" nickname="Output" x="560.978451033781" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="OST_Viewer elements" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="9b3a3a00-b850-493b-8fb3-0514cb5dbdd1" type="Dynamo.Nodes.Output" nickname="Output" x="606.122631304774" y="151.597131595893" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="names" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Function guid="36782731-c7f8-496a-8628-4a3fd7af0f96" type="Dynamo.Nodes.Function" nickname="Element.Name (Universal)" x="420.477606008479" y="127.022540177309" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="9266cc47-e982-46fc-9fd4-59bd7fb19a53" />
+      <Name value="Element.Name (Universal)" />
+      <Description value="Gets an element's name (Dynamo's built-in Name nodes don't work for all element types, e.g. worksets...)" />
+      <Inputs>
+        <Input value="element" />
+      </Inputs>
+      <Outputs>
+        <Output value="name" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="c632051b-b8bd-4f63-ac20-e6cbdc3c793c" start_index="0" end="0b95fe1e-f4bf-4273-886c-a7f28a08d738" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c632051b-b8bd-4f63-ac20-e6cbdc3c793c" start_index="0" end="36782731-c7f8-496a-8628-4a3fd7af0f96" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="36782731-c7f8-496a-8628-4a3fd7af0f96" start_index="0" end="9b3a3a00-b850-493b-8fb3-0514cb5dbdd1" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

@@ -1,0 +1,226 @@
+<Workspace Version="1.0.0.1180" X="-1588.77112642575" Y="-248.211055233072" zoom="0.633133715451124" Name="Transfer Filters and Overrides" Description="" ID="899b33ad-a48a-408f-9d78-6c5f0092132f" Category="Revit">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="c05875e2-7fbd-4c84-b01b-ee45102c2662" type="PythonNodeModels.PythonNode" nickname="View Templates" x="974.496122246144" y="721.462283385385" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <Script>import clr
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+from RevitServices.Persistence import DocumentManager
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+from Autodesk.Revit.DB import FilteredElementCollector, View
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+#collect all views in the model
+collector = FilteredElementCollector(doc)
+views = collector.OfClass(View).ToElements()
+
+vtNames = [v.Name for v in views if v.IsTemplate]
+vtIds = [v.Id for v in views if v.IsTemplate]
+
+OUT = [vtNames, vtIds]</Script>
+    </PythonNodeModels.PythonNode>
+    <PythonNodeModels.PythonNode guid="c0245c1a-86ea-4faa-89bc-9e6497f1b3b2" type="PythonNodeModels.PythonNode" nickname="Select View Template" x="1309.82496749942" y="767.29692203599" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="2">
+      <Script>import clr
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+from RevitServices.Persistence import DocumentManager
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+from Autodesk.Revit.DB import FilteredElementCollector, View, ElementId
+
+#doc = DocumentManager.Instance.CurrentDBDocument
+
+#eID = ElementId(IN[1])
+
+#OUT = None
+
+#for i in IN[0]:
+#	if i[0] == eID:
+#		OUT = eID
+#		break
+		
+OUT = IN[0][1][IN[1]]</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="c2a3933a-f546-455c-92ce-ddda94029ce0" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.FirstItem" x="1210.11146715909" y="646.643050464196" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.List.FirstItem@var[]..[]" />
+    <PythonNodeModels.PythonNode guid="6df0694f-f45c-4317-a11d-c0a566d13a36" type="PythonNodeModels.PythonNode" nickname="View Template Filters" x="1638.17919989417" y="709.173764083894" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <Script>import clr
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+from RevitServices.Persistence import DocumentManager
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+from Autodesk.Revit.DB import FilteredElementCollector, View, ElementId
+
+doc = DocumentManager.Instance.CurrentDBDocument
+
+ele = doc.GetElement(IN[0])
+
+fEle = [doc.GetElement(f) for f in ele.GetFilters()]
+
+fName = [f.Name for f in fEle]
+fId = [f.Id for f in fEle]
+
+OUT = [fName, fId]</Script>
+    </PythonNodeModels.PythonNode>
+    <PythonNodeModels.PythonNode guid="48bb88fd-1b54-4cb0-b563-ea7ae4300fd6" type="PythonNodeModels.PythonNode" nickname="Select Filter" x="2135.9836474035" y="816.507843715611" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="2">
+      <Script>import clr
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+from RevitServices.Persistence import DocumentManager
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+from Autodesk.Revit.DB import FilteredElementCollector, View, ElementId
+
+doc = DocumentManager.Instance.CurrentDBDocument
+
+#eID = ElementId(IN[1])
+
+#eID = [ElementId(i) for i in IN[1]]
+
+#OUT = [e for i in IN[0] for e in eID if i[0] == e]
+fIds = [IN[0][1][i] for i in IN[1]]
+
+fNames = [IN[0][0][i] for i in IN[1]]
+
+OUT = [fNames, fIds]
+
+#for i in IN[0]:
+#	if i[0] == eID:
+#		OUT = eID
+#		break</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="b62260e4-bf12-462a-a80f-6e64660cae03" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.FirstItem" x="1925.9312097527" y="682.299628255436" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.List.FirstItem@var[]..[]" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="f8036832-739e-4732-a948-dfdfe29fc083" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.FirstItem" x="2321.97293798588" y="902.666475482531" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.List.FirstItem@var[]..[]" />
+    <PythonNodeModels.PythonNode guid="590f28f7-36e1-41ef-b524-09bdbe9fd6d0" type="PythonNodeModels.PythonNode" nickname="View Template Overrides" x="2398.59510214417" y="726.73668218914" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="2">
+      <Script>import clr
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+from RevitServices.Persistence import DocumentManager
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+from Autodesk.Revit.DB import FilteredElementCollector, View, ElementId
+
+doc = DocumentManager.Instance.CurrentDBDocument
+
+# Get the view template
+vt = doc.GetElement(IN[0])
+
+# Get the filter if it is in the VT
+fo = [vt.GetFilterOverrides(f) for f in IN[1][1]]
+
+OUT = fo</Script>
+    </PythonNodeModels.PythonNode>
+    <PythonNodeModels.PythonNode guid="79c7b1ca-1628-4468-b1b1-47b65eeb2683" type="PythonNodeModels.PythonNode" nickname="Add Filter and Overrides" x="3285.48965483987" y="949.846685001623" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="4">
+      <Script>import clr
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+from Autodesk.Revit.DB import FilteredElementCollector, View, ElementId, ViewDetailLevel
+
+if IN[3]:
+	doc = DocumentManager.Instance.CurrentDBDocument
+	
+	# Set the view to add filter to
+	v = UnwrapElement(IN[0])
+	
+	# Get the view template
+	vt = doc.GetElement(v.ViewTemplateId)
+	
+	# Get the filter to add
+	fId = IN[1][1]
+	
+	# Get overrides to apply
+	ov = [UnwrapElement(o) for o in IN[2]]
+	
+	TransactionManager.Instance.EnsureInTransaction(doc)
+	
+	for f, o in zip(fId, ov):
+		# Add the filter and apply the overrides
+		vt.AddFilter(f)
+		
+		# Set the overrides
+		vt.SetFilterOverrides(f, o)
+
+	TransactionManager.Instance.TransactionTaskDone()</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="3a70f83f-414a-4621-870e-a287572945a0" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="View Template Index" x="550.484787526271" y="806.116662467544" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="View Template Index" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="3ea1ac27-1507-41de-bccc-aef55df56731" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Available View Templates" x="2828.72258267784" y="-46.1629215192311" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="Available View Templates" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="865224fc-07dc-4b01-813c-5912c1b16097" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Do Filter Transfer?" x="550.484787526271" y="1002.55264581583" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="Do Filter Transfer?" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="c2a50985-e424-49fa-96d1-5f0b87da1cf1" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Filter Indices" x="550.484787526271" y="904.334654141687" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="Filter Indices" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="15ea9804-60af-4e65-9077-a5105ce48e43" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.GetItemAtIndex" x="1533.08966299268" y="459.536852991969" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="5fea859d-c2c6-4efa-960f-d309dc85a563" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Selected View Template" x="2828.72258267784" y="39.2595328815679" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="Selected View Template" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="25dfe89f-6521-4619-876b-9b68e6750ae8" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Available Filters" x="2828.72258267784" y="124.681987282367" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="Available Filters" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="d32e1ff7-e945-49e4-beb7-ca3f7a3e4817" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Selected Filters" x="2828.72258267784" y="210.104441683166" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="Selected Filters" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="256b061e-72dd-453d-952a-398e9ecd10ab" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Document.Current" x="2836.78179365905" y="713.51612967318" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="RevitNodes.dll" function="Revit.Application.Document.Current" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="dbba18f3-e653-41c6-8624-33a6967b4ebd" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Document.ActiveView" x="2996.08410625694" y="730.645410597684" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="RevitNodes.dll" function="Revit.Application.Document.ActiveView" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="c05875e2-7fbd-4c84-b01b-ee45102c2662" start_index="0" end="c0245c1a-86ea-4faa-89bc-9e6497f1b3b2" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c05875e2-7fbd-4c84-b01b-ee45102c2662" start_index="0" end="c2a3933a-f546-455c-92ce-ddda94029ce0" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c0245c1a-86ea-4faa-89bc-9e6497f1b3b2" start_index="0" end="6df0694f-f45c-4317-a11d-c0a566d13a36" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c0245c1a-86ea-4faa-89bc-9e6497f1b3b2" start_index="0" end="590f28f7-36e1-41ef-b524-09bdbe9fd6d0" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c2a3933a-f546-455c-92ce-ddda94029ce0" start_index="0" end="3ea1ac27-1507-41de-bccc-aef55df56731" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c2a3933a-f546-455c-92ce-ddda94029ce0" start_index="0" end="15ea9804-60af-4e65-9077-a5105ce48e43" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="6df0694f-f45c-4317-a11d-c0a566d13a36" start_index="0" end="48bb88fd-1b54-4cb0-b563-ea7ae4300fd6" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="6df0694f-f45c-4317-a11d-c0a566d13a36" start_index="0" end="b62260e4-bf12-462a-a80f-6e64660cae03" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="48bb88fd-1b54-4cb0-b563-ea7ae4300fd6" start_index="0" end="590f28f7-36e1-41ef-b524-09bdbe9fd6d0" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="48bb88fd-1b54-4cb0-b563-ea7ae4300fd6" start_index="0" end="79c7b1ca-1628-4468-b1b1-47b65eeb2683" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="48bb88fd-1b54-4cb0-b563-ea7ae4300fd6" start_index="0" end="f8036832-739e-4732-a948-dfdfe29fc083" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="b62260e4-bf12-462a-a80f-6e64660cae03" start_index="0" end="25dfe89f-6521-4619-876b-9b68e6750ae8" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="f8036832-739e-4732-a948-dfdfe29fc083" start_index="0" end="d32e1ff7-e945-49e4-beb7-ca3f7a3e4817" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="590f28f7-36e1-41ef-b524-09bdbe9fd6d0" start_index="0" end="79c7b1ca-1628-4468-b1b1-47b65eeb2683" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="3a70f83f-414a-4621-870e-a287572945a0" start_index="0" end="c0245c1a-86ea-4faa-89bc-9e6497f1b3b2" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="3a70f83f-414a-4621-870e-a287572945a0" start_index="0" end="15ea9804-60af-4e65-9077-a5105ce48e43" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="865224fc-07dc-4b01-813c-5912c1b16097" start_index="0" end="79c7b1ca-1628-4468-b1b1-47b65eeb2683" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c2a50985-e424-49fa-96d1-5f0b87da1cf1" start_index="0" end="48bb88fd-1b54-4cb0-b563-ea7ae4300fd6" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="15ea9804-60af-4e65-9077-a5105ce48e43" start_index="0" end="5fea859d-c2c6-4efa-960f-d309dc85a563" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="256b061e-72dd-453d-952a-398e9ecd10ab" start_index="0" end="dbba18f3-e653-41c6-8624-33a6967b4ebd" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="dbba18f3-e653-41c6-8624-33a6967b4ebd" start_index="0" end="79c7b1ca-1628-4468-b1b1-47b65eeb2683" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="56109b17-65bc-4118-831d-21400ef080a7" annotationText="Outputs" left="2818.72258267784" top="-76.1629215192311" width="255" height="354.267363202397" fontSize="14" InitialTop="-46.1629215192311" InitialHeight="354.267363202397" TextblockHeight="20" backgrouund="#FFC1D676">
+      <Models ModelGuid="3ea1ac27-1507-41de-bccc-aef55df56731" />
+      <Models ModelGuid="5fea859d-c2c6-4efa-960f-d309dc85a563" />
+      <Models ModelGuid="25dfe89f-6521-4619-876b-9b68e6750ae8" />
+      <Models ModelGuid="d32e1ff7-e945-49e4-beb7-ca3f7a3e4817" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+  </Annotations>
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

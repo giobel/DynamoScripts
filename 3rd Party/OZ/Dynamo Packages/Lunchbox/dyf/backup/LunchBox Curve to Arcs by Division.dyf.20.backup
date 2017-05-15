@@ -1,0 +1,111 @@
+<Workspace Version="0.7.5.3566" X="205.689258443683" Y="98.2938166846652" zoom="1.545620359375" Description="Converts a curve to tangent arc segments" Category="LunchBox.Geometry.Rationalize" Name="LunchBox Curve to Arcs by Division" ID="2ce88d4a-1b14-4c5b-82fc-55537230ecbb">
+  <Elements>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="1d718127-db97-4476-8c94-d5b1ba1b111d" nickname="List.GetItemAtIndex" x="511.163607597078" y="280.60285099862" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="f55179f8-c8f8-4349-9b38-754c9bc3f1ac" nickname="Number" x="399.827637684722" y="322.240693404867" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Double value="2" />
+    </Dynamo.Nodes.DoubleInput>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="22143d2c-de22-46b6-a05f-085a35aaabf0" nickname="List.GetItemAtIndex" x="505.258660607276" y="148.447959883141" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="ee59bbb1-d27b-483a-9a57-9cee568a7371" nickname="Number" x="398.448543130381" y="181.034097418465" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Double value="1" />
+    </Dynamo.Nodes.DoubleInput>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="2083d4ed-e9d7-477f-8e9b-a814328dd0f9" nickname="Python Script" x="249.353010592844" y="114.708713027691" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="2">
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variable.
+curve = IN[0]
+division = IN[1]
+
+arcs = []
+centers = []
+radii = []
+
+for i in range(0, len(curve)):
+	a = []
+	c = []
+	r = []
+	
+	crv = curve[i]
+	div = division[i]
+	increment = 1.0 / div
+	tan = crv.TangentAtParameter(0)
+	for j in range(0, div):
+		incstart = increment * j
+		incend = increment * (j+1)
+		ptstart = crv.PointAtParameter(incstart)
+		ptend = crv.PointAtParameter(incend)
+		
+		#create arc
+		arc = Arc.ByStartPointEndPointStartTangent(ptstart,ptend,tan)
+		a.append(arc)
+		
+		#centers
+		c.append(arc.CenterPoint)
+		
+		#radii
+		r.append(arc.Radius)
+		
+		tan = arc.TangentAtParameter(1)
+		
+	arcs.append(a)
+	centers.append(c)
+	radii.append(r)
+
+output = []
+output.append(arcs)
+output.append(centers)
+output.append(radii)
+
+#Assign your output to the OUT variable
+OUT = output</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="1b6a4340-5406-4630-b91b-a7cd4c73e89c" nickname="List.GetItemAtIndex" x="511.120929949675" y="0" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="31b0b0f7-ecfb-489d-926e-310111045c0f" nickname="Number" x="410.647005882426" y="26.2499441256774" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Double value="0" />
+    </Dynamo.Nodes.DoubleInput>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="987a9153-bf5f-4a47-9278-ab0a11427d25" nickname="Input" x="-71.8158241942963" y="98.9893792948408" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Curve" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="3728abb3-5c60-4e2b-8e99-8933c3a78b0d" nickname="Input" x="-71.8158241942963" y="175.879576286233" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Divisions" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="c7f38c17-d980-4888-adb5-051e6c8af418" nickname="Output" x="721.163607597078" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Arcs" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="542f08ce-7edd-410e-a647-f48e20049605" nickname="Output" x="721.163607597078" y="150" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Centers" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="0f1ae278-ee52-462f-9721-84a59fcca425" nickname="Output" x="721.163607597078" y="300" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Radii" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="7e8bd0dd-49e2-4dfd-b1e6-5871c95a4e97" nickname="LunchBox List Matcher" x="60.0074300627883" y="118.492323336044" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="80d036ba-246a-40cc-b565-92ef2c41e425" />
+      <Name value="LunchBox List Matcher" />
+      <Description value="Compares a List A against a List B and matches length of List A.  If ListA &gt; ListB, ListB will be extended.  If ListA &lt; ListB, ListB will be truncated." />
+      <Inputs>
+        <Input value="ListA" />
+        <Input value="ListB" />
+      </Inputs>
+      <Outputs>
+        <Output value="ListA" />
+        <Output value="MatchListB" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="1d718127-db97-4476-8c94-d5b1ba1b111d" start_index="0" end="0f1ae278-ee52-462f-9721-84a59fcca425" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f55179f8-c8f8-4349-9b38-754c9bc3f1ac" start_index="0" end="1d718127-db97-4476-8c94-d5b1ba1b111d" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="22143d2c-de22-46b6-a05f-085a35aaabf0" start_index="0" end="542f08ce-7edd-410e-a647-f48e20049605" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ee59bbb1-d27b-483a-9a57-9cee568a7371" start_index="0" end="22143d2c-de22-46b6-a05f-085a35aaabf0" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="2083d4ed-e9d7-477f-8e9b-a814328dd0f9" start_index="0" end="1b6a4340-5406-4630-b91b-a7cd4c73e89c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="2083d4ed-e9d7-477f-8e9b-a814328dd0f9" start_index="0" end="22143d2c-de22-46b6-a05f-085a35aaabf0" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="2083d4ed-e9d7-477f-8e9b-a814328dd0f9" start_index="0" end="1d718127-db97-4476-8c94-d5b1ba1b111d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1b6a4340-5406-4630-b91b-a7cd4c73e89c" start_index="0" end="c7f38c17-d980-4888-adb5-051e6c8af418" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="31b0b0f7-ecfb-489d-926e-310111045c0f" start_index="0" end="1b6a4340-5406-4630-b91b-a7cd4c73e89c" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="987a9153-bf5f-4a47-9278-ab0a11427d25" start_index="0" end="7e8bd0dd-49e2-4dfd-b1e6-5871c95a4e97" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3728abb3-5c60-4e2b-8e99-8933c3a78b0d" start_index="0" end="7e8bd0dd-49e2-4dfd-b1e6-5871c95a4e97" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="7e8bd0dd-49e2-4dfd-b1e6-5871c95a4e97" start_index="0" end="2083d4ed-e9d7-477f-8e9b-a814328dd0f9" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="7e8bd0dd-49e2-4dfd-b1e6-5871c95a4e97" start_index="1" end="2083d4ed-e9d7-477f-8e9b-a814328dd0f9" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

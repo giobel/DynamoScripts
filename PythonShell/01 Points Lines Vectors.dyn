@@ -1,0 +1,141 @@
+<Workspace Version="1.2.0.2514" X="1572.35631467441" Y="-647.976408316058" zoom="1.07039320787473" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="Point" resolvedName="Autodesk.DesignScript.Geometry.Point" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Line" resolvedName="Autodesk.DesignScript.Geometry.Line" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="DSCore.Object.Identity" resolvedName="DSCore.Object" assemblyName="DSCoreNodes.dll" />
+    <ClassMap partialName="DSCore.Object" resolvedName="DSCore.Object" assemblyName="DSCoreNodes.dll" />
+    <ClassMap partialName="Vector" resolvedName="Autodesk.DesignScript.Geometry.Vector" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="CoordinateSystem" resolvedName="Autodesk.DesignScript.Geometry.CoordinateSystem" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="CoordinateSystem.Identity" resolvedName="Autodesk.DesignScript.Geometry.CoordinateSystem" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Vector.ZAxis" resolvedName="Autodesk.DesignScript.Geometry.Vector" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Vector.X" resolvedName="Autodesk.DesignScript.Geometry.Vector" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Line.PointAtParameter" resolvedName="Autodesk.DesignScript.Geometry.Line" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Geometry" resolvedName="Autodesk.DesignScript.Geometry.Geometry" assemblyName="ProtoGeometry.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <PythonNodeModels.PythonNode guid="52b286cf-326b-477e-9622-a587964fe82a" type="PythonNodeModels.PythonNode" nickname="Py-Translate" x="-1705.26010596931" y="874.825737086836" isVisible="false" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variables.
+PtA = Point.ByCoordinates(0,0,0)
+PtB = Point.ByCoordinates(5,5,0)
+
+LnAB = Line.ByStartPointEndPoint(PtA,PtB)
+
+old_cs = CoordinateSystem.Identity()
+
+Trans_cs = old_cs.Translate(Vector.XAxis(),5)
+
+TransLnAB = LnAB.Transform(old_cs,Trans_cs)
+
+#Assign your output to the OUT variable.
+OUT = old_cs,LnAB,Trans_cs,TransLnAB</Script>
+    </PythonNodeModels.PythonNode>
+    <PythonNodeModels.PythonNode guid="453045a6-ea25-43e4-94cf-79c4ef1603fb" type="PythonNodeModels.PythonNode" nickname="Py-Rotate" x="-1705.42814047913" y="1088.80110125151" isVisible="false" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variables.
+PtA = Point.ByCoordinates(0,0,0)
+PtB = Point.ByCoordinates(5,5,0)
+
+LnAB = Line.ByStartPointEndPoint(PtA,PtB)
+
+old_cs = CoordinateSystem.Identity()
+
+Rot_cs = old_cs.Rotate(PtA,Vector.ZAxis(),45)
+
+RotLnAB = LnAB.Transform(old_cs,Rot_cs)
+
+#Assign your output to the OUT variable.
+OUT = LnAB,Rot_cs,RotLnAB</Script>
+    </PythonNodeModels.PythonNode>
+    <PythonNodeModels.PythonNode guid="f20aa25c-2a00-4da3-9715-7c564250cd98" type="PythonNodeModels.PythonNode" nickname="Py-Translate" x="-1241.37376049881" y="839.811078879275" isVisible="false" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variables.
+PtA = Point.ByCoordinates(0,0,0)
+PtB = Point.ByCoordinates(5,5,0)
+
+LnAB = Line.ByStartPointEndPoint(PtA,PtB)
+
+Vct = Vector.XAxis()
+
+TransLn = Geometry.Translate(LnAB, Vct,5)
+
+#Assign your output to the OUT variable.
+OUT = LnAB,TransLn</Script>
+    </PythonNodeModels.PythonNode>
+    <PythonNodeModels.PythonNode guid="f699b3f8-198f-471b-96b4-028a550c77aa" type="PythonNodeModels.PythonNode" nickname="Py-Rotate" x="-1229.40842713823" y="1054.27023775585" isVisible="false" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variables.
+PtA = Point.ByCoordinates(0,0,0)
+PtB = Point.ByCoordinates(5,5,0)
+
+LnAB = Line.ByStartPointEndPoint(PtA,PtB)
+
+Vct = Vector.ZAxis()
+
+RotLn = Geometry.Rotate(LnAB, PtA, Vct, 45)
+
+#Assign your output to the OUT variable.
+OUT = LnAB,RotLn</Script>
+    </PythonNodeModels.PythonNode>
+    <PythonNodeModels.PythonNode guid="118fe73a-7e17-4e50-94d8-30ee4ec5090e" type="PythonNodeModels.PythonNode" nickname="Py-Translate" x="-942.422091930617" y="840.192120308251" isVisible="false" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variables.
+PtA = Point.ByCoordinates(0,0,0)
+PtB = Point.ByCoordinates(5,5,0)
+
+LnAB = Line.ByStartPointEndPoint(PtA,PtB)
+
+Vct = Vector.XAxis()
+
+TransLn = LnAB.Translate(Vct,5)
+
+#Assign your output to the OUT variable.
+OUT = LnAB,TransLn</Script>
+    </PythonNodeModels.PythonNode>
+    <PythonNodeModels.PythonNode guid="158f2b68-159c-4761-80b2-dfc88cd529df" type="PythonNodeModels.PythonNode" nickname="Py-Rotate" x="-941.94418938592" y="1048.76926510352" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variables.
+PtA = Point.ByCoordinates(0,0,0)
+PtB = Point.ByCoordinates(5,5,0)
+
+LnAB = Line.ByStartPointEndPoint(PtA,PtB)
+
+Vct = Vector.ZAxis()
+
+RotLn = LnAB.Rotate(PtA, Vct, 45)
+
+#Assign your output to the OUT variable.
+OUT = LnAB,RotLn</Script>
+    </PythonNodeModels.PythonNode>
+  </Elements>
+  <Connectors />
+  <Notes />
+  <Annotations>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="7907f1e8-6b8c-4efc-9295-709c00bd72d7" annotationText="Coordinate System" left="-1715.42814047913" top="844.825737086836" width="142.16803450982" height="336.975364164674" fontSize="14" InitialTop="874.825737086836" InitialHeight="336.97536416467" TextblockHeight="20" backgrouund="#FFC1D676">
+      <Models ModelGuid="52b286cf-326b-477e-9622-a587964fe82a" />
+      <Models ModelGuid="453045a6-ea25-43e4-94cf-79c4ef1603fb" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+  </Annotations>
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="2.29720687866211" eyeY="8.48567771911621" eyeZ="9.70982074737549" lookX="-2.29720687866211" lookY="-8.48567771911621" lookZ="-9.70982074737549" upX="-0.108086571097374" upY="0.882947623729706" upZ="-0.456859767436981" />
+  </Cameras>
+</Workspace>

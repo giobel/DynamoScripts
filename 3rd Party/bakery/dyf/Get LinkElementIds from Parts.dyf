@@ -1,0 +1,99 @@
+<Workspace Version="0.8.2.2371" X="359" Y="265" zoom="1" Name="Get LinkElementIds from Parts" Description="" ID="b1c9ff8c-d3d5-4caa-ab88-900b9a02b1ed" Category="Bakery.Parts">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Watch guid="719e5f81-92da-44de-8647-235130a8e845" type="Dynamo.Nodes.Watch" nickname="Watch" x="250" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+    <DSIronPythonNode.PythonNode guid="be702371-d9df-475f-9ecc-55667ca5bcb2" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="451.880102191438" y="92.8946537646467" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>#python nodes in dynamo 0.7
+#proposed by Julien Benoit @jbenoit44 
+#http://aecuandme.wordpress.com/
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+from System.Collections.Generic import *
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+
+#doc = IN[1]
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+#unwrap all elements to use with API
+elements = []
+for i in IN[0]:
+	elements.append(UnwrapElement(i))
+	
+# "Start" the transaction
+#TransactionManager.Instance.EnsureInTransaction(doc)
+
+hostIdlist = list()
+for item in elements:
+    try:
+    	hostIdlist.append(item.GetSourceElementIds())
+    except:
+    	hostIdlist.append(item)
+#    for source in item:#    .GetSourceElementIds():
+#        sourcelist.append(source)
+        
+#    if len(sourcelist) &lt; 2:
+#       elementlist.append(sourcelist[0])
+#   else:
+#        elementlist.append(sourcelist)
+
+
+
+# "End" the transaction
+#TransactionManager.Instance.TransactionTaskDone()
+
+
+#Assign your output to the OUT variable
+OUT = elements, hostIdlist# (elementlist)</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="3364b2c1-0852-4023-a16a-5bd089d251a5" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="499.925456259025" y="491.956625409751" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="1;" ShouldFocus="false" />
+    <Dynamo.Nodes.DSFunction guid="0cbc3537-e849-4cd1-8ee8-7cc2dd0cba49" type="Dynamo.Nodes.DSFunction" nickname="List.FirstItem" x="642.855757940603" y="456.327467386306" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.FirstItem@var[]..[]" />
+    <Dynamo.Nodes.DSFunction guid="62a98b8a-0008-49a2-b3af-82c27d274892" type="Dynamo.Nodes.DSFunction" nickname="List.GetItemAtIndex" x="666.1445999408" y="215.767242628538" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <DSCore.Map guid="088fa211-40f0-41df-810b-4ca96f9dcf0b" type="DSCore.Map" nickname="List.Map" x="790.142163701909" y="362.658207302483" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+    <Dynamo.Nodes.Symbol guid="6d736a76-55f1-4f5e-90d0-1104c81e8471" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="partList" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="8c57f6dd-b129-4b3d-8702-22ce3aee6a73" type="Dynamo.Nodes.Output" nickname="Output" x="999.142163701909" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="allParents" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="42ab4ce4-d229-4a51-9ef7-2a3824371eb7" type="Dynamo.Nodes.Output" nickname="Output" x="1123.14216370191" y="359" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="firstParentLinkElementId" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="719e5f81-92da-44de-8647-235130a8e845" start_index="0" end="be702371-d9df-475f-9ecc-55667ca5bcb2" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="be702371-d9df-475f-9ecc-55667ca5bcb2" start_index="0" end="62a98b8a-0008-49a2-b3af-82c27d274892" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3364b2c1-0852-4023-a16a-5bd089d251a5" start_index="0" end="62a98b8a-0008-49a2-b3af-82c27d274892" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0cbc3537-e849-4cd1-8ee8-7cc2dd0cba49" start_index="0" end="088fa211-40f0-41df-810b-4ca96f9dcf0b" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="62a98b8a-0008-49a2-b3af-82c27d274892" start_index="0" end="088fa211-40f0-41df-810b-4ca96f9dcf0b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="62a98b8a-0008-49a2-b3af-82c27d274892" start_index="0" end="8c57f6dd-b129-4b3d-8702-22ce3aee6a73" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="088fa211-40f0-41df-810b-4ca96f9dcf0b" start_index="0" end="42ab4ce4-d229-4a51-9ef7-2a3824371eb7" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6d736a76-55f1-4f5e-90d0-1104c81e8471" start_index="0" end="719e5f81-92da-44de-8647-235130a8e845" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

@@ -1,0 +1,189 @@
+<Workspace Version="0.9.1.4062" X="-196.353037668745" Y="-379.403705375482" zoom="0.819262660472705" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="False">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="0b0f210f-6139-4088-bfb3-095e9a6eccdc" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Color.ByARGB" x="1441.11243118864" y="1039.35307964642" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" assembly="DSCoreNodes.dll" function="DSCore.Color.ByARGB@int,int,int,int">
+      <PortInfo index="0" default="True" />
+      <PortInfo index="1" default="True" />
+      <PortInfo index="2" default="True" />
+      <PortInfo index="3" default="True" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="5fc9fdcf-953e-42e6-a5f3-6a7ae8fb2a61" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="850.027722305636" y="981.119630420645" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" CodeText="100;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="276f79b9-3b6e-483e-b804-783fb188ce54" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="851.434482216888" y="1090.88111893502" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" CodeText="0;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="b3dae8e7-b851-4540-88d5-fb4a995a1cf2" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1310.39897853265" y="490.504580342244" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" CodeText="Flatten({item});" ShouldFocus="false" />
+    <PythonNodeModels.PythonNode guid="b81cb85d-b03e-48ad-a656-327880363eb4" type="PythonNodeModels.PythonNode" nickname="Python Script" x="1932.59603027353" y="509.093072905012" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" inputcount="2">
+      <Script># Created by DPSDesign, dpsdesign.org
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+from System.Collections.Generic import *
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+#unwrap all elements to use with API
+elements = []
+for i in IN[0]:
+	elements.append(UnwrapElement(i))
+
+
+patts = UnwrapElement(IN[1])
+#for patt in IN[1]:
+#	patts.append(UnwrapElement(patt))
+
+#create graphic overrides properties
+gSettings = Autodesk.Revit.DB.OverrideGraphicSettings()
+#deconstruct DS Color Object and convert to RevitAPI color
+
+gSettings.SetProjectionFillPatternId(patts.Id)
+
+# "Start" the transaction
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+#apply color override to elements in an input list
+for i in elements:
+	id = i.Id
+	doc.ActiveView.SetElementOverrides(id, gSettings)
+
+# "End" the transaction
+TransactionManager.Instance.TransactionTaskDone()
+
+#Assign your output to the OUT variable
+OUT = IN[0]</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="26561ac8-5865-498b-b8c7-755c038e34b2" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Override Fill Pattern in View" x="1756.26129950127" y="997.165570627689" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false">
+      <ID value="53c86607-aff8-4fbb-8d37-1e824fff6168" />
+      <Name value="Override Fill Pattern in View" />
+      <Description value="Overrides fill pattern of any element in an active view to specified fill pattern and color" />
+      <Inputs>
+        <Input value="Element" />
+        <Input value="Color" />
+        <Input value="fillPattern" />
+      </Inputs>
+      <Outputs>
+        <Output value="Element" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <CoreNodeModels.Input.StringInput guid="ffc46140-f664-4aeb-97de-23ebc10b6a9c" type="CoreNodeModels.Input.StringInput" nickname="String" x="1194.99310024431" y="854.5340996945" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false">
+      <System.String>Solid fill</System.String>
+      <System.String value="Solid fill" />
+    </CoreNodeModels.Input.StringInput>
+    <CoreNodeModels.Watch guid="20b528a2-2090-4e3a-8be4-558cf55b0c34" type="CoreNodeModels.Watch" nickname="Watch" x="1290.987069541" y="1276.28280315683" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="6205d9bb-c64c-46fe-a3af-fd36e6e3ef28" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1272.72015055236" y="726.591519024866" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" CodeText="true;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="1be71bbc-604b-44cc-a3c9-f68ce1b317b5" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Fill Pattern" x="1398.87181024672" y="838.278222897387" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false">
+      <ID value="2cbe2067-61b2-4bba-8763-615b0e25464c" />
+      <Name value="Fill Pattern" />
+      <Description value="Get Fill Pattern by Name" />
+      <Inputs>
+        <Input value="Name" />
+        <Input value="Drafting/Modeling?" />
+      </Inputs>
+      <Outputs>
+        <Output value="Fill Pattern" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <DSRevitNodesUI.ElementsOfCategory guid="f7b81ec5-cafc-4d39-9d60-e84cfd332dfc" type="DSRevitNodesUI.ElementsOfCategory" nickname="All Elements of Category" x="835.079104538246" y="605.584282792556" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" />
+    <DSRevitNodesUI.Categories guid="47a5e608-a8b7-430e-ba4e-d31dd753c550" type="DSRevitNodesUI.Categories" nickname="Categories" x="479.630901020187" y="611.31679119165" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" index="835:StructuralFraming" />
+    <DSRevitNodesUI.FamilyTypes guid="b8c8a2a0-1a2a-4d4f-a3ee-d9e07a160d12" type="DSRevitNodesUI.FamilyTypes" nickname="Family Types" x="318.230576838547" y="738.060754419006" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" index="0:00:00" />
+    <PythonNodeModels.PythonNode guid="1efef021-7cfc-4aaf-92b8-fadacc6e7caf" type="PythonNodeModels.PythonNode" nickname="Python Script" x="1940.81360857043" y="780.825941221775" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" inputcount="2">
+      <Script># Created by DPSDesign, dpsdesign.org
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+from System.Collections.Generic import *
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+#unwrap all elements to use with API
+elements = []
+for i in IN[0]:
+	elements.append(UnwrapElement(i))
+
+#create graphic overrides properties
+gSettings = Autodesk.Revit.DB.OverrideGraphicSettings()
+#deconstruct DS Color Object and convert to RevitAPI color
+dsColor = IN[1]
+colRed = dsColor.Red
+colGreen = dsColor.Green
+colBlue = dsColor.Blue
+color = Autodesk.Revit.DB.Color(colRed, colGreen, colBlue)
+#set Projection Line color
+gSettings.SetProjectionFillColor(color)
+
+# "Start" the transaction
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+#apply color override to elements in an input list
+for i in elements:
+	id = i.Id
+	doc.ActiveView.SetElementOverrides(id, gSettings)
+
+# "End" the transaction
+TransactionManager.Instance.TransactionTaskDone()
+
+#Assign your output to the OUT variable
+OUT = IN[0]</Script>
+    </PythonNodeModels.PythonNode>
+    <DSRevitNodesUI.ElementsOfFamilyType guid="54c7b1b2-e9bc-47ec-89eb-e68efd9efeb2" type="DSRevitNodesUI.ElementsOfFamilyType" nickname="All Elements of Family Type" x="1016.08417961673" y="917.075151792009" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="0b0f210f-6139-4088-bfb3-095e9a6eccdc" start_index="0" end="26561ac8-5865-498b-b8c7-755c038e34b2" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="5fc9fdcf-953e-42e6-a5f3-6a7ae8fb2a61" start_index="0" end="0b0f210f-6139-4088-bfb3-095e9a6eccdc" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="5fc9fdcf-953e-42e6-a5f3-6a7ae8fb2a61" start_index="0" end="0b0f210f-6139-4088-bfb3-095e9a6eccdc" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="276f79b9-3b6e-483e-b804-783fb188ce54" start_index="0" end="0b0f210f-6139-4088-bfb3-095e9a6eccdc" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="b3dae8e7-b851-4540-88d5-fb4a995a1cf2" start_index="0" end="b81cb85d-b03e-48ad-a656-327880363eb4" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="ffc46140-f664-4aeb-97de-23ebc10b6a9c" start_index="0" end="1be71bbc-604b-44cc-a3c9-f68ce1b317b5" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="6205d9bb-c64c-46fe-a3af-fd36e6e3ef28" start_index="0" end="1be71bbc-604b-44cc-a3c9-f68ce1b317b5" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="1be71bbc-604b-44cc-a3c9-f68ce1b317b5" start_index="0" end="26561ac8-5865-498b-b8c7-755c038e34b2" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="1be71bbc-604b-44cc-a3c9-f68ce1b317b5" start_index="0" end="b81cb85d-b03e-48ad-a656-327880363eb4" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="47a5e608-a8b7-430e-ba4e-d31dd753c550" start_index="0" end="f7b81ec5-cafc-4d39-9d60-e84cfd332dfc" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="b8c8a2a0-1a2a-4d4f-a3ee-d9e07a160d12" start_index="0" end="54c7b1b2-e9bc-47ec-89eb-e68efd9efeb2" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="54c7b1b2-e9bc-47ec-89eb-e68efd9efeb2" start_index="0" end="26561ac8-5865-498b-b8c7-755c038e34b2" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

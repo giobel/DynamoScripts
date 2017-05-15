@@ -1,0 +1,53 @@
+<Workspace Version="0.8.1.1942" X="50.4093730484483" Y="240.883200187616" zoom="0.822695359375" Name="String Replace using RegEx" ID="2224fcdb-4c1e-4a0f-8dac-c2f9a5dab985" Description="for lists" Category="Bakery.Strings">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Symbol guid="92638a9d-9cbb-485d-92a9-10a8fb16535f" type="Dynamo.Nodes.Symbol" nickname="Input" x="10" y="10" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="string(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="cf713dff-33da-4717-aed3-e46f539c4fad" type="Dynamo.Nodes.Symbol" nickname="Input" x="231.073516207328" y="71.5972703095261" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="regex" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Function guid="47da4e9d-8a43-43a7-aa66-84bc21cc1457" type="Dynamo.Nodes.Function" nickname="Turn Into List" x="199.187240603128" y="147.059890120703" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="var[]" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSIronPythonNode.PythonNode guid="828f02d9-c697-4621-b6fb-a3dd9b5e1eab" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="373.573509497605" y="120.768465618989" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="3">
+      <Script>import clr
+import re
+
+regexstring = IN[0]
+regexlist = IN[1]
+replacement = IN[2]
+elementlist = list()
+thisexp = re.compile(regexstring)
+for item in regexlist:
+	try:
+		elementlist.append(thisexp.sub(replacement,item))
+	except:
+		elementlist.append(list())
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol guid="48134f70-1927-4a02-804b-edf0def91bb3" type="Dynamo.Nodes.Symbol" nickname="Input" x="191.712958797611" y="227.081344457215" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="replacement" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="bdfded3c-b6ed-4b5b-b8a9-8ca8a7f25749" type="Dynamo.Nodes.Output" nickname="Output" x="897.774157303371" y="12.9685393258426" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="replaced" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="92638a9d-9cbb-485d-92a9-10a8fb16535f" start_index="0" end="47da4e9d-8a43-43a7-aa66-84bc21cc1457" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="cf713dff-33da-4717-aed3-e46f539c4fad" start_index="0" end="828f02d9-c697-4621-b6fb-a3dd9b5e1eab" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="47da4e9d-8a43-43a7-aa66-84bc21cc1457" start_index="0" end="828f02d9-c697-4621-b6fb-a3dd9b5e1eab" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="828f02d9-c697-4621-b6fb-a3dd9b5e1eab" start_index="0" end="bdfded3c-b6ed-4b5b-b8a9-8ca8a7f25749" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="48134f70-1927-4a02-804b-edf0def91bb3" start_index="0" end="828f02d9-c697-4621-b6fb-a3dd9b5e1eab" end_index="2" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+</Workspace>

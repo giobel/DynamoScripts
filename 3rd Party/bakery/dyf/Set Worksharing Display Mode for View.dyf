@@ -1,0 +1,73 @@
+<Workspace Version="0.8.2.2371" X="146.8175" Y="140.385" zoom="1.1575" Name="Set Worksharing Display Mode for View" Description="" ID="16113707-a440-40c3-a0dc-30112d1e243c" Category="Bakery.Views">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Symbol guid="4337222c-29cc-4701-a8d3-fbe31dd84a8b" type="Dynamo.Nodes.Symbol" nickname="Input" x="10" y="21.3651864801865" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="View" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Function guid="4619cdae-e156-4d8c-bcfe-74769ffccac0" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="172.074592074592" y="20.5866317016317" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSIronPythonNode.PythonNode guid="fc734336-2948-4f0e-b4a4-c041dd2e0bd2" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="369.8016387545" y="37.6024293961278" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+viewinsts = UnwrapElement(IN[0])
+wsmode = IN[1]
+successlist = list()
+
+booleans = list()
+TransactionManager.Instance.EnsureInTransaction(doc)
+for item in viewinsts:
+	try:
+#		p = item.get_Parameter(BuiltInParameter.VIEWER_OPTION_VISIBILITY)
+#		p.Set(options[counter].Id)
+		item.SetWorksharingDisplayMode(wsmode)
+		booleans.append(True)
+	except:
+		booleans.append(False)
+TransactionManager.Instance.TransactionTaskDone()
+
+#for item in viewinsts:
+#	try:
+#		item.SetWorkSharingDisplayMode(wsmode)
+#		successlist.append("Success")
+#	except:
+#		successlist.append("Failed")
+
+OUT = booleans</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Output guid="fcbce1b2-0b55-4b70-aa86-665cde101113" type="Dynamo.Nodes.Output" nickname="Output" x="815.972027972028" y="10" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="out" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Symbol guid="31a628d6-6499-4a8f-bc93-14af772e7456" type="Dynamo.Nodes.Symbol" nickname="Input" x="10.6544276457883" y="124.203023758099" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="WorksharingDisplayMode" />
+    </Dynamo.Nodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="4337222c-29cc-4701-a8d3-fbe31dd84a8b" start_index="0" end="4619cdae-e156-4d8c-bcfe-74769ffccac0" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4619cdae-e156-4d8c-bcfe-74769ffccac0" start_index="0" end="fc734336-2948-4f0e-b4a4-c041dd2e0bd2" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="fc734336-2948-4f0e-b4a4-c041dd2e0bd2" start_index="0" end="fcbce1b2-0b55-4b70-aa86-665cde101113" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="31a628d6-6499-4a8f-bc93-14af772e7456" start_index="0" end="fc734336-2948-4f0e-b4a4-c041dd2e0bd2" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

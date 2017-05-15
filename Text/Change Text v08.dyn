@@ -1,0 +1,86 @@
+<Workspace Version="0.8.2.2392" X="-458.576903828302" Y="258.930678844481" zoom="0.752633033731266" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="False">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.DSModelElementsSelection guid="92b7e8ce-d22a-4ff9-a478-e62775b76118" type="Dynamo.Nodes.DSModelElementsSelection" nickname="Select Model Elements" x="993.714747935229" y="-171.160171150544" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <instance id="f4ac64a2-7162-456c-af22-2bc7bc93f7c9-003c0500" />
+      <instance id="f4ac64a2-7162-456c-af22-2bc7bc93f7c9-003c051e" />
+      <instance id="f4ac64a2-7162-456c-af22-2bc7bc93f7c9-003c0529" />
+      <instance id="f4ac64a2-7162-456c-af22-2bc7bc93f7c9-003c0530" />
+      <instance id="f4ac64a2-7162-456c-af22-2bc7bc93f7c9-003c0537" />
+      <instance id="f4ac64a2-7162-456c-af22-2bc7bc93f7c9-003c053e" />
+    </Dynamo.Nodes.DSModelElementsSelection>
+    <Dynamo.Nodes.DSFunction guid="9f548828-1b15-4776-b1c0-b22d92c20da8" type="Dynamo.Nodes.DSFunction" nickname="Excel.ReadFromFile" x="1206.79703720938" y="377.575996039296" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSOffice.dll" function="DSOffice.Excel.ReadFromFile@var,string,bool">
+      <PortInfo index="2" default="True" />
+    </Dynamo.Nodes.DSFunction>
+    <DSCore.File.Directory guid="c692eb93-4bdd-479e-be61-ab3a7c06c69f" type="DSCore.File.Directory" nickname="Directory Path" x="696.374593265924" y="281.463942866819" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <System.String>No file selected.</System.String>
+    </DSCore.File.Directory>
+    <DSCore.File.Filename guid="f0d4efa7-9cd4-4dab-a25f-30e4328e6f13" type="DSCore.File.Filename" nickname="File Path" x="863.374593265924" y="279.463942866819" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <System.String>C:\Users\giovanni.brogioli\Documents\Dynamo\Scripts\Text\Text.xlsx</System.String>
+    </DSCore.File.Filename>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="206623a2-ed8d-4cdb-bb9e-15177b0de925" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1037" y="394" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="&quot;Sheet1&quot;;" ShouldFocus="false" />
+    <DSCoreNodesUI.BoolSelector guid="babe5b8d-80f5-4205-a8a4-8c828a4ab721" type="DSCoreNodesUI.BoolSelector" nickname="Boolean" x="1025.37459326592" y="487.463942866819" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <System.Boolean>False</System.Boolean>
+    </DSCoreNodesUI.BoolSelector>
+    <DSCore.File.FileObject guid="66e1c416-679d-40e0-bfe8-093f65c77998" type="DSCore.File.FileObject" nickname="File.FromPath" x="1100.37459326592" y="164.463942866819" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+    <Dynamo.Nodes.DSFunction guid="baa58b57-7c15-469b-9adc-ec22c5a57402" type="Dynamo.Nodes.DSFunction" nickname="Flatten" x="1439.37459326592" y="245.463942866819" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="BuiltIn" function="Flatten@var[]..[]" />
+    <DSIronPythonNode.PythonNode guid="0fd0b8fd-a2f4-4b2e-8042-d8decf35656a" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="1980.95949015676" y="21.8720618758089" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+items = UnwrapElement(IN[0])
+texts = IN[1]
+goodlist = list()
+badlist = list()
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+for i in range(0,len(items)):
+	try:
+		items[i].Text = texts[i]
+		goodlist.append(items[i])
+	except:
+		badlist.append(items[i])
+	
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = (goodlist,badlist)</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSFunction guid="498fe4c8-19d3-41f9-a99b-8aa348754c9c" type="Dynamo.Nodes.DSFunction" nickname="Element.Parameters" x="2345.90482964049" y="348.46046512577" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="RevitNodes.dll" function="Revit.Elements.Element.Parameters" />
+    <DSRevitNodesUI.ElementTypes guid="fb9ac3e6-6b94-4fdc-898a-0d3ba7fd2ead" type="DSRevitNodesUI.ElementTypes" nickname="Element Types" x="1689.61931511562" y="470.85755623989" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" index="270:TextNoteType" />
+    <DSRevitNodesUI.ElementsOfType guid="44a5959d-b127-4eb6-bbe3-f1bf9a6c013b" type="DSRevitNodesUI.ElementsOfType" nickname="All Elements of Type" x="1977.32365405966" y="494.045667139857" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+    <Dynamo.Nodes.DSFunction guid="48059622-7156-4006-8110-fb6658c40c76" type="Dynamo.Nodes.DSFunction" nickname="Element.Name" x="2326.1290502919" y="515.218102092777" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="RevitNodes.dll" function="Revit.Elements.Element.Name" />
+    <Dynamo.Nodes.DSFunction guid="7a517a28-b39a-48cf-84af-fc1f35889c9e" type="Dynamo.Nodes.DSFunction" nickname="Element.SetParameterByName" x="1456.26484994047" y="-249.60861913956" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="RevitNodes.dll" function="Revit.Elements.Element.SetParameterByName@string,var" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="fa26e7e2-cec3-4d01-a8c2-1d3458180efb" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1240.81912947266" y="-115.282098983701" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="&quot;Text&quot;;" ShouldFocus="false" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="92b7e8ce-d22a-4ff9-a478-e62775b76118" start_index="0" end="7a517a28-b39a-48cf-84af-fc1f35889c9e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9f548828-1b15-4776-b1c0-b22d92c20da8" start_index="0" end="baa58b57-7c15-469b-9adc-ec22c5a57402" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f0d4efa7-9cd4-4dab-a25f-30e4328e6f13" start_index="0" end="66e1c416-679d-40e0-bfe8-093f65c77998" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="206623a2-ed8d-4cdb-bb9e-15177b0de925" start_index="0" end="9f548828-1b15-4776-b1c0-b22d92c20da8" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="babe5b8d-80f5-4205-a8a4-8c828a4ab721" start_index="0" end="9f548828-1b15-4776-b1c0-b22d92c20da8" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="66e1c416-679d-40e0-bfe8-093f65c77998" start_index="0" end="9f548828-1b15-4776-b1c0-b22d92c20da8" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="baa58b57-7c15-469b-9adc-ec22c5a57402" start_index="0" end="0fd0b8fd-a2f4-4b2e-8042-d8decf35656a" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="baa58b57-7c15-469b-9adc-ec22c5a57402" start_index="0" end="7a517a28-b39a-48cf-84af-fc1f35889c9e" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="fb9ac3e6-6b94-4fdc-898a-0d3ba7fd2ead" start_index="0" end="44a5959d-b127-4eb6-bbe3-f1bf9a6c013b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="44a5959d-b127-4eb6-bbe3-f1bf9a6c013b" start_index="0" end="498fe4c8-19d3-41f9-a99b-8aa348754c9c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="44a5959d-b127-4eb6-bbe3-f1bf9a6c013b" start_index="0" end="48059622-7156-4006-8110-fb6658c40c76" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="fa26e7e2-cec3-4d01-a8c2-1d3458180efb" start_index="0" end="7a517a28-b39a-48cf-84af-fc1f35889c9e" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>
