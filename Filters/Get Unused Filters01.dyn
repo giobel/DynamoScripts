@@ -1,0 +1,429 @@
+<Workspace Version="0.8.2.2392" X="136.816607369338" Y="882.154566017998" zoom="0.289870236236188" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Function guid="b25f982a-a0f9-4262-bf5d-57ccd0dea966" type="Dynamo.Nodes.Function" nickname="Filter.GetUnusedv8" x="1505.10175980557" y="-391.543752759807" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="c59627cd-e090-4297-a956-88430d59bfa0" />
+      <Name value="Filter.GetUnusedv8" />
+      <Description value="Returns all unused filters in the project so that they can be used. Use in conjunction with 'Tool.Eraser' from the SteamNodes package or 'Delete.Elements' from Grimshaw package." />
+      <Inputs>
+        <Input value="Toggle" />
+      </Inputs>
+      <Outputs>
+        <Output value="element" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSCoreNodesUI.BoolSelector guid="b5edf5eb-1f15-464e-82a6-78a23254d250" type="DSCoreNodesUI.BoolSelector" nickname="Boolean" x="1293.47463184343" y="-369.79769515735" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <System.Boolean>True</System.Boolean>
+    </DSCoreNodesUI.BoolSelector>
+    <Dynamo.Nodes.DSFunction guid="93f3e77f-a7a4-4c01-b1bc-eb1f17063d29" type="Dynamo.Nodes.DSFunction" nickname="Element.Name" x="1763.33268285306" y="-393.062568004102" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="RevitNodes.dll" function="Revit.Elements.Element.Name" />
+    <Dynamo.Nodes.Watch guid="6d07d71b-62b1-4d6e-9327-3e6ecb253db9" type="Dynamo.Nodes.Watch" nickname="Watch" x="2046.14767875388" y="-509.643576885059" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+    <Dynamo.Nodes.DSFunction guid="02e1fd47-ce2b-4f58-8691-49727581ee0c" type="Dynamo.Nodes.DSFunction" nickname="Excel.WriteToFile" x="3105.22372572639" y="-488.99916722361" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSOffice.dll" function="DSOffice.Excel.WriteToFile@string,string,int,int,var[][],bool">
+      <PortInfo index="5" default="True" />
+    </Dynamo.Nodes.DSFunction>
+    <DSCore.File.Filename guid="7483910e-7806-4883-b030-a7a57e3310aa" type="DSCore.File.Filename" nickname="File Path" x="2655.41938196995" y="-659.295645400073" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <System.String>\\global.arup.com\london\ILG\JOBS\239000\239762-00 RMP\4 Internal Data\05 1F4\08 BIM\02 Structural\Links\10 Excel\01_Substructure\UnusedFilters</System.String>
+    </DSCore.File.Filename>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="3d2b1cd9-6a7c-445c-8821-5dbcb9739f31" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="2789.71729872964" y="-542.223181083517" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="{&quot;Unused Filters&quot;};" ShouldFocus="false" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="9ec1bc2c-a517-414e-add9-78e55d1acc44" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="2849.13401694957" y="-418.712433404293" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="0;" ShouldFocus="false" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="0dc41862-ffba-43bd-b970-c8cda6ff7b99" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="2841.10854960719" y="-277.298840102184" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="0;" ShouldFocus="false" />
+    <Dynamo.Nodes.Function guid="0d22a7d1-a7ec-4063-b961-bd473d0e253a" type="Dynamo.Nodes.Function" nickname="List.CountOccurences" x="1037.33202246978" y="-1193.44110685226" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="8c837cab-46ce-4976-8ae0-2e6158103945" />
+      <Name value="List.CountOccurences" />
+      <Description value="Counts the number of occurences of each unique element in a given list" />
+      <Inputs>
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="uniqueElements" />
+        <Output value="count" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSIronPythonNode.PythonNode guid="7ce77827-b7ac-4f70-80f6-7e86ed9c07f0" type="DSIronPythonNode.PythonNode" nickname="usedFilterIds" x="822.198001863879" y="-1232.0760931403" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+clr.AddReference("System.Core")
+import System.Linq
+clr.ImportExtensions(System.Linq)
+
+clr.AddReference("RevitAPI")
+import Autodesk.Revit
+from Autodesk.Revit.Exceptions import InvalidOperationException
+from Autodesk.Revit.DB import *
+
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+# Import DocumentManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+
+#views = FilteredElementCollector(doc).OfClass(View).ToElements()
+
+views = UnwrapElement(IN[0])
+
+usedFilterIds = []
+
+for view in views:
+	viewFilterIds = []
+	try:
+		viewFilterIds = view.GetFilters()
+	except InvalidOperationException, e:
+		pass # this exception happens when a view doesn't support filters
+	usedFilterIds.append(viewFilterIds)
+
+#The inputs to this node will be stored as a list in the IN variables.
+
+
+
+#Assign your output to the OUT variable.
+OUT = usedFilterIds</Script>
+    </DSIronPythonNode.PythonNode>
+    <DSIronPythonNode.PythonNode guid="9bd90874-82f7-48c3-8456-99752c5697d6" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="273.787039917718" y="-1221.08279573667" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" inputcount="0">
+      <Script>#Copyright(c) 2015, Konrad Sobon
+# @arch_laboratory, http://archi-lab.net
+
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+from System.Collections.Generic import *
+
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+#collect all views in the model
+collector = FilteredElementCollector(doc)
+views = collector.OfClass(View).ToElements()
+
+#sort views into separate lists based on view type
+areaPlans, ceilingPlans, columnSchedules = [], [], []
+costReport, details, draftingViews = [], [], []
+drawingSheets, elevations, engineetingPlans = [], [], []
+floorPlans, internal, legends, loadReports = [], [], [], []
+panelSchedules, pressureLossReports, renderings = [], [], []
+reports, schedules, sections, threeD = [], [], [], []
+undefined, walkthrough = [], []
+for i in views:
+	if not i.IsTemplate:
+		if i.ViewType == ViewType.AreaPlan:
+			areaPlans.append(i.ToDSType(True))
+		elif i.ViewType == ViewType.CeilingPlan:
+			ceilingPlans.append(i.ToDSType(True))
+		elif i.ViewType == ViewType.ColumnSchedule:
+			columnSchedules.append(i.ToDSType(True))
+		elif i.ViewType == ViewType.CostReport:
+			costReport.append(i.ToDSType(True))
+		elif i.ViewType == ViewType.Detail:
+			details.append(i.ToDSType(True))
+		elif i.ViewType == ViewType.DraftingView:
+			draftingViews.append(i.ToDSType(True))
+		elif i.ViewType == ViewType.DrawingSheet:
+			drawingSheets.append(i.ToDSType(True))
+		elif i.ViewType == ViewType.Elevation:
+			elevations.append(i.ToDSType(True))
+		elif i.ViewType == ViewType.EngineeringPlan:
+			engineetingPlans.append(i.ToDSType(True))
+		elif i.ViewType == ViewType.FloorPlan:
+			floorPlans.append(i.ToDSType(True))
+		elif i.ViewType == ViewType.Internal:
+			internal.append(i.ToDSType(True))
+		elif i.ViewType == ViewType.Legend:
+			legends.append(i.ToDSType(True))
+		elif i.ViewType == ViewType.LoadsReport:
+			loadReports.append(i.ToDSType(True))
+		elif i.ViewType == ViewType.PanelSchedule:
+			panelSchedules.append(i.ToDSType(True))
+		elif i.ViewType == ViewType.PresureLossReport:
+			pressureLossReports.append(i.ToDSType(True))
+		elif i.ViewType == ViewType.Rendering:
+			renderings.append(i.ToDSType(True))
+		elif i.ViewType == ViewType.Report:
+			reports.append(i.ToDSType(True))
+		elif i.ViewType == ViewType.Schedule:
+			schedules.append(i.ToDSType(True))
+		elif i.ViewType == ViewType.Section:
+			sections.append(i.ToDSType(True))
+		elif i.ViewType == ViewType.ThreeD:
+			threeD.append(i.ToDSType(True))
+		elif i.ViewType == ViewType.Undefined:
+			undefined.append(i.ToDSType(True))
+		elif i.ViewType == ViewType.Walkthrough:
+			walkthrough.append(i.ToDSType(True))
+		else:
+			continue
+
+#Assign your output to the OUT variable
+OUT = areaPlans, ceilingPlans, columnSchedules, costReport, \
+	details, draftingViews, drawingSheets, elevations, \
+	engineetingPlans, floorPlans, internal, legends, \
+	loadReports, panelSchedules, pressureLossReports, \
+	renderings, reports, schedules, sections, threeD, \
+	undefined, walkthrough</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSFunction guid="a28484d5-5240-49c5-ba76-5eba1458475d" type="Dynamo.Nodes.DSFunction" nickname="Flatten" x="489.173343877095" y="-1233.61444160466" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="BuiltIn" function="Flatten@var[]..[]" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="9c0297da-4488-476b-8d85-ddcd601e5310" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1872.85294645295" y="-1188.84784029709" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="{c,d};" ShouldFocus="false" />
+    <Dynamo.Nodes.DSFunction guid="842abecd-fd5d-466e-9086-9cecbf55eb78" type="Dynamo.Nodes.DSFunction" nickname="Element.Name" x="801.049395148135" y="-1672.15785090189" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="RevitNodes.dll" function="Revit.Elements.Element.Name" />
+    <Dynamo.Nodes.DSFunction guid="51149642-317a-4d56-80bf-19bb91848c63" type="Dynamo.Nodes.DSFunction" nickname="Element.Name" x="1333.97798659848" y="-1613.56201424182" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="RevitNodes.dll" function="Revit.Elements.Element.Name" />
+    <DSIronPythonNode.PythonNode guid="613ea1b6-ebda-4df2-bfea-f3726327048c" type="DSIronPythonNode.PythonNode" nickname="Id to Element" x="1134.97279446312" y="-1668.98301739705" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script># Copyright(c) 2016, Konrad Sobon
+# @arch_laboratory, http://archi-lab.net
+
+# Import ToDSType(bool) extension method
+import clr
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+doc = DocumentManager.Instance.CurrentDBDocument
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+import sys
+pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
+sys.path.append(pyt_path)
+
+from System.Collections.Generic import *
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+def ProcessList(_func, _list):
+    return map( lambda x: ProcessList(_func, x) if type(x)==list else _func(x), _list )
+
+def Unwrap(item):
+	return UnwrapElement(item)
+
+def ToRevitId(_id):
+	if isinstance(_id, int):
+		id = ElementId(int(_id))
+		return ("ElementId", id)
+	elif isinstance(_id, basestring) and len(_id) &gt; 8:
+		return ("GUID", _id)
+	elif isinstance(_id, basestring) and len(_id) &lt; 8:
+		id = ElementId(int(_id))
+		return ("ElementId", id)
+	elif isinstance(_id, Autodesk.Revit.DB.ElementId):
+		return ("ElementId", _id)
+	else:
+		return None
+
+def ProcessIds(_id):
+	id = ToRevitId(_id)
+	if id == None:
+		return None
+	elif id[0] == "ElementId":
+		return doc.GetElement.Overloads[Autodesk.Revit.DB.ElementId](id[1]).ToDSType(True)
+	else:
+		return doc.GetElement.Overloads[str](id[1]).ToDSType(True)
+
+#unwrap incoming information for use with API
+if isinstance(IN[0], list):
+	ids = ProcessList(Unwrap, IN[0])
+else:
+	ids = [Unwrap(IN[0])]
+    
+try:
+	errorReport = None
+	elements = []
+	output = ProcessList(ProcessIds, ids)
+except:
+	# if error accurs anywhere in the process catch it
+	import traceback
+	errorReport = traceback.format_exc()
+
+#Assign your output to the OUT variable
+if errorReport == None:
+	OUT = output
+else:
+	OUT = errorReport</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSFunction guid="45a85829-0813-4e2a-96e7-f5a5d7fe2443" type="Dynamo.Nodes.DSFunction" nickname="List.AddItemToFront" x="1770.37686014994" y="-1827.03054097291" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.AddItemToFront@var[]..[],var[]..[]" />
+    <DSCore.LaceShortest guid="9566c7fc-5a91-4925-84c8-fb1f6dd4e528" type="DSCore.LaceShortest" nickname="List.LaceShortest" x="2137.04965824783" y="-1716.15661254596" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="3" />
+    <Dynamo.Nodes.DSFunction guid="c78861e3-bb88-4629-a309-8667faab52c3" type="Dynamo.Nodes.DSFunction" nickname="Element.Name" x="1569.64504372639" y="-1077.42855981009" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="RevitNodes.dll" function="Revit.Elements.Element.Name" />
+    <DSIronPythonNode.PythonNode guid="ecaac0b0-e0d5-4d1c-9ac6-fbba85fb8ed2" type="DSIronPythonNode.PythonNode" nickname="Id to Element" x="1303.26735469999" y="-1061.11402039887" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script># Copyright(c) 2016, Konrad Sobon
+# @arch_laboratory, http://archi-lab.net
+
+# Import ToDSType(bool) extension method
+import clr
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+doc = DocumentManager.Instance.CurrentDBDocument
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+import sys
+pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
+sys.path.append(pyt_path)
+
+from System.Collections.Generic import *
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+def ProcessList(_func, _list):
+    return map( lambda x: ProcessList(_func, x) if type(x)==list else _func(x), _list )
+
+def Unwrap(item):
+	return UnwrapElement(item)
+
+def ToRevitId(_id):
+	if isinstance(_id, int):
+		id = ElementId(int(_id))
+		return ("ElementId", id)
+	elif isinstance(_id, basestring) and len(_id) &gt; 8:
+		return ("GUID", _id)
+	elif isinstance(_id, basestring) and len(_id) &lt; 8:
+		id = ElementId(int(_id))
+		return ("ElementId", id)
+	elif isinstance(_id, Autodesk.Revit.DB.ElementId):
+		return ("ElementId", _id)
+	else:
+		return None
+
+def ProcessIds(_id):
+	id = ToRevitId(_id)
+	if id == None:
+		return None
+	elif id[0] == "ElementId":
+		return doc.GetElement.Overloads[Autodesk.Revit.DB.ElementId](id[1]).ToDSType(True)
+	else:
+		return doc.GetElement.Overloads[str](id[1]).ToDSType(True)
+
+#unwrap incoming information for use with API
+if isinstance(IN[0], list):
+	ids = ProcessList(Unwrap, IN[0])
+else:
+	ids = [Unwrap(IN[0])]
+    
+try:
+	errorReport = None
+	elements = []
+	output = ProcessList(ProcessIds, ids)
+except:
+	# if error accurs anywhere in the process catch it
+	import traceback
+	errorReport = traceback.format_exc()
+
+#Assign your output to the OUT variable
+if errorReport == None:
+	OUT = output
+else:
+	OUT = errorReport</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSFunction guid="b8072271-695a-43cc-ac7f-134ddbdcad70" type="Dynamo.Nodes.DSFunction" nickname="Excel.WriteToFile" x="3115.74621630662" y="-1783.27938494387" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSOffice.dll" function="DSOffice.Excel.WriteToFile@string,string,int,int,var[][],bool">
+      <PortInfo index="5" default="True" />
+    </Dynamo.Nodes.DSFunction>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="72134219-dfd1-4111-81fc-e03224d07339" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="2720.5813504429" y="-1755.62748032739" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="{&quot;Views Filters&quot;};" ShouldFocus="false" />
+    <Dynamo.Nodes.DSFunction guid="dd35c545-d93a-4b77-904f-b265eb3380f5" type="Dynamo.Nodes.DSFunction" nickname="List.Transpose" x="2491.52003693248" y="-1703.5909133859" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.Transpose@var[]..[]" />
+    <Dynamo.Nodes.DSFunction guid="c6a94ab0-ee78-4965-ab69-56694414baaa" type="Dynamo.Nodes.DSFunction" nickname="Excel.WriteToFile" x="3143.56286972283" y="-1190.03092002856" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSOffice.dll" function="DSOffice.Excel.WriteToFile@string,string,int,int,var[][],bool">
+      <PortInfo index="5" default="True" />
+    </Dynamo.Nodes.DSFunction>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="a5717795-71d2-4aa4-a033-6be229047e1e" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="2772.02405972002" y="-1144.81298202815" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="{&quot;Filters Utilisation&quot;};" ShouldFocus="false" />
+    <Dynamo.Nodes.DSFunction guid="b98bbd7c-c3f4-4316-9af4-6d58b0c86fcb" type="Dynamo.Nodes.DSFunction" nickname="List.Transpose" x="2664.91279199645" y="-992.31808643723" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.Transpose@var[]..[]" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="3277fbc4-ff1e-4442-beca-606be016ba11" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="2920.51750191734" y="-1668.27110610231" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="0;" ShouldFocus="false" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="1c77b40a-4f39-4a4e-bc8d-1d82a5170c13" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="2836.83142424128" y="-1054.16312783319" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="0;" ShouldFocus="false" />
+    <DSCore.File.Filename guid="3da73f2e-9fe7-4872-ba4f-7cb422f0cbb2" type="DSCore.File.Filename" nickname="File Path" x="2666.2682056666" y="-1894.66236087832" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <System.String>\\global.arup.com\london\ILG\JOBS\239000\239762-00 RMP\4 Internal Data\05 1F4\08 BIM\02 Structural\Links\10 Excel\01_Substructure\UnusedFilters</System.String>
+    </DSCore.File.Filename>
+    <DSCore.File.Filename guid="b80aac8d-2f5a-4a2b-9e4f-80772cc5f88f" type="DSCore.File.Filename" nickname="File Path" x="2685.61259357907" y="-1264.12210702209" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <System.String>\\global.arup.com\london\ILG\JOBS\239000\239762-00 RMP\4 Internal Data\05 1F4\08 BIM\02 Structural\Links\10 Excel\01_Substructure\UnusedFilters</System.String>
+    </DSCore.File.Filename>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="b25f982a-a0f9-4262-bf5d-57ccd0dea966" start_index="0" end="93f3e77f-a7a4-4c01-b1bc-eb1f17063d29" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="b5edf5eb-1f15-464e-82a6-78a23254d250" start_index="0" end="b25f982a-a0f9-4262-bf5d-57ccd0dea966" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="93f3e77f-a7a4-4c01-b1bc-eb1f17063d29" start_index="0" end="6d07d71b-62b1-4d6e-9327-3e6ecb253db9" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6d07d71b-62b1-4d6e-9327-3e6ecb253db9" start_index="0" end="02e1fd47-ce2b-4f58-8691-49727581ee0c" end_index="4" portType="0" />
+    <Dynamo.Models.ConnectorModel start="7483910e-7806-4883-b030-a7a57e3310aa" start_index="0" end="02e1fd47-ce2b-4f58-8691-49727581ee0c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3d2b1cd9-6a7c-445c-8821-5dbcb9739f31" start_index="0" end="02e1fd47-ce2b-4f58-8691-49727581ee0c" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9ec1bc2c-a517-414e-add9-78e55d1acc44" start_index="0" end="02e1fd47-ce2b-4f58-8691-49727581ee0c" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9ec1bc2c-a517-414e-add9-78e55d1acc44" start_index="0" end="02e1fd47-ce2b-4f58-8691-49727581ee0c" end_index="3" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0dc41862-ffba-43bd-b970-c8cda6ff7b99" start_index="0" end="02e1fd47-ce2b-4f58-8691-49727581ee0c" end_index="5" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0d22a7d1-a7ec-4063-b961-bd473d0e253a" start_index="0" end="ecaac0b0-e0d5-4d1c-9ac6-fbba85fb8ed2" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0d22a7d1-a7ec-4063-b961-bd473d0e253a" start_index="1" end="9c0297da-4488-476b-8d85-ddcd601e5310" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="7ce77827-b7ac-4f70-80f6-7e86ed9c07f0" start_index="0" end="0d22a7d1-a7ec-4063-b961-bd473d0e253a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="7ce77827-b7ac-4f70-80f6-7e86ed9c07f0" start_index="0" end="613ea1b6-ebda-4df2-bfea-f3726327048c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9bd90874-82f7-48c3-8456-99752c5697d6" start_index="0" end="a28484d5-5240-49c5-ba76-5eba1458475d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a28484d5-5240-49c5-ba76-5eba1458475d" start_index="0" end="7ce77827-b7ac-4f70-80f6-7e86ed9c07f0" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a28484d5-5240-49c5-ba76-5eba1458475d" start_index="0" end="842abecd-fd5d-466e-9086-9cecbf55eb78" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9c0297da-4488-476b-8d85-ddcd601e5310" start_index="0" end="b98bbd7c-c3f4-4316-9af4-6d58b0c86fcb" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="842abecd-fd5d-466e-9086-9cecbf55eb78" start_index="0" end="9566c7fc-5a91-4925-84c8-fb1f6dd4e528" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="51149642-317a-4d56-80bf-19bb91848c63" start_index="0" end="9566c7fc-5a91-4925-84c8-fb1f6dd4e528" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="613ea1b6-ebda-4df2-bfea-f3726327048c" start_index="0" end="51149642-317a-4d56-80bf-19bb91848c63" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="45a85829-0813-4e2a-96e7-f5a5d7fe2443" start_index="0" end="9566c7fc-5a91-4925-84c8-fb1f6dd4e528" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9566c7fc-5a91-4925-84c8-fb1f6dd4e528" start_index="0" end="dd35c545-d93a-4b77-904f-b265eb3380f5" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c78861e3-bb88-4629-a309-8667faab52c3" start_index="0" end="9c0297da-4488-476b-8d85-ddcd601e5310" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ecaac0b0-e0d5-4d1c-9ac6-fbba85fb8ed2" start_index="0" end="c78861e3-bb88-4629-a309-8667faab52c3" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="72134219-dfd1-4111-81fc-e03224d07339" start_index="0" end="b8072271-695a-43cc-ac7f-134ddbdcad70" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="dd35c545-d93a-4b77-904f-b265eb3380f5" start_index="0" end="b8072271-695a-43cc-ac7f-134ddbdcad70" end_index="4" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a5717795-71d2-4aa4-a033-6be229047e1e" start_index="0" end="c6a94ab0-ee78-4965-ab69-56694414baaa" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="b98bbd7c-c3f4-4316-9af4-6d58b0c86fcb" start_index="0" end="c6a94ab0-ee78-4965-ab69-56694414baaa" end_index="4" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3277fbc4-ff1e-4442-beca-606be016ba11" start_index="0" end="b8072271-695a-43cc-ac7f-134ddbdcad70" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3277fbc4-ff1e-4442-beca-606be016ba11" start_index="0" end="b8072271-695a-43cc-ac7f-134ddbdcad70" end_index="3" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3277fbc4-ff1e-4442-beca-606be016ba11" start_index="0" end="b8072271-695a-43cc-ac7f-134ddbdcad70" end_index="5" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1c77b40a-4f39-4a4e-bc8d-1d82a5170c13" start_index="0" end="c6a94ab0-ee78-4965-ab69-56694414baaa" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1c77b40a-4f39-4a4e-bc8d-1d82a5170c13" start_index="0" end="c6a94ab0-ee78-4965-ab69-56694414baaa" end_index="3" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1c77b40a-4f39-4a4e-bc8d-1d82a5170c13" start_index="0" end="c6a94ab0-ee78-4965-ab69-56694414baaa" end_index="5" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3da73f2e-9fe7-4872-ba4f-7cb422f0cbb2" start_index="0" end="b8072271-695a-43cc-ac7f-134ddbdcad70" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations>
+    <Dynamo.Models.AnnotationModel guid="792bb96d-fcf0-4733-b240-c398623b1f88" annotationText="SELECT EXCEL FILE" left="2656.2682056666" top="-1962.66236087832" width="432" height="164" fontSize="48" InitialTop="-1894.66236087832" InitialHeight="126" TextblockHeight="58" backgrouund="#FFFFB8D8">
+      <Models ModelGuid="3da73f2e-9fe7-4872-ba4f-7cb422f0cbb2" />
+    </Dynamo.Models.AnnotationModel>
+    <Dynamo.Models.AnnotationModel guid="7fa11df3-5f7d-436b-a93e-872229a9f30d" annotationText="SELECT EXCEL FILE" left="2675.61259357907" top="-1332.12210702209" width="432" height="164" fontSize="48" InitialTop="-1264.12210702209" InitialHeight="126" TextblockHeight="58" backgrouund="#FFFFB8D8">
+      <Models ModelGuid="b80aac8d-2f5a-4a2b-9e4f-80772cc5f88f" />
+    </Dynamo.Models.AnnotationModel>
+    <Dynamo.Models.AnnotationModel guid="7084133a-8e2d-4864-ac89-47d36670161f" annotationText="SELECT EXCEL FILE" left="2645.41938196995" top="-727.295645400073" width="432" height="164" fontSize="48" InitialTop="-659.295645400073" InitialHeight="126" TextblockHeight="58" backgrouund="#FFFFB8D8">
+      <Models ModelGuid="7483910e-7806-4883-b030-a7a57e3310aa" />
+    </Dynamo.Models.AnnotationModel>
+  </Annotations>
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

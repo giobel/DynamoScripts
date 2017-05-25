@@ -1,0 +1,116 @@
+<Workspace Version="1.2.0.2514" X="-388.685795152225" Y="-521.889621586026" zoom="0.875276436862203" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSRevitNodesUI.WallTypes guid="afe748be-183e-4f23-9a42-205dbd949478" type="DSRevitNodesUI.WallTypes" nickname="Wall Types" x="1757.86458784227" y="538.266152158715" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false" index="2:Wall 1" />
+    <Dynamo.Nodes.DSModelElementSelection guid="f3bd81cd-266a-4615-a447-28a40261e75a" type="Dynamo.Nodes.DSModelElementSelection" nickname="Select Model Element" x="494.792438722011" y="711.61912694648" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <instance id="e5529ffb-c699-49cf-af37-374e11c1cb14-00000bd0" />
+    </Dynamo.Nodes.DSModelElementSelection>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="5ea49fa4-5a23-4ab6-aab1-8878ded9b118" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.Faces" x="717.091360748008" y="702.563548011787" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="RevitNodes.dll" function="Revit.Elements.Element.Faces">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="5366f78c-909a-45a6-a82e-0ca85f81a87e" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Surface.FilterByOrientation" x="1078.47117053748" y="920.60930552889" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true">
+      <PortInfo index="0" default="False" />
+      <ID value="3325a597-4c74-4292-9152-66b7177b27f1" />
+      <Name value="Surface.FilterByOrientation" />
+      <Description value="Sorts surfaces in three lists based on their orientation (vertical, horizontal up &amp; horizontal down) and also returns three corresponding lists of booleans." />
+      <Inputs>
+        <Input value="surfaces" />
+      </Inputs>
+      <Outputs>
+        <Output value="vertical" />
+        <Output value="isVertical" />
+        <Output value="horizontalUp" />
+        <Output value="isHorizontalUp" />
+        <Output value="horizontalDown" />
+        <Output value="isHorizontalDown" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <CoreNodeModels.Watch guid="352c61f6-ca5b-4d19-aa9a-fc05ca559c35" type="CoreNodeModels.Watch" nickname="Watch" x="1436.01321247652" y="805.962693348183" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.Watch>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="7d7a64f5-12a5-4dbb-b29e-e0ea1906eb36" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="WallLocationLine.FinishFaceExterior" x="1688.71038592276" y="678.774598340722" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <ID value="28126966-67ff-4b1f-ae5c-47993debcca6" />
+      <Name value="WallLocationLine.FinishFaceExterior" />
+      <Description value="Returns the WallLocationLine option for FinishFaceExterior" />
+      <Inputs />
+      <Outputs>
+        <Output value="FinishFaceExterior" />
+        <Output value="int" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <PythonNodeModels.PythonNode guid="49507b52-810f-4171-b71e-1e0a7327f42b" type="PythonNodeModels.PythonNode" nickname="Python Script" x="2153.0604103452" y="649.198301186623" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="3">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+walltype = UnwrapElement(IN[0])
+locline = IN[1]
+facerefs = IN[2]
+elementlist = list()
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+for ref in facerefs:
+	try:
+		newwall = FaceWall.Create(doc,walltype.Id,locline,ref)
+		elementlist.append(newwall)
+	except:
+		elementlist.append(list())
+TransactionManager.Instance.TransactionTaskDone()
+OUT = elementlist</Script>
+    </PythonNodeModels.PythonNode>
+    <PythonNodeModels.PythonNode guid="d392f371-4370-4004-a320-ccd7a20f8a98" type="PythonNodeModels.PythonNode" nickname="Python Script" x="1806.75711708308" y="917.885103278226" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+faces = UnwrapElement(IN[0])
+elementlist = list()
+for face in faces:
+	try:
+		ref = face.Tags.LookupTag("RevitFaceReference")
+		elementlist.append(ref)
+	except:
+		elementlist.append(list())
+OUT = elementlist</Script>
+    </PythonNodeModels.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="afe748be-183e-4f23-9a42-205dbd949478" start_index="0" end="49507b52-810f-4171-b71e-1e0a7327f42b" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="f3bd81cd-266a-4615-a447-28a40261e75a" start_index="0" end="5ea49fa4-5a23-4ab6-aab1-8878ded9b118" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="5ea49fa4-5a23-4ab6-aab1-8878ded9b118" start_index="0" end="5366f78c-909a-45a6-a82e-0ca85f81a87e" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="5ea49fa4-5a23-4ab6-aab1-8878ded9b118" start_index="0" end="352c61f6-ca5b-4d19-aa9a-fc05ca559c35" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="352c61f6-ca5b-4d19-aa9a-fc05ca559c35" start_index="0" end="d392f371-4370-4004-a320-ccd7a20f8a98" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="7d7a64f5-12a5-4dbb-b29e-e0ea1906eb36" start_index="0" end="49507b52-810f-4171-b71e-1e0a7327f42b" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="d392f371-4370-4004-a320-ccd7a20f8a98" start_index="0" end="49507b52-810f-4171-b71e-1e0a7327f42b" end_index="2" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="61bf5137-a398-4d2a-b80e-ada5fb0a7671" annotationText="Wall by Face - Clockwork" left="2143.0604103452" top="605.198301186623" width="142" height="189" fontSize="14" InitialTop="649.198301186623" InitialHeight="175" TextblockHeight="34" backgrouund="#FFC1D676">
+      <Models ModelGuid="49507b52-810f-4171-b71e-1e0a7327f42b" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="8a0f2151-106a-4d36-adc5-423508c1325c" annotationText="Revit Reference-Clockwork" left="1796.75711708308" top="873.885103278226" width="142" height="137" fontSize="14" InitialTop="917.885103278226" InitialHeight="123" TextblockHeight="34" backgrouund="#FFC1D676">
+      <Models ModelGuid="d392f371-4370-4004-a320-ccd7a20f8a98" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="cfbe4f10-d0ba-4f41-b92f-e369941317dc" annotationText="INPUT: IN PLACE MASS" left="484.792438722011" top="681.61912694648" width="166" height="122" fontSize="14" InitialTop="711.61912694648" InitialHeight="122" TextblockHeight="20" backgrouund="#FFFFAA45">
+      <Models ModelGuid="f3bd81cd-266a-4615-a447-28a40261e75a" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+  </Annotations>
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-12853.408203125" eyeY="8539.4775390625" eyeZ="16940.265625" lookX="12853.408203125" lookY="-8539.4775390625" lookZ="-16940.265625" upX="0.0997632443904877" upY="0.986285626888275" upZ="-0.131483867764473" />
+  </Cameras>
+</Workspace>
