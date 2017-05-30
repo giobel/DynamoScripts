@@ -1,0 +1,418 @@
+<Workspace Version="1.2.0.2514" X="-491.35481601161" Y="-910.484875460798" zoom="0.890477252800745" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="Point" resolvedName="Autodesk.DesignScript.Geometry.Point" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Line" resolvedName="Autodesk.DesignScript.Geometry.Line" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="DSCore.Object.Identity" resolvedName="DSCore.Object" assemblyName="DSCoreNodes.dll" />
+    <ClassMap partialName="DSCore.Object" resolvedName="DSCore.Object" assemblyName="DSCoreNodes.dll" />
+    <ClassMap partialName="Vector" resolvedName="Autodesk.DesignScript.Geometry.Vector" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="CoordinateSystem" resolvedName="Autodesk.DesignScript.Geometry.CoordinateSystem" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="CoordinateSystem.Identity" resolvedName="Autodesk.DesignScript.Geometry.CoordinateSystem" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Vector.ZAxis" resolvedName="Autodesk.DesignScript.Geometry.Vector" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Geometry" resolvedName="Autodesk.DesignScript.Geometry.Geometry" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Geometry.Transform" resolvedName="Autodesk.DesignScript.Geometry.Geometry" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Rectangle" resolvedName="Autodesk.DesignScript.Geometry.Rectangle" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Geometry.cop" resolvedName="Autodesk.DesignScript.Geometry.Geometry" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Geometry.base" resolvedName="Autodesk.DesignScript.Geometry.Geometry" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Vector.ByTwoPoints" resolvedName="Autodesk.DesignScript.Geometry.Vector" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Rectangle.Center" resolvedName="Autodesk.DesignScript.Geometry.Rectangle" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Plane" resolvedName="Autodesk.DesignScript.Geometry.Plane" assemblyName="ProtoGeometry.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="32a124e4-5154-46d8-a3e9-c08d4ed490e5" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-526.242272830694" y="1012.1734926323" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" CodeText="0..10;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="ce759249-118e-453d-966a-d82577098535" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-769.578035369917" y="1410.96976446725" isVisible="false" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" CodeText="x=0..10;&#xA;y= 0..10;&#xA;p = Point.ByCoordinates(x&lt;1&gt;,y&lt;2&gt;,0);" ShouldFocus="false" />
+    <PythonNodeModels.PythonNode guid="96aca312-c43b-4d75-835f-bb79eb993148" type="PythonNodeModels.PythonNode" nickname="Python Script" x="-250.050774293198" y="1009.65820473309" isVisible="false" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variables.
+
+PtA = Point.ByCoordinates(0,0,0)
+
+PtList = IN[0]
+
+old_cs = CoordinateSystem.Identity()
+
+new_csx = []
+for i in range(0,len(PtList)):
+	new_csx.append(old_cs.Translate(i,0,0))
+
+new_csxy = []
+
+for item in new_csx:
+	for j in range(0,len(PtList)):
+		new_csxy.append(item.Translate(0,j,0))
+
+new_PtA = []
+
+for item in new_csxy:
+	new_PtA.append(PtA.Transform(old_cs,item))
+
+Radius = []
+for item in new_PtA:
+	Radius.append(Geometry.DistanceTo(Point.ByCoordinates(0,0,0),item))
+
+new_Circles = []
+
+for pt,rad in zip(new_PtA,Radius):
+	if rad&gt;0:
+		new_Circles.append(Circle.ByCenterPointRadius(pt,rad/30))
+
+#Assign your output to the OUT variable.
+
+OUT = new_Circles
+</Script>
+    </PythonNodeModels.PythonNode>
+    <PythonNodeModels.PythonNode guid="402021b8-d70b-42c3-8d0e-771d9eda5042" type="PythonNodeModels.PythonNode" nickname="Python Script" x="-261.941641825546" y="1205.79662336113" isVisible="false" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variables.
+
+PtA = Point.ByCoordinates(0,0,0)
+
+PtList = IN[0]
+
+old_cs = CoordinateSystem.Identity()
+
+new_csx = []
+for i in range(0,len(PtList)):
+	new_csx.append(old_cs.Translate(i,0,0))
+
+new_PtA = []
+
+for item in new_csx:
+	new_PtA.append(PtA.Transform(old_cs,item))
+
+Radius = []
+
+for item in new_PtA:
+	Radius.append(Geometry.DistanceTo(Point.ByCoordinates(0,0,0),item))
+
+
+Circles = []
+
+
+for pt,rad in zip(new_PtA,Radius):
+	if rad&gt;0:
+		Circles.append(Circle.ByCenterPointRadius(pt,rad/32.8))
+
+new_Circles = []
+
+for item in Circles:
+	for j in range(0,len(PtList)):
+		new_Circles.append(item.Translate(0,j,0))
+
+#Assign your output to the OUT variable.
+
+OUT = new_Circles
+</Script>
+    </PythonNodeModels.PythonNode>
+    <PythonNodeModels.PythonNode guid="5891ebce-8788-45a1-9241-ff9ea22f8d04" type="PythonNodeModels.PythonNode" nickname="Python Script" x="-263.605016500441" y="812.259754336579" isVisible="false" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="2">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variables.
+
+PtA = Point.ByCoordinates(IN[1],IN[1],0)
+
+PtList = IN[0]
+
+old_cs = CoordinateSystem.Identity()
+
+new_csx = []
+for i in range(0,len(PtList)):
+	new_csx.append(old_cs.Translate(i,0,0))
+
+new_csxy = []
+
+for item in new_csx:
+	for j in range(0,len(PtList)):
+		new_csxy.append(item.Translate(0,j,0))
+
+new_PtA = []
+
+for item in new_csxy:
+	new_PtA.append(PtA.Transform(old_cs,item))
+
+Radius = []
+for item in new_PtA:
+	Radius.append(Geometry.DistanceTo(Point.ByCoordinates(0,0,0),item))
+
+new_Circles = []
+
+for pt,rad in zip(new_PtA,Radius):
+	if rad&gt;0:
+		new_Circles.append(Circle.ByCenterPointRadius(pt,rad/30))
+
+#Assign your output to the OUT variable.
+
+OUT = new_Circles
+</Script>
+    </PythonNodeModels.PythonNode>
+    <CoreNodeModels.Input.DoubleSlider guid="20c1be05-6d3b-42d7-b4ca-b236669590fe" type="CoreNodeModels.Input.DoubleSlider" nickname="Number Slider" x="-576.925503182517" y="689.62425399285" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.Double>1.6</System.Double>
+      <Range min="0" max="10" step="0.1" />
+    </CoreNodeModels.Input.DoubleSlider>
+    <PythonNodeModels.PythonNode guid="d1e0488f-8fa6-4bb0-bda9-c60af4eb0414" type="PythonNodeModels.PythonNode" nickname="Py - For Vector Z" x="-262.947405667455" y="1354.85366489348" isVisible="false" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variables.
+
+PtA = Point.ByCoordinates(0,0,0)
+
+new_cs = []
+
+TransPtA = []
+
+for i in range (0,20):
+	old_cs = CoordinateSystem.Identity()
+	new_cs.append(old_cs.Translate(Vector.ZAxis(),i))
+	TransPtA.append(PtA.Transform(old_cs,new_cs[i]))
+
+#Assign your output to the OUT variable.
+OUT = new_cs,TransPtA</Script>
+    </PythonNodeModels.PythonNode>
+    <PythonNodeModels.PythonNode guid="547268d7-20a6-450d-9884-59565cef2180" type="PythonNodeModels.PythonNode" nickname="Py - For math" x="-267.59485025706" y="1461.20991567382" isVisible="false" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+import math
+#The inputs to this node will be stored as a list in the IN variables.
+
+PtA = Point.ByCoordinates(0,0,0)
+
+new_cs = []
+
+TransPtA = []
+
+for i in range (0,20):
+	x = math.sin(2*math.pi/10*i)
+	y = math.cos(2*math.pi/10*i)
+	z = i
+	Vct = Vector.ByCoordinates(x,y,z)
+	old_cs = CoordinateSystem.Identity()
+	new_cs.append(old_cs.Translate(Vct,i))
+	TransPtA.append(PtA.Transform(old_cs,new_cs[i]))
+
+#Assign your output to the OUT variable.
+OUT = TransPtA</Script>
+    </PythonNodeModels.PythonNode>
+    <PythonNodeModels.PythonNode guid="ad7289a4-8e16-475d-8325-1781c5b23c3a" type="PythonNodeModels.PythonNode" nickname="Py - For math" x="-276.040008589437" y="1587.40067618082" isVisible="false" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+import math
+#The inputs to this node will be stored as a list in the IN variables.
+
+PtA = Point.ByCoordinates(0,0,0)
+PtB = Point.ByCoordinates(5,0,0)
+PtC = Point.ByCoordinates(5,5,0)
+PtD = Point.ByCoordinates(0,5,0)
+
+Rect = Rectangle.ByCornerPoints(PtA,PtB,PtC,PtD)
+
+hFactor = .6
+
+Vct = []
+
+TransRect = []
+
+ScaleRect = []
+
+RotRect = []
+
+for i in range (0,20):
+	Vct.append(Vector.ByCoordinates(0,0,i*hFactor))
+	TransRect.append(Geometry.Translate(Rect,Vct[i]))
+	sFactor = 1+abs(math.sin(math.pi*i/10))/2
+	#ScaleRect.append(Geometry.Scale(TransRect[i],sFactor))
+	RotRect.append(Geometry.Rotate(TransRect[i],Rectangle.Center(TransRect[i]),Vct[i],360*i/80))
+
+	#Assign your output to the OUT variable.
+OUT = RotRect,Vct</Script>
+    </PythonNodeModels.PythonNode>
+    <PythonNodeModels.PythonNode guid="2c355ce5-e11b-4828-baff-a08e3324fcab" type="PythonNodeModels.PythonNode" nickname="Py - For Vector Z" x="-91.1253105479919" y="1350.19446122564" isVisible="false" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variables.
+
+PtA = Point.ByCoordinates(0,0,0)
+
+TransPtA = []
+
+for i in range (0,20):
+	TransPtA.append(Geometry.Translate(PtA, Vector.ZAxis(),i))
+	
+#Assign your output to the OUT variable.
+OUT = TransPtA</Script>
+    </PythonNodeModels.PythonNode>
+    <PythonNodeModels.PythonNode guid="9705c993-0a82-47da-9b3a-75e6c1a76071" type="PythonNodeModels.PythonNode" nickname="Py - For math" x="-93.0444575225447" y="1460.37817180721" isVisible="false" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+import math
+#The inputs to this node will be stored as a list in the IN variables.
+
+PtA = Point.ByCoordinates(0,0,0)
+
+TransPtA = []
+
+for i in range (0,20):
+	x = math.sin(2*math.pi/10*i)
+	y = math.cos(2*math.pi/10*i)
+	z = i
+	Vct = Vector.ByCoordinates(x,y,z)
+	TransPtA.append(Geometry.Translate(PtA,Vct))
+
+#Assign your output to the OUT variable.
+OUT = TransPtA</Script>
+    </PythonNodeModels.PythonNode>
+    <PythonNodeModels.PythonNode guid="058a1ac7-89e0-4e16-9d38-644ef9c6d71b" type="PythonNodeModels.PythonNode" nickname="Py - For math" x="1778.73282033965" y="1177.57276734157" isVisible="false" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+import math
+#The inputs to this node will be stored as a list in the IN variables.
+
+PtA = Point.ByCoordinates(-5,-5,0)
+PtB = Point.ByCoordinates(5,-5,0)
+PtC = Point.ByCoordinates(5,5,0)
+PtD = Point.ByCoordinates(-5,5,0)
+
+Rect = Rectangle.ByCornerPoints(PtA,PtB,PtC,PtD)
+
+hFactor = 1
+
+Vct = []
+
+TransRect = []
+sFactor = []
+ScaleRect = []
+RotRect = []
+old_cs = []
+new_cs = []
+Bplane = []
+BplaneOr = []
+RecCent = []
+TransVect = []
+newBPlane = []
+
+for i in range (0,20):
+	Vct.append(Vector.ByCoordinates(0,0,i*hFactor))
+	
+	TransRect.append(Geometry.Translate(Rect,Vct[i]))
+	
+	RecCent.append(Rectangle.Center(TransRect[i]))
+	
+	sFactor.append(1+abs(math.sin(math.pi*i/10))/3)
+	
+	Bplane.append(Rectangle.BasePlane(TransRect[i]))
+	BplaneOr.append(Bplane[i].Origin)
+	TransVect.append(Vector.ByTwoPoints(BplaneOr[i],RecCent[i]))
+	newBPlane.append(Geometry.Translate(Bplane[i],TransVect[i]))
+	
+	ScaleRect.append(Geometry.Scale(TransRect[i],newBPlane[i],sFactor[i],sFactor[i],sFactor[i]))
+	
+	RotRect.append(Geometry.Rotate(ScaleRect[i],Rectangle.Center(TransRect[i]),Vct[i],360*i/80))
+
+	#Assign your output to the OUT variable.
+OUT = RotRect</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="6a0c9712-5697-4bad-b1f8-f1ba9e2984b3" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="46.7009391783221" y="1768.14752311352" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="Geometry.Scale(geom,plane,x,y,z);" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <PortInfo index="3" default="False" />
+      <PortInfo index="4" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="ab19b4bb-af0d-49f5-87f3-8845a87fae6f" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1051.43025303787" y="1912.6310559568" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="Geometry.Translate(a,vec);" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="6d8bee1d-e535-4c15-bb55-7f08563954f7" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="679.914330918732" y="1902.47121654059" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="Vector.ByTwoPoints(a,b);" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <PythonNodeModels.PythonNode guid="07defa19-235f-4e6a-9b59-9d771fcfa5e5" type="PythonNodeModels.PythonNode" nickname="Py - For math" x="1453.89941966022" y="1505.70316793576" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+import math
+#The inputs to this node will be stored as a list in the IN variables.
+
+PtA = Point.ByCoordinates(-5,-5,0)
+PtB = Point.ByCoordinates(5,-5,0)
+PtC = Point.ByCoordinates(5,5,0)
+PtD = Point.ByCoordinates(-5,5,0)
+
+Rect = Rectangle.ByCornerPoints(PtA,PtB,PtC,PtD)
+
+hFactor = 1
+
+Vct = []
+
+TransRect = []
+BPlane = []
+sFactor = []
+ScaleRect = []
+RotRect = []
+
+
+for i in range (0,20):
+	Vct.append(Vector.ByCoordinates(0,0,i*hFactor))
+	
+	TransRect.append(Geometry.Translate(Rect,Vct[i]))
+	
+	BPlane.append(Plane.ByOriginNormal(Rectangle.Center(TransRect[i]),Vector.ZAxis()))
+	
+	sFactor.append(1+abs(math.sin(math.pi*i/10))/3)
+	
+	ScaleRect.append(Geometry.Scale(TransRect[i],BPlane[i],sFactor[i],sFactor[i],sFactor[i]))
+	
+	RotRect.append(Geometry.Rotate(ScaleRect[i],Rectangle.Center(TransRect[i]),Vct[i],360*i/80))
+
+	#Assign your output to the OUT variable.
+OUT = RotRect</Script>
+    </PythonNodeModels.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="32a124e4-5154-46d8-a3e9-c08d4ed490e5" start_index="0" end="96aca312-c43b-4d75-835f-bb79eb993148" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="32a124e4-5154-46d8-a3e9-c08d4ed490e5" start_index="0" end="402021b8-d70b-42c3-8d0e-771d9eda5042" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="32a124e4-5154-46d8-a3e9-c08d4ed490e5" start_index="0" end="5891ebce-8788-45a1-9241-ff9ea22f8d04" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="20c1be05-6d3b-42d7-b4ca-b236669590fe" start_index="0" end="5891ebce-8788-45a1-9241-ff9ea22f8d04" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="6d8bee1d-e535-4c15-bb55-7f08563954f7" start_index="0" end="ab19b4bb-af0d-49f5-87f3-8845a87fae6f" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="4b3af55f-0d1d-4890-942a-bc8d0e35e1af" annotationText="Coordinate System" left="-277.59485025706" top="1324.85366489348" width="146.647444589605" height="229.35625078034" fontSize="14" InitialTop="1354.85366489348" InitialHeight="229.356250780337" TextblockHeight="20" backgrouund="#FFC1D676">
+      <Models ModelGuid="d1e0488f-8fa6-4bb0-bda9-c60af4eb0414" />
+      <Models ModelGuid="547268d7-20a6-450d-9884-59565cef2180" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="bf74aa0d-af1a-4c71-a437-78f7f2460941" annotationText="Geometry" left="-103.044457522545" top="1320.19446122564" width="143.919146974553" height="233.18371058157" fontSize="14" InitialTop="1350.19446122564" InitialHeight="233.18371058157" TextblockHeight="20" backgrouund="#FFC1D676">
+      <Models ModelGuid="2c355ce5-e11b-4828-baff-a08e3324fcab" />
+      <Models ModelGuid="9705c993-0a82-47da-9b3a-75e6c1a76071" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+  </Annotations>
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="24.0786694238503" eyeY="21.8964207231595" eyeZ="21.846651841351" lookX="-24.1473591207291" lookY="-10.1604633339151" lookZ="-24.7355349402055" upX="-0.0487282510718724" upY="0.997564113240628" upZ="-0.0499151723784377" />
+  </Cameras>
+</Workspace>
