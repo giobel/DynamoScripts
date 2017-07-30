@@ -1,0 +1,36 @@
+import clr
+
+# Import Revit API
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+# Import ToDSType(bool) extension method
+clr.AddReference('RevitNodes')
+import Revit
+clr.ImportExtensions(Revit.GeometryConversion)
+clr.ImportExtensions(Revit.Elements)
+
+# Import DocumentManager and TransactionManager
+clr.AddReference('RevitServices')
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+
+# Input
+element = UnwrapElement(IN[0])
+valueToSet = IN[1]
+
+#Get the type
+elementType = doc.GetElement(element.GetTypeId())
+
+# Get the parameter
+parameter = elementType.get_Parameter(BuiltInParameter.UNIFORMAT_CODE)
+
+ #Set the parameter in a Transaction
+TransactionManager.Instance.EnsureInTransaction(doc)
+parameter.Set(valueToSet)
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = 0
