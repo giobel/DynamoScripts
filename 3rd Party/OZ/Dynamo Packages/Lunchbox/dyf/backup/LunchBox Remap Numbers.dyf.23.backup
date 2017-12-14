@@ -1,0 +1,71 @@
+<Workspace Version="0.7.1.29946" X="48.2201266712046" Y="298.138718296771" zoom="1.10476425630303" Description="Remaps a list of numbers to a new domain." Category="LunchBox.Revit.Math" Name="LunchBox Remap Numbers" ID="4f7086ab-e3da-451a-9c60-30985c4eb011">
+  <Elements>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="6d1f1ab3-bbad-472f-88e0-bfc4e3a921c3" nickname="Python Script" x="199.496359849443" y="15.0948295129077" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="2">
+      <Script>#Copyright(c) 2014, Nathan Miller
+# The Proving Ground, http://theprovingground.org
+# Default imports
+import clr
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+#The input to this node will be stored in the IN[0] variable.
+
+doc =  DocumentManager.Instance.CurrentDBDocument
+app =  DocumentManager.Instance.CurrentUIApplication.Application
+
+list = IN[0]
+dom = IN[1]
+
+dmin = dom.Min
+dmax = dom.Max
+drange = dmax-dmin
+
+l = []
+for i in range(0,len(list)):
+	l.append(list[i])
+
+l.sort()
+listMin = l[0]
+listMax = l[(len(list)-1)]
+listRange = listMax-listMin
+
+mapped = []
+for i in range(0,len(list)):
+	scaled = dmin + (((list[i] - listMin) / listRange) * drange)
+	mapped.append(scaled)
+
+
+#Assign your output to the OUT variable
+OUT = mapped</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="c24e935f-2b6f-41ec-a050-4ec4770cce43" nickname="Input" x="2.72727272727275" y="-10.9090909090909" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Numbers" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="31a79255-4c77-4ebc-b0e2-d7f235fdd66c" nickname="Input" x="4.5454545454545" y="80" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Domain" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="11e342db-afa4-4684-9378-615aa8f3e794" nickname="Output" x="364.496359849443" y="17.0948295129077" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Remapped" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="6d1f1ab3-bbad-472f-88e0-bfc4e3a921c3" start_index="0" end="11e342db-afa4-4684-9378-615aa8f3e794" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c24e935f-2b6f-41ec-a050-4ec4770cce43" start_index="0" end="6d1f1ab3-bbad-472f-88e0-bfc4e3a921c3" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="31a79255-4c77-4ebc-b0e2-d7f235fdd66c" start_index="0" end="6d1f1ab3-bbad-472f-88e0-bfc4e3a921c3" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>
