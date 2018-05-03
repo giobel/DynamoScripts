@@ -1,0 +1,375 @@
+<Workspace Version="1.3.1.1736" X="-1559.12777110681" Y="-561.773223628172" zoom="0.910909980001543" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="dcd778c7-cceb-4afb-85b6-e3f7c32a1fbb" type="PythonNodeModels.PythonNode" nickname="Python Script" x="176.214081428444" y="957.025084173672" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script># Copyright(c) 2015, Konrad K Sobon
+# @arch_laboratory, http://archi-lab.net
+
+import clr
+# Import Element wrapper extension methods
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+doc = DocumentManager.Instance.CurrentDBDocument
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+clr.AddReference("System")
+from System.Collections.Generic import List
+
+import sys
+pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
+sys.path.append(pyt_path)
+
+
+allRevisionsIds = Revision.GetAllRevisionIds(doc)
+
+allRevisionsEl = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Revisions).WhereElementIsNotElementType().ToElements()
+
+
+
+OUT = allRevisionsIds, allRevisionsEl</Script>
+    </PythonNodeModels.PythonNode>
+    <PythonNodeModels.PythonNode guid="82ef3db9-1ed5-4d4d-a60c-c80efaceadeb" type="PythonNodeModels.PythonNode" nickname="Python Script" x="995.359954242923" y="971.172791506083" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script># Copyright(c) 2015, Konrad K Sobon
+# @arch_laboratory, http://archi-lab.net
+
+import clr
+# Import Element wrapper extension methods
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+doc = DocumentManager.Instance.CurrentDBDocument
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+
+revId = UnwrapElement(IN[0])
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+Revision.ReorderRevisionSequence(doc, revId)
+
+allRevisionsEl = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Revisions).WhereElementIsNotElementType().ToElements()
+
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = allRevisionsEl</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="1bd6425d-de54-4f69-820c-77c6c3091c04" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.Name" x="2771.98669178488" y="722.544339057705" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="RevitNodes.dll" function="Revit.Elements.Element.Name">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="a00d672b-8a45-441d-94e4-b30f18dd203b" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="393.780520521819" y="973.463710566866" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="a[1];" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="836e97e1-d1dd-493d-8a6a-cc5459597d7b" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="392.580530558939" y="745.233623255612" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" CodeText="a[0];" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="8632cdff-bd75-4d98-b9f2-76a6fe8617fc" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.Reverse" x="531.260098890695" y="975.93304924917" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="DSCoreNodes.dll" function="DSCore.List.Reverse@var[]..[]">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="d8117f04-9e07-4767-a1e9-c909715283dc" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.Name" x="1249.01070551452" y="963.980062734797" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="RevitNodes.dll" function="Revit.Elements.Element.Name">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="565cb23e-a07e-420f-934b-858c19b94aba" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Object.Type" x="1406.2126930012" y="1324.88753272846" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="DSCoreNodes.dll" function="DSCore.Object.Type@var">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <PythonNodeModels.PythonNode guid="c8b48211-bbd7-449f-8cb1-22c1bbbc2392" type="PythonNodeModels.PythonNode" nickname="Python Script" x="510.977237653544" y="1381.2905327954" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script># Copyright(c) 2015, Konrad K Sobon
+# @arch_laboratory, http://archi-lab.net
+
+import clr
+# Import Element wrapper extension methods
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+doc = DocumentManager.Instance.CurrentDBDocument
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+
+rev= UnwrapElement(IN[0])
+
+ids = []
+issue = []
+nextRevsion = []
+
+for r in rev:
+	ids.append(r.Id)
+	issue.append(r.Issued)
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+#nextRevsion = Revision.CombineWithNext(doc, ids[0])
+
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = ids, issue, nextRevsion</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="f906c2b7-3fc0-4758-94f8-6f57c9a2766b" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1809.58591464466" y="1069.41287013476" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" CodeText="a[1];" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="13240cb0-2e89-4a48-aa7b-7faade94d0a7" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.RestOfItems" x="977.031815830616" y="1366.03402203774" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.List.RestOfItems@var[]..[]">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="bd1fd0aa-38f0-41cd-86c4-f60669ec0968" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.RestOfItems" x="753.546989586679" y="952.652920117218" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="DSCoreNodes.dll" function="DSCore.List.RestOfItems@var[]..[]">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <PythonNodeModels.PythonNode guid="c5c369d8-e0ee-487c-b424-e9cbc451ef68" type="PythonNodeModels.PythonNode" nickname="Python Script" x="1209.76517238778" y="1649.67679024875" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script># Copyright(c) 2015, Konrad K Sobon
+# @arch_laboratory, http://archi-lab.net
+
+import clr
+# Import Element wrapper extension methods
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+doc = DocumentManager.Instance.CurrentDBDocument
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+
+rev= UnwrapElement(IN[0])
+
+
+issue = []
+nextRevsion = []
+
+
+
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+for i in range(0,len(rev)-1):
+	nextRevsion = Revision.CombineWithNext(doc, rev[i].Id)
+#	issue.append(rev[i].Issued)
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = issue, nextRevsion</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="303443c7-6fb5-489e-965e-5b461130be63" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.RestOfItems" x="260.950966072063" y="1365.07706744715" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="DSCoreNodes.dll" function="DSCore.List.RestOfItems@var[]..[]">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="720008d5-7a12-4894-8af2-b148251ce1eb" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.Reverse" x="370.414660097547" y="1930.32718054882" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="DSCoreNodes.dll" function="DSCore.List.Reverse@var[]..[]">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="0af40762-f5d9-403b-96e7-7258bab79ce3" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.RestOfItems" x="2072.46485044617" y="1066.37494542348" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="DSCoreNodes.dll" function="DSCore.List.RestOfItems@var[]..[]">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="6fab70fa-ee55-4861-86e1-bcdd4583dd14" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Revision.ByName" x="3190.96740123612" y="1004.77655938175" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="RevitNodes.dll" function="Revit.Elements.Revision.ByName@string,string,string,bool,string,string,string,string">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <PortInfo index="3" default="False" />
+      <PortInfo index="4" default="False" />
+      <PortInfo index="5" default="False" />
+      <PortInfo index="6" default="True" />
+      <PortInfo index="7" default="True" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="eb2bfb6e-8871-4275-86a9-6e5995b5b812" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Revision.RevisionDate" x="2780.58640457136" y="949.846106475617" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="RevitNodes.dll" function="Revit.Elements.Revision.RevisionDate">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="12c73384-42b9-4d33-b9a6-f91f1df7cc1c" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Revision.IssuedTo" x="2784.46120510298" y="1495.59637986027" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="RevitNodes.dll" function="Revit.Elements.Revision.IssuedTo">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="24540913-7744-451a-bd30-99a7fcf4e724" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Revision.IssuedBy" x="2785.95774711751" y="1402.32789352355" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="RevitNodes.dll" function="Revit.Elements.Revision.IssuedBy">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="a433f79a-179f-4c54-ace0-0eb9d748c856" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Revision.Issued" x="2786.36247562733" y="1297.31157916543" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="RevitNodes.dll" function="Revit.Elements.Revision.Issued">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <PythonNodeModels.PythonNode guid="6a136eeb-f839-4e26-a838-e64911c74c82" type="PythonNodeModels.PythonNode" nickname="RevisionDescription : Python Script" x="2762.01788903631" y="1063.49203963392" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script># Copyright(c) 2015, Konrad K Sobon
+# @arch_laboratory, http://archi-lab.net
+
+import clr
+# Import Element wrapper extension methods
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+doc = DocumentManager.Instance.CurrentDBDocument
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+
+rev= UnwrapElement(IN[0])
+
+description = []
+
+for r in rev:
+	description.Add(r.Description)
+
+
+OUT = description</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="fd3d79e3-4a6e-4f03-a8a6-8f3afcb48662" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Revision.SetIssued" x="2244.29130438365" y="2334.16106586665" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="RevitNodes.dll" function="Revit.Elements.Revision.SetIssued@bool">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <PythonNodeModels.PythonNode guid="89e9f84f-cc35-4857-878d-de17a492bab6" type="PythonNodeModels.PythonNode" nickname="Python Script" x="649.628862738928" y="2126.33003663078" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script># Copyright(c) 2015, Konrad K Sobon
+# @arch_laboratory, http://archi-lab.net
+
+import clr
+# Import Element wrapper extension methods
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+doc = DocumentManager.Instance.CurrentDBDocument
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+clr.AddReference("System")
+from System.Collections.Generic import List
+
+import sys
+pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
+sys.path.append(pyt_path)
+
+
+allRevisionsIds = Revision.GetAllRevisionIds(doc)
+
+allRevisionsEl = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Revisions).WhereElementIsNotElementType().ToElements()
+
+
+
+OUT = allRevisionsIds, allRevisionsEl</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="fd942b75-29a6-4d01-ae61-f9af80e140f4" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.Name" x="1150.30830160579" y="2106.92688997183" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="RevitNodes.dll" function="Revit.Elements.Element.Name">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="8d47e419-2c19-43e7-90ff-ac990abf3d4f" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="930.841692866612" y="2053.14263606462" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" CodeText="a[1];" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="20dc2d1a-5c9d-45a7-8be9-c0618ff681e9" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="String.Contains" x="1467.21974455415" y="2412.86015980975" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="DSCoreNodes.dll" function="DSCore.String.Contains@string,string,bool">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="True" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="f9b43b0c-dfa8-4990-9866-952585a70cac" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1251" y="2528" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;-1&quot;;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="1a0c55c3-e685-447e-a801-a9ace9084ba3" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.FilterByBoolMask" x="1784.47435264482" y="2164.2101742271" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="DSCoreNodes.dll" function="DSCore.List.FilterByBoolMask@var[]..[],var[]..[]">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="e7990104-bbf8-4fa0-83d1-0b1f70400ccd" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="353" y="1110" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="89b45e9f-8af4-4219-bd5e-f86a271217fd" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="730.478678036054" y="1400.63342341192" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="a[0];" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="dcd778c7-cceb-4afb-85b6-e3f7c32a1fbb" start_index="0" end="a00d672b-8a45-441d-94e4-b30f18dd203b" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="dcd778c7-cceb-4afb-85b6-e3f7c32a1fbb" start_index="0" end="836e97e1-d1dd-493d-8a6a-cc5459597d7b" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="dcd778c7-cceb-4afb-85b6-e3f7c32a1fbb" start_index="0" end="f906c2b7-3fc0-4758-94f8-6f57c9a2766b" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="82ef3db9-1ed5-4d4d-a60c-c80efaceadeb" start_index="0" end="d8117f04-9e07-4767-a1e9-c909715283dc" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="1bd6425d-de54-4f69-820c-77c6c3091c04" start_index="0" end="6fab70fa-ee55-4861-86e1-bcdd4583dd14" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="8632cdff-bd75-4d98-b9f2-76a6fe8617fc" start_index="0" end="bd1fd0aa-38f0-41cd-86c4-f60669ec0968" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c8b48211-bbd7-449f-8cb1-22c1bbbc2392" start_index="0" end="89b45e9f-8af4-4219-bd5e-f86a271217fd" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="f906c2b7-3fc0-4758-94f8-6f57c9a2766b" start_index="0" end="0af40762-f5d9-403b-96e7-7258bab79ce3" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="13240cb0-2e89-4a48-aa7b-7faade94d0a7" start_index="0" end="565cb23e-a07e-420f-934b-858c19b94aba" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="13240cb0-2e89-4a48-aa7b-7faade94d0a7" start_index="0" end="8632cdff-bd75-4d98-b9f2-76a6fe8617fc" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="bd1fd0aa-38f0-41cd-86c4-f60669ec0968" start_index="0" end="82ef3db9-1ed5-4d4d-a60c-c80efaceadeb" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="303443c7-6fb5-489e-965e-5b461130be63" start_index="0" end="c8b48211-bbd7-449f-8cb1-22c1bbbc2392" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="303443c7-6fb5-489e-965e-5b461130be63" start_index="0" end="720008d5-7a12-4894-8af2-b148251ce1eb" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0af40762-f5d9-403b-96e7-7258bab79ce3" start_index="0" end="1bd6425d-de54-4f69-820c-77c6c3091c04" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0af40762-f5d9-403b-96e7-7258bab79ce3" start_index="0" end="eb2bfb6e-8871-4275-86a9-6e5995b5b812" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0af40762-f5d9-403b-96e7-7258bab79ce3" start_index="0" end="a433f79a-179f-4c54-ace0-0eb9d748c856" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0af40762-f5d9-403b-96e7-7258bab79ce3" start_index="0" end="24540913-7744-451a-bd30-99a7fcf4e724" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0af40762-f5d9-403b-96e7-7258bab79ce3" start_index="0" end="12c73384-42b9-4d33-b9a6-f91f1df7cc1c" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0af40762-f5d9-403b-96e7-7258bab79ce3" start_index="0" end="6a136eeb-f839-4e26-a838-e64911c74c82" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="eb2bfb6e-8871-4275-86a9-6e5995b5b812" start_index="0" end="6fab70fa-ee55-4861-86e1-bcdd4583dd14" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="12c73384-42b9-4d33-b9a6-f91f1df7cc1c" start_index="0" end="6fab70fa-ee55-4861-86e1-bcdd4583dd14" end_index="5" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="24540913-7744-451a-bd30-99a7fcf4e724" start_index="0" end="6fab70fa-ee55-4861-86e1-bcdd4583dd14" end_index="4" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="a433f79a-179f-4c54-ace0-0eb9d748c856" start_index="0" end="6fab70fa-ee55-4861-86e1-bcdd4583dd14" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="6a136eeb-f839-4e26-a838-e64911c74c82" start_index="0" end="6fab70fa-ee55-4861-86e1-bcdd4583dd14" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="89e9f84f-cc35-4857-878d-de17a492bab6" start_index="0" end="8d47e419-2c19-43e7-90ff-ac990abf3d4f" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="fd942b75-29a6-4d01-ae61-f9af80e140f4" start_index="0" end="20dc2d1a-5c9d-45a7-8be9-c0618ff681e9" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="8d47e419-2c19-43e7-90ff-ac990abf3d4f" start_index="0" end="fd942b75-29a6-4d01-ae61-f9af80e140f4" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="8d47e419-2c19-43e7-90ff-ac990abf3d4f" start_index="0" end="1a0c55c3-e685-447e-a801-a9ace9084ba3" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="8d47e419-2c19-43e7-90ff-ac990abf3d4f" start_index="0" end="c5c369d8-e0ee-487c-b424-e9cbc451ef68" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="20dc2d1a-5c9d-45a7-8be9-c0618ff681e9" start_index="0" end="1a0c55c3-e685-447e-a801-a9ace9084ba3" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="f9b43b0c-dfa8-4990-9866-952585a70cac" start_index="0" end="20dc2d1a-5c9d-45a7-8be9-c0618ff681e9" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="89b45e9f-8af4-4219-bd5e-f86a271217fd" start_index="0" end="13240cb0-2e89-4a48-aa7b-7faade94d0a7" end_index="0" portType="0" />
+  </Connectors>
+  <Notes>
+    <Dynamo.Graph.Notes.NoteModel guid="9c120f8f-4f1a-465b-b34e-f8d25785e5d7" text="[0] allRevisionsIds = Revision.GetAllRevisionIds(doc)" x="-189.285918571556" y="1067.52508417367" />
+    <Dynamo.Graph.Notes.NoteModel guid="d57b1b50-9c49-4a51-a9cd-edb38fe46451" text="[1] allRevisionsEl = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Revisions).WhereElementIsNotElementType().ToElements()" x="-192.285918571556" y="1147.52508417367" />
+    <Dynamo.Graph.Notes.NoteModel guid="9616f5f8-7fc2-414c-9500-cba5e23b0d5b" text=" " x="1952.45867910638" y="1118.33374211961" />
+  </Notes>
+  <Annotations>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="252596fa-8a6b-4db7-9cfa-fe2cd9dd5dc2" annotationText="Reorder sequence" left="166.214081428444" top="911.025084173672" width="963.145872814479" height="153.147707332411" fontSize="30" InitialTop="957.025084173672" InitialHeight="155.0445437485" TextblockHeight="36" backgrouund="#FFC1D676">
+      <Models ModelGuid="dcd778c7-cceb-4afb-85b6-e3f7c32a1fbb" />
+      <Models ModelGuid="82ef3db9-1ed5-4d4d-a60c-c80efaceadeb" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="d019a49a-9146-43f3-ac67-e2a29cda7b4a" annotationText="Revision in the linked file" left="1799.58591464466" top="987.412870134761" width="212.872764461723" height="174.920871984854" fontSize="30" InitialTop="1069.41287013476" InitialHeight="123" TextblockHeight="72" backgrouund="#FFC1D676">
+      <Models ModelGuid="f906c2b7-3fc0-4758-94f8-6f57c9a2766b" />
+      <Models ModelGuid="9616f5f8-7fc2-414c-9500-cba5e23b0d5b" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+  </Annotations>
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="48.4020805358887" eyeY="92.0298538208008" eyeZ="48.2833938598633" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+  <SessionTraceData>
+    <NodeTraceData NodeId="6fab70fa-ee55-4861-86e1-bcdd4583dd14">
+      <CallsiteTraceData CallSiteID="ByName_InClassDecl-1_InFunctionScope-1_Instance0_6fab70fa-ee55-4861-86e1-bcdd4583dd14">PFNPQVAtRU5WOkVudmVsb3BlIHhtbG5zOnhzaT0iaHR0cDovL3d3dy53My5vcmcvMjAwMS9YTUxTY2hlbWEtaW5zdGFuY2UiIHhtbG5zOnhzZD0iaHR0cDovL3d3dy53My5vcmcvMjAwMS9YTUxTY2hlbWEiIHhtbG5zOlNPQVAtRU5DPSJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy9zb2FwL2VuY29kaW5nLyIgeG1sbnM6U09BUC1FTlY9Imh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3NvYXAvZW52ZWxvcGUvIiB4bWxuczpjbHI9Imh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vc29hcC9lbmNvZGluZy9jbHIvMS4wIiBTT0FQLUVOVjplbmNvZGluZ1N0eWxlPSJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy9zb2FwL2VuY29kaW5nLyI+DQo8U09BUC1FTlY6Qm9keT4NCjxhMTpDYWxsU2l0ZV94MDAyQl9UcmFjZVNlcmlhbGlzZXJIZWxwZXIgaWQ9InJlZi0xIiB4bWxuczphMT0iaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS9jbHIvbnNhc3NlbS9Qcm90b0NvcmUvUHJvdG9Db3JlJTJDJTIwVmVyc2lvbiUzRDEuMy4xLjE3MzYlMkMlMjBDdWx0dXJlJTNEbmV1dHJhbCUyQyUyMFB1YmxpY0tleVRva2VuJTNEbnVsbCI+DQo8TnVtYmVyT2ZFbGVtZW50cz4xPC9OdW1iZXJPZkVsZW1lbnRzPg0KPEJhc2UtMF9IYXNEYXRhPmZhbHNlPC9CYXNlLTBfSGFzRGF0YT4NCjxCYXNlLTBfSGFzTmVzdGVkRGF0YT50cnVlPC9CYXNlLTBfSGFzTmVzdGVkRGF0YT4NCjxCYXNlLTBfTmVzdGVkRGF0YUNvdW50PjU8L0Jhc2UtMF9OZXN0ZWREYXRhQ291bnQ+DQo8QmFzZS0wLTBfSGFzRGF0YT50cnVlPC9CYXNlLTAtMF9IYXNEYXRhPg0KPEJhc2UtMC0wX0RhdGEgaWQ9InJlZi0zIj5QRk5QUVZBdFJVNVdPa1Z1ZG1Wc2IzQmxJSGh0Ykc1ek9uaHphVDBpYUhSMGNEb3ZMM2QzZHk1M015NXZjbWN2TWpBd01TOVlUVXhUWTJobGJXRXRhVzV6ZEdGdVkyVWlJSGh0Ykc1ek9uaHpaRDBpYUhSMGNEb3ZMM2QzZHk1M015NXZjbWN2TWpBd01TOVlUVXhUWTJobGJXRWlJSGh0Ykc1ek9sTlBRVkF0UlU1RFBTSm9kSFJ3T2k4dmMyTm9aVzFoY3k1NGJXeHpiMkZ3TG05eVp5OXpiMkZ3TDJWdVkyOWthVzVuTHlJZ2VHMXNibk02VTA5QlVDMUZUbFk5SW1oMGRIQTZMeTl6WTJobGJXRnpMbmh0YkhOdllYQXViM0puTDNOdllYQXZaVzUyWld4dmNHVXZJaUI0Yld4dWN6cGpiSEk5SW1oMGRIQTZMeTl6WTJobGJXRnpMbTFwWTNKdmMyOW1kQzVqYjIwdmMyOWhjQzlsYm1OdlpHbHVaeTlqYkhJdk1TNHdJaUJUVDBGUUxVVk9WanBsYm1OdlpHbHVaMU4wZVd4bFBTSm9kSFJ3T2k4dmMyTm9aVzFoY3k1NGJXeHpiMkZ3TG05eVp5OXpiMkZ3TDJWdVkyOWthVzVuTHlJK0RRbzhVMDlCVUMxRlRsWTZRbTlrZVQ0TkNqeGhNVHBUWlhKcFlXeHBlbUZpYkdWSlpDQnBaRDBpY21WbUxURWlJSGh0Ykc1ek9tRXhQU0pvZEhSd09pOHZjMk5vWlcxaGN5NXRhV055YjNOdlpuUXVZMjl0TDJOc2NpOXVjMkZ6YzJWdEwxSmxkbWwwVTJWeWRtbGpaWE11VUdWeWMybHpkR1Z1WTJVdlVtVjJhWFJUWlhKMmFXTmxjeVV5UXlVeU1GWmxjbk5wYjI0bE0wUXhMak11TVM0eE56TTJKVEpESlRJd1EzVnNkSFZ5WlNVelJHNWxkWFJ5WVd3bE1rTWxNakJRZFdKc2FXTkxaWGxVYjJ0bGJpVXpSRzUxYkd3aVBnMEtQSE4wY21sdVowbEVJR2xrUFNKeVpXWXRNeUkrWWpjeE1HTmtPVFF0TjJObFlpMDBNMlJqTFRrMU56UXRPVFJrTURsaE1ESmhZMll4TFRBd01qRm1NakkyUEM5emRISnBibWRKUkQ0TkNqeHBiblJKUkQ0eU1qSTBOamM0UEM5cGJuUkpSRDROQ2p3dllURTZVMlZ5YVdGc2FYcGhZbXhsU1dRK0RRbzhMMU5QUVZBdFJVNVdPa0p2WkhrK0RRbzhMMU5QUVZBdFJVNVdPa1Z1ZG1Wc2IzQmxQZzBLPC9CYXNlLTAtMF9EYXRhPg0KPEJhc2UtMC0wX0hhc05lc3RlZERhdGE+ZmFsc2U8L0Jhc2UtMC0wX0hhc05lc3RlZERhdGE+DQo8QmFzZS0wLTFfSGFzRGF0YT50cnVlPC9CYXNlLTAtMV9IYXNEYXRhPg0KPEJhc2UtMC0xX0RhdGEgaWQ9InJlZi00Ij5QRk5QUVZBdFJVNVdPa1Z1ZG1Wc2IzQmxJSGh0Ykc1ek9uaHphVDBpYUhSMGNEb3ZMM2QzZHk1M015NXZjbWN2TWpBd01TOVlUVXhUWTJobGJXRXRhVzV6ZEdGdVkyVWlJSGh0Ykc1ek9uaHpaRDBpYUhSMGNEb3ZMM2QzZHk1M015NXZjbWN2TWpBd01TOVlUVXhUWTJobGJXRWlJSGh0Ykc1ek9sTlBRVkF0UlU1RFBTSm9kSFJ3T2k4dmMyTm9aVzFoY3k1NGJXeHpiMkZ3TG05eVp5OXpiMkZ3TDJWdVkyOWthVzVuTHlJZ2VHMXNibk02VTA5QlVDMUZUbFk5SW1oMGRIQTZMeTl6WTJobGJXRnpMbmh0YkhOdllYQXViM0puTDNOdllYQXZaVzUyWld4dmNHVXZJaUI0Yld4dWN6cGpiSEk5SW1oMGRIQTZMeTl6WTJobGJXRnpMbTFwWTNKdmMyOW1kQzVqYjIwdmMyOWhjQzlsYm1OdlpHbHVaeTlqYkhJdk1TNHdJaUJUVDBGUUxVVk9WanBsYm1OdlpHbHVaMU4wZVd4bFBTSm9kSFJ3T2k4dmMyTm9aVzFoY3k1NGJXeHpiMkZ3TG05eVp5OXpiMkZ3TDJWdVkyOWthVzVuTHlJK0RRbzhVMDlCVUMxRlRsWTZRbTlrZVQ0TkNqeGhNVHBUWlhKcFlXeHBlbUZpYkdWSlpDQnBaRDBpY21WbUxURWlJSGh0Ykc1ek9tRXhQU0pvZEhSd09pOHZjMk5vWlcxaGN5NXRhV055YjNOdlpuUXVZMjl0TDJOc2NpOXVjMkZ6YzJWdEwxSmxkbWwwVTJWeWRtbGpaWE11VUdWeWMybHpkR1Z1WTJVdlVtVjJhWFJUWlhKMmFXTmxjeVV5UXlVeU1GWmxjbk5wYjI0bE0wUXhMak11TVM0eE56TTJKVEpESlRJd1EzVnNkSFZ5WlNVelJHNWxkWFJ5WVd3bE1rTWxNakJRZFdKc2FXTkxaWGxVYjJ0bGJpVXpSRzUxYkd3aVBnMEtQSE4wY21sdVowbEVJR2xrUFNKeVpXWXRNeUkrWWpjeE1HTmtPVFF0TjJObFlpMDBNMlJqTFRrMU56UXRPVFJrTURsaE1ESmhZMll4TFRBd01qRm1NakkzUEM5emRISnBibWRKUkQ0TkNqeHBiblJKUkQ0eU1qSTBOamM1UEM5cGJuUkpSRDROQ2p3dllURTZVMlZ5YVdGc2FYcGhZbXhsU1dRK0RRbzhMMU5QUVZBdFJVNVdPa0p2WkhrK0RRbzhMMU5QUVZBdFJVNVdPa1Z1ZG1Wc2IzQmxQZzBLPC9CYXNlLTAtMV9EYXRhPg0KPEJhc2UtMC0xX0hhc05lc3RlZERhdGE+ZmFsc2U8L0Jhc2UtMC0xX0hhc05lc3RlZERhdGE+DQo8QmFzZS0wLTJfSGFzRGF0YT50cnVlPC9CYXNlLTAtMl9IYXNEYXRhPg0KPEJhc2UtMC0yX0RhdGEgaWQ9InJlZi01Ij5QRk5QUVZBdFJVNVdPa1Z1ZG1Wc2IzQmxJSGh0Ykc1ek9uaHphVDBpYUhSMGNEb3ZMM2QzZHk1M015NXZjbWN2TWpBd01TOVlUVXhUWTJobGJXRXRhVzV6ZEdGdVkyVWlJSGh0Ykc1ek9uaHpaRDBpYUhSMGNEb3ZMM2QzZHk1M015NXZjbWN2TWpBd01TOVlUVXhUWTJobGJXRWlJSGh0Ykc1ek9sTlBRVkF0UlU1RFBTSm9kSFJ3T2k4dmMyTm9aVzFoY3k1NGJXeHpiMkZ3TG05eVp5OXpiMkZ3TDJWdVkyOWthVzVuTHlJZ2VHMXNibk02VTA5QlVDMUZUbFk5SW1oMGRIQTZMeTl6WTJobGJXRnpMbmh0YkhOdllYQXViM0puTDNOdllYQXZaVzUyWld4dmNHVXZJaUI0Yld4dWN6cGpiSEk5SW1oMGRIQTZMeTl6WTJobGJXRnpMbTFwWTNKdmMyOW1kQzVqYjIwdmMyOWhjQzlsYm1OdlpHbHVaeTlqYkhJdk1TNHdJaUJUVDBGUUxVVk9WanBsYm1OdlpHbHVaMU4wZVd4bFBTSm9kSFJ3T2k4dmMyTm9aVzFoY3k1NGJXeHpiMkZ3TG05eVp5OXpiMkZ3TDJWdVkyOWthVzVuTHlJK0RRbzhVMDlCVUMxRlRsWTZRbTlrZVQ0TkNqeGhNVHBUWlhKcFlXeHBlbUZpYkdWSlpDQnBaRDBpY21WbUxURWlJSGh0Ykc1ek9tRXhQU0pvZEhSd09pOHZjMk5vWlcxaGN5NXRhV055YjNOdlpuUXVZMjl0TDJOc2NpOXVjMkZ6YzJWdEwxSmxkbWwwVTJWeWRtbGpaWE11VUdWeWMybHpkR1Z1WTJVdlVtVjJhWFJUWlhKMmFXTmxjeVV5UXlVeU1GWmxjbk5wYjI0bE0wUXhMak11TVM0eE56TTJKVEpESlRJd1EzVnNkSFZ5WlNVelJHNWxkWFJ5WVd3bE1rTWxNakJRZFdKc2FXTkxaWGxVYjJ0bGJpVXpSRzUxYkd3aVBnMEtQSE4wY21sdVowbEVJR2xrUFNKeVpXWXRNeUkrWWpjeE1HTmtPVFF0TjJObFlpMDBNMlJqTFRrMU56UXRPVFJrTURsaE1ESmhZMll4TFRBd01qRm1Nakk0UEM5emRISnBibWRKUkQ0TkNqeHBiblJKUkQ0eU1qSTBOamd3UEM5cGJuUkpSRDROQ2p3dllURTZVMlZ5YVdGc2FYcGhZbXhsU1dRK0RRbzhMMU5QUVZBdFJVNVdPa0p2WkhrK0RRbzhMMU5QUVZBdFJVNVdPa1Z1ZG1Wc2IzQmxQZzBLPC9CYXNlLTAtMl9EYXRhPg0KPEJhc2UtMC0yX0hhc05lc3RlZERhdGE+ZmFsc2U8L0Jhc2UtMC0yX0hhc05lc3RlZERhdGE+DQo8QmFzZS0wLTNfSGFzRGF0YT50cnVlPC9CYXNlLTAtM19IYXNEYXRhPg0KPEJhc2UtMC0zX0RhdGEgaWQ9InJlZi02Ij5QRk5QUVZBdFJVNVdPa1Z1ZG1Wc2IzQmxJSGh0Ykc1ek9uaHphVDBpYUhSMGNEb3ZMM2QzZHk1M015NXZjbWN2TWpBd01TOVlUVXhUWTJobGJXRXRhVzV6ZEdGdVkyVWlJSGh0Ykc1ek9uaHpaRDBpYUhSMGNEb3ZMM2QzZHk1M015NXZjbWN2TWpBd01TOVlUVXhUWTJobGJXRWlJSGh0Ykc1ek9sTlBRVkF0UlU1RFBTSm9kSFJ3T2k4dmMyTm9aVzFoY3k1NGJXeHpiMkZ3TG05eVp5OXpiMkZ3TDJWdVkyOWthVzVuTHlJZ2VHMXNibk02VTA5QlVDMUZUbFk5SW1oMGRIQTZMeTl6WTJobGJXRnpMbmh0YkhOdllYQXViM0puTDNOdllYQXZaVzUyWld4dmNHVXZJaUI0Yld4dWN6cGpiSEk5SW1oMGRIQTZMeTl6WTJobGJXRnpMbTFwWTNKdmMyOW1kQzVqYjIwdmMyOWhjQzlsYm1OdlpHbHVaeTlqYkhJdk1TNHdJaUJUVDBGUUxVVk9WanBsYm1OdlpHbHVaMU4wZVd4bFBTSm9kSFJ3T2k4dmMyTm9aVzFoY3k1NGJXeHpiMkZ3TG05eVp5OXpiMkZ3TDJWdVkyOWthVzVuTHlJK0RRbzhVMDlCVUMxRlRsWTZRbTlrZVQ0TkNqeGhNVHBUWlhKcFlXeHBlbUZpYkdWSlpDQnBaRDBpY21WbUxURWlJSGh0Ykc1ek9tRXhQU0pvZEhSd09pOHZjMk5vWlcxaGN5NXRhV055YjNOdlpuUXVZMjl0TDJOc2NpOXVjMkZ6YzJWdEwxSmxkbWwwVTJWeWRtbGpaWE11VUdWeWMybHpkR1Z1WTJVdlVtVjJhWFJUWlhKMmFXTmxjeVV5UXlVeU1GWmxjbk5wYjI0bE0wUXhMak11TVM0eE56TTJKVEpESlRJd1EzVnNkSFZ5WlNVelJHNWxkWFJ5WVd3bE1rTWxNakJRZFdKc2FXTkxaWGxVYjJ0bGJpVXpSRzUxYkd3aVBnMEtQSE4wY21sdVowbEVJR2xrUFNKeVpXWXRNeUkrWWpjeE1HTmtPVFF0TjJObFlpMDBNMlJqTFRrMU56UXRPVFJrTURsaE1ESmhZMll4TFRBd01qRm1Nakk1UEM5emRISnBibWRKUkQ0TkNqeHBiblJKUkQ0eU1qSTBOamd4UEM5cGJuUkpSRDROQ2p3dllURTZVMlZ5YVdGc2FYcGhZbXhsU1dRK0RRbzhMMU5QUVZBdFJVNVdPa0p2WkhrK0RRbzhMMU5QUVZBdFJVNVdPa1Z1ZG1Wc2IzQmxQZzBLPC9CYXNlLTAtM19EYXRhPg0KPEJhc2UtMC0zX0hhc05lc3RlZERhdGE+ZmFsc2U8L0Jhc2UtMC0zX0hhc05lc3RlZERhdGE+DQo8QmFzZS0wLTRfSGFzRGF0YT50cnVlPC9CYXNlLTAtNF9IYXNEYXRhPg0KPEJhc2UtMC00X0RhdGEgaWQ9InJlZi03Ij5QRk5QUVZBdFJVNVdPa1Z1ZG1Wc2IzQmxJSGh0Ykc1ek9uaHphVDBpYUhSMGNEb3ZMM2QzZHk1M015NXZjbWN2TWpBd01TOVlUVXhUWTJobGJXRXRhVzV6ZEdGdVkyVWlJSGh0Ykc1ek9uaHpaRDBpYUhSMGNEb3ZMM2QzZHk1M015NXZjbWN2TWpBd01TOVlUVXhUWTJobGJXRWlJSGh0Ykc1ek9sTlBRVkF0UlU1RFBTSm9kSFJ3T2k4dmMyTm9aVzFoY3k1NGJXeHpiMkZ3TG05eVp5OXpiMkZ3TDJWdVkyOWthVzVuTHlJZ2VHMXNibk02VTA5QlVDMUZUbFk5SW1oMGRIQTZMeTl6WTJobGJXRnpMbmh0YkhOdllYQXViM0puTDNOdllYQXZaVzUyWld4dmNHVXZJaUI0Yld4dWN6cGpiSEk5SW1oMGRIQTZMeTl6WTJobGJXRnpMbTFwWTNKdmMyOW1kQzVqYjIwdmMyOWhjQzlsYm1OdlpHbHVaeTlqYkhJdk1TNHdJaUJUVDBGUUxVVk9WanBsYm1OdlpHbHVaMU4wZVd4bFBTSm9kSFJ3T2k4dmMyTm9aVzFoY3k1NGJXeHpiMkZ3TG05eVp5OXpiMkZ3TDJWdVkyOWthVzVuTHlJK0RRbzhVMDlCVUMxRlRsWTZRbTlrZVQ0TkNqeGhNVHBUWlhKcFlXeHBlbUZpYkdWSlpDQnBaRDBpY21WbUxURWlJSGh0Ykc1ek9tRXhQU0pvZEhSd09pOHZjMk5vWlcxaGN5NXRhV055YjNOdlpuUXVZMjl0TDJOc2NpOXVjMkZ6YzJWdEwxSmxkbWwwVTJWeWRtbGpaWE11VUdWeWMybHpkR1Z1WTJVdlVtVjJhWFJUWlhKMmFXTmxjeVV5UXlVeU1GWmxjbk5wYjI0bE0wUXhMak11TVM0eE56TTJKVEpESlRJd1EzVnNkSFZ5WlNVelJHNWxkWFJ5WVd3bE1rTWxNakJRZFdKc2FXTkxaWGxVYjJ0bGJpVXpSRzUxYkd3aVBnMEtQSE4wY21sdVowbEVJR2xrUFNKeVpXWXRNeUkrWWpjeE1HTmtPVFF0TjJObFlpMDBNMlJqTFRrMU56UXRPVFJrTURsaE1ESmhZMll4TFRBd01qRm1NakpoUEM5emRISnBibWRKUkQ0TkNqeHBiblJKUkQ0eU1qSTBOamd5UEM5cGJuUkpSRDROQ2p3dllURTZVMlZ5YVdGc2FYcGhZbXhsU1dRK0RRbzhMMU5QUVZBdFJVNVdPa0p2WkhrK0RRbzhMMU5QUVZBdFJVNVdPa1Z1ZG1Wc2IzQmxQZzBLPC9CYXNlLTAtNF9EYXRhPg0KPEJhc2UtMC00X0hhc05lc3RlZERhdGE+ZmFsc2U8L0Jhc2UtMC00X0hhc05lc3RlZERhdGE+DQo8L2ExOkNhbGxTaXRlX3gwMDJCX1RyYWNlU2VyaWFsaXNlckhlbHBlcj4NCjwvU09BUC1FTlY6Qm9keT4NCjwvU09BUC1FTlY6RW52ZWxvcGU+DQo=</CallsiteTraceData>
+    </NodeTraceData>
+  </SessionTraceData>
+</Workspace>

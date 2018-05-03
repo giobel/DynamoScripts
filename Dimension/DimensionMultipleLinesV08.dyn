@@ -1,0 +1,79 @@
+<Workspace Version="0.8.2.2392" X="51" Y="-33" zoom="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="f619ab83-02af-41fa-ad5d-6e7e85b9e56f" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="450" y="363" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+clr.ImportExtensions(Revit.GeometryConversion)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+
+line = IN[0].ToRevitType()
+grids = UnwrapElement(IN[1])
+
+gridRef = ReferenceArray()
+opt = Options()
+opt.ComputeReferences = True
+opt.IncludeNonVisibleObjects = False
+opt.View = doc.ActiveView
+
+for grid in grids:
+	for obj in grid.get_Geometry(opt):
+		if isinstance(obj, Line):
+			gline = obj
+			gridRef.Append(gline.Reference)
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+dim = doc.Create.NewDimension(doc.ActiveView, line, gridRef)
+
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = dim, gridRef</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSModelElementsSelection guid="915a17c1-90c9-459f-a4cd-90be8937c56c" type="Dynamo.Nodes.DSModelElementsSelection" nickname="Select Model Elements" x="-76" y="273" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" />
+    <Dynamo.Nodes.DSFunction guid="454111c8-8f4f-4fc3-bb45-05dc0bfdbf4e" type="Dynamo.Nodes.DSFunction" nickname="Element.Curves" x="149" y="270" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="RevitNodes.dll" function="Revit.Elements.Element.Curves" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="e0ed9247-b769-44d9-9288-08ce46ac3c9e" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="333" y="268" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="a[0];" ShouldFocus="false" />
+    <Dynamo.Nodes.DSModelElementsSelection guid="10af4972-958b-4a18-afaf-91b3a63b74a7" type="Dynamo.Nodes.DSModelElementsSelection" nickname="Select Model Elements" x="105" y="501" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <instance id="ba511815-6907-40be-affb-6df76d015f01-003d4b98" />
+      <instance id="ba511815-6907-40be-affb-6df76d015f01-003d4b99" />
+      <instance id="ba511815-6907-40be-affb-6df76d015f01-003d4b9a" />
+      <instance id="ba511815-6907-40be-affb-6df76d015f01-003d4b9b" />
+      <instance id="3e1d3605-3ad9-4069-8e6e-2c60ca0838c6-003d5176" />
+      <instance id="7bd3b84e-7594-4a6b-87e4-340b4dcf0bd1-003ffb02" />
+      <instance id="7bd3b84e-7594-4a6b-87e4-340b4dcf0bd1-003ffb04" />
+      <instance id="7bd3b84e-7594-4a6b-87e4-340b4dcf0bd1-003ffb06" />
+      <instance id="7bd3b84e-7594-4a6b-87e4-340b4dcf0bd1-003ffb08" />
+      <instance id="7bd3b84e-7594-4a6b-87e4-340b4dcf0bd1-003ffb0a" />
+    </Dynamo.Nodes.DSModelElementsSelection>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="915a17c1-90c9-459f-a4cd-90be8937c56c" start_index="0" end="454111c8-8f4f-4fc3-bb45-05dc0bfdbf4e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="454111c8-8f4f-4fc3-bb45-05dc0bfdbf4e" start_index="0" end="e0ed9247-b769-44d9-9288-08ce46ac3c9e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e0ed9247-b769-44d9-9288-08ce46ac3c9e" start_index="0" end="f619ab83-02af-41fa-ad5d-6e7e85b9e56f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="10af4972-958b-4a18-afaf-91b3a63b74a7" start_index="0" end="f619ab83-02af-41fa-ad5d-6e7e85b9e56f" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations>
+    <Dynamo.Models.AnnotationModel guid="535a7177-7760-4503-b568-562c61d87372" annotationText="beams" left="95" top="471" width="258" height="173" fontSize="14" InitialTop="501" InitialHeight="124" TextblockHeight="20" backgrouund="#FFC1D676">
+      <Models ModelGuid="10af4972-958b-4a18-afaf-91b3a63b74a7" />
+    </Dynamo.Models.AnnotationModel>
+    <Dynamo.Models.AnnotationModel guid="129e9166-dc2b-4e15-a4b8-29e023987fc1" annotationText="alignment line" left="-86" top="243" width="195" height="124" fontSize="14" InitialTop="273" InitialHeight="124" TextblockHeight="20" backgrouund="#FFC1D676">
+      <Models ModelGuid="915a17c1-90c9-459f-a4cd-90be8937c56c" />
+    </Dynamo.Models.AnnotationModel>
+  </Annotations>
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

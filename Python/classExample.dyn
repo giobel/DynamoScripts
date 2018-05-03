@@ -1,0 +1,53 @@
+<Workspace Version="1.3.2.2480" X="-433.768185703125" Y="-443.589352171875" zoom="1.545620359375" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="8c0e0948-3b01-4542-942e-588464b98993" type="PythonNodeModels.PythonNode" nickname="Python Script" x="483.658790190666" y="553.886656756339" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variables.
+class RectDuct():
+	def __init__(self):
+		self.Shape = None
+		self.Name = None
+		pass
+
+list= []
+
+for i in range(0,3):
+	instance = RectDuct()
+	instance.Shape = "square"
+	instance.Name = "Duct"+i.ToString()
+	list.append(instance)
+
+
+#Assign your output to the OUT variable.
+OUT = list</Script>
+    </PythonNodeModels.PythonNode>
+    <PythonNodeModels.PythonNode guid="0db2bd25-0d9f-4b00-84f5-f90c04ad89f8" type="PythonNodeModels.PythonNode" nickname="Python Script" x="786.171194943843" y="553.182995727353" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variables.
+
+list = []
+
+for l in IN[0]:
+	subout = l.Shape
+	list.append(subout)
+	
+OUT = list</Script>
+    </PythonNodeModels.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="8c0e0948-3b01-4542-942e-588464b98993" start_index="0" end="0db2bd25-0d9f-4b00-84f5-f90c04ad89f8" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

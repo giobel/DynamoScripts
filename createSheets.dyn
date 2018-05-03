@@ -1,0 +1,281 @@
+<Workspace Version="0.8.2.2392" X="-294.171999723087" Y="-840.809298380908" zoom="1.02988563947099" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Function guid="bb38f91f-f484-4361-9b98-619cc1aef724" type="Dynamo.Nodes.Function" nickname="Create Placeholder Sheet" x="842.278643142301" y="412.743230223985" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="533e8fa5-dec8-4783-8240-72b460694d4d" />
+      <Name value="Create Placeholder Sheet" />
+      <Description value="This node will create placeholder sheets from a sheet number/name. " />
+      <Inputs>
+        <Input value="sheetNumber" />
+        <Input value="sheetName" />
+        <Input value="RunIt" />
+      </Inputs>
+      <Outputs>
+        <Output value="Sheet" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="067e0677-d3b2-48bc-8f30-9e8ec5bb1e19" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="490.502959782601" y="1002.43805351117" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="{&quot;999900&quot;,&quot;999901&quot;};" ShouldFocus="false" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="524fa067-e316-4116-9e2e-0458676b8f4d" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="525.283174695092" y="1098.87679258932" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="{&quot;aaa&quot;,&quot;bbb&quot;};" ShouldFocus="false" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="c56ecd2b-32bb-49c8-9710-574eb9b64399" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="583" y="625" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="1;" ShouldFocus="false" />
+    <DSIronPythonNode.PythonNode guid="6871610a-c9fa-4fd9-b340-1c271b5e3552" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="842.471809172498" y="565.404017049516" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="3">
+      <Script>#Copyright(c) 2015, Konrad Sobon
+# @arch_laboratory, http://archi-lab.net
+
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+from System.Collections.Generic import *
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+import sys
+pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
+sys.path.append(pyt_path)
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+sheetNumbers = IN[0]
+sheetNames = IN[1]
+runMe = IN[2]
+
+if runMe:
+	try:
+		errorReport = None
+		
+		# Collect all sheets in the project
+		existingSheets = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Sheets)
+		projectSheetNum = []
+		for i in existingSheets:
+			eSheetNumber = i.get_Parameter(BuiltInParameter.SHEET_NUMBER).AsString()
+			# Strip spaces from sheet number
+			projectSheetNum.append("".join(eSheetNumber.split()))
+
+		TransactionManager.Instance.EnsureInTransaction(doc)
+		sheets = []
+		for i, j in zip(sheetNames, sheetNumbers):
+			if "".join(j.split()) in projectSheetNum:
+				# only update params
+				# get existing sheet
+				index = projectSheetNum.index("".join(j.split()))
+				sheet = list(existingSheets)[index]
+				# update params
+				sheetName = sheet.get_Parameter(BuiltInParameter.SHEET_NAME)
+				sheetName.Set(i)
+				sheets.append(sheet)
+			else:
+				# create new placeholder sheet and set params
+				newSheet = ViewSheet.CreatePlaceholder(doc)
+				#set sheet name param
+				sheetName = newSheet.get_Parameter(BuiltInParameter.SHEET_NAME)
+				sheetName.Set(i)
+				#set sheet number param
+				sheetNumber = newSheet.get_Parameter(BuiltInParameter.SHEET_NUMBER)
+				sheetNumber.Set(j)
+				sheets.append(newSheet)
+				
+		TransactionManager.Instance.TransactionTaskDone()
+	except:
+		# if error accurs anywhere in the process catch it
+		import traceback
+		errorReport = traceback.format_exc()
+else:
+	errorReport = "Set RunMe to True to create new Placeholder Sheets"
+	
+#Assign your output to the OUT variable
+if errorReport == None:
+	OUT = sheets
+else:
+	OUT = errorReport</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="71c6294c-7c70-4c6f-9d4a-0928a5f29fbc" type="Dynamo.Nodes.Function" nickname="PlaceholderSheet.ByNumberAndName" x="532.5" y="83.5" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="70293749-be2a-4aba-8bb1-9c0d863c3ccb" />
+      <Name value="PlaceholderSheet.ByNumberAndName" />
+      <Description value="Creates placeholder sheets" />
+      <Inputs>
+        <Input value="sheetNumber" />
+        <Input value="sheetName" />
+      </Inputs>
+      <Outputs>
+        <Output value="sheet" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSIronPythonNode.PythonNode guid="1ba37ef5-8872-4014-85bc-7a6cb946cb6b" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="756.805149361776" y="991.444240826186" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>
+#Copyright(c) 2014, Konrad Sobon
+# @arch_laboratory, http://archi-lab.net
+
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+excelSheetNumber = IN[0]
+excelSheetName = IN[1]
+
+#get all sheets in the project and their numbers
+collector = FilteredElementCollector(doc)
+sheets = collector.OfCategory(BuiltInCategory.OST_Sheets)
+projectSheetNum = []
+for i in sheets:
+    bipNumber = BuiltInParameter.SHEET_NUMBER
+    tempSheetNum = i.get_Parameter(bipNumber).AsString()
+    projectSheetNum.append("".join(tempSheetNum.split()))
+    
+#compare excel sheets to project sheets and pass only new sheets
+newNumber, newName = [], []
+for i, j in zip(excelSheetNumber, excelSheetName):
+    if "".join(i.split()) in projectSheetNum:
+        continue
+    else:
+        newNumber.append(i)
+        newName.append(j)
+
+#Assign your output to the OUT variable
+OUT = newNumber, newName</Script>
+    </DSIronPythonNode.PythonNode>
+    <DSRevitNodesUI.FamilyTypes guid="40d2cbf4-9290-4c85-b27e-7a8d7defdcd6" type="DSRevitNodesUI.FamilyTypes" nickname="Family Types" x="476.918971290234" y="1303.84311317386" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" index="162:Title_Blocks_A0_Metric:Standard" />
+    <DSIronPythonNode.PythonNode guid="fc8eb2b1-da46-4afa-976a-08273eb23581" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="1576.07013586173" y="1201.8900457887" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="3">
+      <Script>#Copyright(c) 2014, Konrad Sobon
+# @arch_laboratory, http://archi-lab.net
+
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+# Import ToDSType(bool) extension method
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+from System.Collections.Generic import *
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+titleBlockTypeId = IN[0]
+sheetNumbers = IN[1]
+sheetNames = IN[2]
+
+# "Start" the transaction
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+sheets = []
+for i, j in zip(sheetNames, sheetNumbers):
+	#create new sheet
+	newSheet = ViewSheet.Create(doc, titleBlockTypeId)
+	#set sheet name param
+	bipName = BuiltInParameter.SHEET_NAME
+	sheetName = newSheet.get_Parameter(bipName)
+	sheetName.Set(i)
+	#set sheet number param
+	bipNumber = BuiltInParameter.SHEET_NUMBER
+	sheetNumber = newSheet.get_Parameter(bipNumber)
+	sheetNumber.Set(j)
+	#collect all newly created sheets
+	sheets.append(newSheet)
+# "End" the transaction
+TransactionManager.Instance.TransactionTaskDone()
+
+#Assign your output to the OUT variable
+OUT = sheets</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSFunction guid="79536b74-6737-4f0b-8dd7-265ea78b917e" type="Dynamo.Nodes.DSFunction" nickname="List.GetItemAtIndex" x="1155.63510559719" y="881.466119721036" isVisible="true" isUpstreamVisible="true" lacing="Longest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.DSFunction guid="84b2e149-e8d9-418a-9d6f-74db5c8db142" type="Dynamo.Nodes.DSFunction" nickname="List.GetItemAtIndex" x="1134.85387864313" y="1132.55973912741" isVisible="true" isUpstreamVisible="true" lacing="Longest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="bd7a18b7-f271-4aef-a0f4-0869196b60da" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="973" y="1027" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="0;" ShouldFocus="false" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="b0bc0ea9-e586-48f4-809e-bca139333e77" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="950" y="1190" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="1;" ShouldFocus="false" />
+    <DSIronPythonNode.PythonNode guid="6d79ccad-119e-459e-9563-d13877201738" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="1076.88516705302" y="1354.2337266509" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+items = UnwrapElement(IN[0])
+elementlist = list()
+unmatched = list()
+for item in items:
+	try:
+		elementlist.append(item.Id)
+	except:
+		unmatched.append(item)
+OUT = (elementlist, unmatched)</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="fdea1870-80d3-4189-bd36-dc9d18f98226" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1277" y="1355" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="a[0][0];" ShouldFocus="false" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="8de57b8f-5680-4155-96db-6911bf4f1e24" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="902.533435502277" y="1352.75220854821" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="{a};" ShouldFocus="false" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="067e0677-d3b2-48bc-8f30-9e8ec5bb1e19" start_index="0" end="1ba37ef5-8872-4014-85bc-7a6cb946cb6b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="524fa067-e316-4116-9e2e-0458676b8f4d" start_index="0" end="1ba37ef5-8872-4014-85bc-7a6cb946cb6b" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c56ecd2b-32bb-49c8-9710-574eb9b64399" start_index="0" end="6871610a-c9fa-4fd9-b340-1c271b5e3552" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1ba37ef5-8872-4014-85bc-7a6cb946cb6b" start_index="0" end="79536b74-6737-4f0b-8dd7-265ea78b917e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1ba37ef5-8872-4014-85bc-7a6cb946cb6b" start_index="0" end="84b2e149-e8d9-418a-9d6f-74db5c8db142" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="40d2cbf4-9290-4c85-b27e-7a8d7defdcd6" start_index="0" end="8de57b8f-5680-4155-96db-6911bf4f1e24" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="79536b74-6737-4f0b-8dd7-265ea78b917e" start_index="0" end="fc8eb2b1-da46-4afa-976a-08273eb23581" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="84b2e149-e8d9-418a-9d6f-74db5c8db142" start_index="0" end="fc8eb2b1-da46-4afa-976a-08273eb23581" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="bd7a18b7-f271-4aef-a0f4-0869196b60da" start_index="0" end="79536b74-6737-4f0b-8dd7-265ea78b917e" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="b0bc0ea9-e586-48f4-809e-bca139333e77" start_index="0" end="84b2e149-e8d9-418a-9d6f-74db5c8db142" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6d79ccad-119e-459e-9563-d13877201738" start_index="0" end="fdea1870-80d3-4189-bd36-dc9d18f98226" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="fdea1870-80d3-4189-bd36-dc9d18f98226" start_index="0" end="fc8eb2b1-da46-4afa-976a-08273eb23581" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="8de57b8f-5680-4155-96db-6911bf4f1e24" start_index="0" end="6d79ccad-119e-459e-9563-d13877201738" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>
