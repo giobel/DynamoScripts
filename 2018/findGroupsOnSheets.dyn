@@ -1,0 +1,74 @@
+<Workspace Version="0.8.2.2392" X="65.9099841134653" Y="-360.100541891556" zoom="0.605863339036959" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Function guid="c4437f5c-f6fe-4fb3-be00-be1704c4eddc" type="Dynamo.Nodes.Function" nickname="Element.OwnerView" x="909.233166661657" y="1183.36851417936" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="a0fc8138-f7bc-4425-abe6-2ef1b411d447" />
+      <Name value="Element.OwnerView" />
+      <Description value="Gets the owner view of a given Revit element (if possible)" />
+      <Inputs>
+        <Input value="element" />
+      </Inputs>
+      <Outputs>
+        <Output value="view" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSRevitNodesUI.ElementTypes guid="ca842532-1ec8-4dbc-a175-068396c39395" type="DSRevitNodesUI.ElementTypes" nickname="Element Types" x="41.0025944444232" y="1176.70101980783" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" index="120:Group" />
+    <DSRevitNodesUI.ElementsOfType guid="995f4997-0076-4074-9819-9477d5f8f184" type="DSRevitNodesUI.ElementsOfType" nickname="All Elements of Type" x="372.765299922084" y="1176.81607835677" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+    <DSIronPythonNode.PythonNode guid="ff853ac3-6b8b-4768-8e2f-c04f2b59933a" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="2038.08521890795" y="1762.09534366364" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variables.
+data = IN[0]
+
+result = []
+
+for i in range(0,len(data)):
+	r = []
+	result.append(r)
+	for j in range(0,len(data[i])):
+		if data[i][j].GetType().ToString() == "Revit.Elements.Views.Sheet":
+			r.append(data[i][j].SheetNumber)
+		else:
+			r.append("Not on sheet")
+	
+#Assign your output to the OUT variable.
+OUT = result</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSFunction guid="d4268082-68f3-451b-9a0b-4146652a798e" type="Dynamo.Nodes.DSFunction" nickname="Element.Name" x="610.674817587162" y="1287.27695809864" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="RevitNodes.dll" function="Revit.Elements.Element.Name" />
+    <Dynamo.Nodes.DSFunction guid="4b8c233f-074c-4de9-91c5-596351bc5972" type="Dynamo.Nodes.DSFunction" nickname="List.UniqueItems" x="1087.70704064804" y="1368.3006515245" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.UniqueItems@var[]..[]" />
+    <Dynamo.Nodes.DSFunction guid="a8f2dd94-8193-40cb-82be-6d39d5417dcc" type="Dynamo.Nodes.DSFunction" nickname="List.AllIndicesOf" x="1369.08114685851" y="1292.37286038283" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.AllIndicesOf@var[]..[],var" />
+    <Dynamo.Nodes.DSFunction guid="c32b738f-0f3b-4978-b15d-b493e8bf2605" type="Dynamo.Nodes.DSFunction" nickname="List.GetItemAtIndex" x="1672.31552393625" y="1264.39282626662" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.GetItemAtIndex@var[]..[],int" />
+    <Dynamo.Nodes.DSFunction guid="d11b6ad1-3f9e-4cf5-b2fe-cf071f83ad78" type="Dynamo.Nodes.DSFunction" nickname="List.Sort" x="1347.79815983057" y="1804.01268144603" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.Sort@var[]" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="c4437f5c-f6fe-4fb3-be00-be1704c4eddc" start_index="0" end="c32b738f-0f3b-4978-b15d-b493e8bf2605" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ca842532-1ec8-4dbc-a175-068396c39395" start_index="0" end="995f4997-0076-4074-9819-9477d5f8f184" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="995f4997-0076-4074-9819-9477d5f8f184" start_index="0" end="c4437f5c-f6fe-4fb3-be00-be1704c4eddc" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="995f4997-0076-4074-9819-9477d5f8f184" start_index="0" end="d4268082-68f3-451b-9a0b-4146652a798e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d4268082-68f3-451b-9a0b-4146652a798e" start_index="0" end="4b8c233f-074c-4de9-91c5-596351bc5972" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d4268082-68f3-451b-9a0b-4146652a798e" start_index="0" end="a8f2dd94-8193-40cb-82be-6d39d5417dcc" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4b8c233f-074c-4de9-91c5-596351bc5972" start_index="0" end="d11b6ad1-3f9e-4cf5-b2fe-cf071f83ad78" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a8f2dd94-8193-40cb-82be-6d39d5417dcc" start_index="0" end="c32b738f-0f3b-4978-b15d-b493e8bf2605" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c32b738f-0f3b-4978-b15d-b493e8bf2605" start_index="0" end="ff853ac3-6b8b-4768-8e2f-c04f2b59933a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d11b6ad1-3f9e-4cf5-b2fe-cf071f83ad78" start_index="0" end="a8f2dd94-8193-40cb-82be-6d39d5417dcc" end_index="1" portType="0" />
+  </Connectors>
+  <Notes>
+    <Dynamo.Models.NoteModel guid="c4fbbd7a-c88c-4256-a2c6-feff140123b1" text=" " x="1542.59941976288" y="1837.33328662417" />
+    <Dynamo.Models.NoteModel guid="7431e412-691c-49c5-9384-a77140c14633" text=" " x="2225.57637876148" y="1800.71064499363" />
+  </Notes>
+  <Annotations>
+    <Dynamo.Models.AnnotationModel guid="a7fe767c-5dcc-4ae1-a512-70c9ae120916" annotationText="GROUP NAMES" left="1337.79815983057" top="1751.01268144603" width="264.801259932311" height="146" fontSize="36" InitialTop="1804.01268144603" InitialHeight="123" TextblockHeight="43" backgrouund="#FFC1D676">
+      <Models ModelGuid="d11b6ad1-3f9e-4cf5-b2fe-cf071f83ad78" />
+      <Models ModelGuid="c4fbbd7a-c88c-4256-a2c6-feff140123b1" />
+    </Dynamo.Models.AnnotationModel>
+    <Dynamo.Models.AnnotationModel guid="81d1ed70-b073-451a-8d76-eb4710f4bb33" annotationText="SHEET NUMBER" left="2028.08521890795" top="1709.09534366364" width="257.491159853531" height="135.615301329994" fontSize="36" InitialTop="1762.09534366364" InitialHeight="123" TextblockHeight="43" backgrouund="#FFC1D676">
+      <Models ModelGuid="ff853ac3-6b8b-4768-8e2f-c04f2b59933a" />
+      <Models ModelGuid="7431e412-691c-49c5-9384-a77140c14633" />
+    </Dynamo.Models.AnnotationModel>
+  </Annotations>
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

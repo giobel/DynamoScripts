@@ -1,0 +1,123 @@
+<Workspace Version="1.3.2.2480" X="-318.787273336119" Y="-206.852960660707" zoom="0.775230660981312" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.DSModelElementSelection guid="9104ab66-c333-40cb-93bc-ce8640958363" type="Dynamo.Nodes.DSModelElementSelection" nickname="Select Model Element" x="988.880376840273" y="644.755788124085" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="true">
+      <instance id="2a688664-94cc-4048-80ab-fed0207d09ff-00000a07" />
+    </Dynamo.Nodes.DSModelElementSelection>
+    <DSRevitNodesUI.Categories guid="264f4945-d7fe-4dad-a435-a07ae9f1d4f2" type="DSRevitNodesUI.Categories" nickname="Categories" x="392.224247312171" y="869.302596408802" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false" index="572:Views" />
+    <DSRevitNodesUI.ElementsOfCategory guid="5d265680-3590-4d19-8d5f-f31b79266719" type="DSRevitNodesUI.ElementsOfCategory" nickname="All Elements of Category" x="606.00452372916" y="870.703649147657" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true">
+      <PortInfo index="0" default="False" />
+    </DSRevitNodesUI.ElementsOfCategory>
+    <DSRevitNodesUI.Categories guid="91446948-a0bb-4466-b745-8d9748f3b422" type="DSRevitNodesUI.Categories" nickname="Categories" x="627.541793175913" y="1002.21381983368" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false" index="417:Sections" />
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="d45acf50-53cc-4b45-b48c-1faefaeef7e4" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Elements in View(s)" x="956.787357837467" y="863.142477672623" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true">
+      <PortInfo index="0" default="False" />
+      <ID value="c5afdc8a-a47a-4d22-8a04-d6e60c259808" />
+      <Name value="Elements in View(s)" />
+      <Description value="Gets all elements in given view(s)." />
+      <Inputs>
+        <Input value="Views" />
+      </Inputs>
+      <Outputs>
+        <Output value="Elements" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <PythonNodeModels.PythonNode guid="f2e73bdc-df0e-499d-ba1d-1bf41eb95189" type="PythonNodeModels.PythonNode" nickname="Python Script" x="1219.0883453958" y="845.194359870754" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>#Made by Marc Tavenier @marctavenier
+import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference('RevitServices')
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+views = UnwrapElement(IN[0])
+
+elementlist = []
+doc = DocumentManager.Instance.CurrentDBDocument
+
+for view in views:
+	collector = FilteredElementCollector(doc, view.Id)
+	elementlist.append(collector.ToElements())
+
+#Assign your output to the OUT variable
+OUT = elementlist</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="ede2d2b1-32ba-4967-bb78-ef11005f6ee1" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Elements in view by category" x="513.121182323448" y="608.661375781268" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <ID value="5f3d26ae-3989-4618-acfb-33c338ec9882" />
+      <Name value="Elements in view by category" />
+      <Description value="Returns all the elements in the selected view(s) by the selected categor(y)(ies)" />
+      <Inputs>
+        <Input value="View" />
+        <Input value="Category" />
+      </Inputs>
+      <Outputs>
+        <Output value="Elements" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <PythonNodeModels.PythonNode guid="03292a4b-4619-4a06-9b01-08299aedb621" type="PythonNodeModels.PythonNode" nickname="Python Script" x="760.789405039201" y="603.501621141356" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="2">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+clr.ImportExtensions(Revit.GeometryConversion)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+toggle = 0
+if isinstance(IN[0], list):
+	view = UnwrapElement(IN[0])
+else:
+	toggle = 1
+	view = [UnwrapElement(IN[0])]
+
+if isinstance(IN[1], list):
+	category = UnwrapElement(IN[1])
+else:
+	category = [UnwrapElement(IN[1])]
+	
+listout = []
+
+for x in view:
+	viewlist = []
+	for c in category:
+		collector = FilteredElementCollector(doc,x.Id)
+		elements = collector.OfCategoryId(c.Id).ToElements()
+		viewlist.append(elements)
+	listout.append(viewlist)
+
+if toggle:
+	OUT = viewlist
+else:
+	OUT = listout</Script>
+    </PythonNodeModels.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="264f4945-d7fe-4dad-a435-a07ae9f1d4f2" start_index="0" end="5d265680-3590-4d19-8d5f-f31b79266719" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="5d265680-3590-4d19-8d5f-f31b79266719" start_index="0" end="d45acf50-53cc-4b45-b48c-1faefaeef7e4" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="98fe296f-a0eb-48bf-836a-100534a07264" annotationText="from  package manager" left="946.787357837467" top="781.142477672623" width="230" height="175" fontSize="30" InitialTop="863.142477672623" InitialHeight="123" TextblockHeight="72" backgrouund="#FFC1D676">
+      <Models ModelGuid="d45acf50-53cc-4b45-b48c-1faefaeef7e4" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+  </Annotations>
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

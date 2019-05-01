@@ -1,0 +1,167 @@
+{
+  "Uuid": "3c9d0464-8643-5ffe-96e5-ab1769818209",
+  "IsCustomNode": false,
+  "Description": "",
+  "Name": "GetBeamWidth",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\n\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.DB.Structure import *\r\n\r\nclr.AddReference('RevitAPIUI')\r\nfrom Autodesk.Revit.UI import *\r\n\r\nclr.AddReference('System')\r\nfrom System.Collections.Generic import List\r\n\r\nclr.AddReference('RevitNodes')\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference('RevitServices')\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n\r\nelement = UnwrapElement(IN[0])\r\n\r\ninstTransform = None;\r\n\r\n\r\ndef GetBeamWidth(element):\r\n\topt = Options()\r\n\topt.ComputeReferences = True\r\n\topt.IncludeNonVisibleObjects = False\r\n\topt.View = doc.ActiveView\r\n\t\r\n\tfor instance in element.get_Geometry(opt):\r\n\t\ttry:\r\n\t\t\tgeomInst = instance.GetSymbolGeometry()\r\n\t\t\tinstTransform = instance.Transform;\r\n\t\t\twidth = (geomInst.GetBoundingBox().Max.Y - geomInst.GetBoundingBox().Min.Y)*304.8\r\n\t\texcept:\r\n\t\t\tcontinue\r\n\treturn width\r\n\r\nOUT = GetBeamWidth(element)",
+      "VariableInputPorts": true,
+      "Id": "f6300f1337bf46c28c4c310d098c01ee",
+      "Inputs": [
+        {
+          "Id": "d0ac70e29cee411cb890a68192d1d007",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "27d6fdfbd40a4e45aca01571923033c4",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSModelElementSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "65d8a146-dfdc-4e0a-b5c3-564c1288fabe-003b7e42"
+      ],
+      "Id": "a5eec98803624ec9ae27c5f437beee8c",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "f44cf6b50d2540168f2495580afa7941",
+          "Name": "Element",
+          "Description": "The selected elements.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "[a];",
+      "Id": "1f55fca308d748c8bb7dfb1abf5ae1a4",
+      "Inputs": [
+        {
+          "Id": "4fc67018984547159955f73372a22536",
+          "Name": "a",
+          "Description": "a",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "bd56ef2c7302419abd0681f21f87f97f",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "f44cf6b50d2540168f2495580afa7941",
+      "End": "4fc67018984547159955f73372a22536",
+      "Id": "a867efc1b91543e38e505514ff9b9511"
+    },
+    {
+      "Start": "f44cf6b50d2540168f2495580afa7941",
+      "End": "d0ac70e29cee411cb890a68192d1d007",
+      "Id": "d100244c0eea46959b39fa947e96dd5f"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.1.5055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "f6300f1337bf46c28c4c310d098c01ee",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 791.60713556976384,
+        "Y": 462.08322403143427
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Model Element",
+        "Id": "a5eec98803624ec9ae27c5f437beee8c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 281.90094521617522,
+        "Y": 453.85482693245137
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "1f55fca308d748c8bb7dfb1abf5ae1a4",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 515.0,
+        "Y": 546.0
+      }
+    ],
+    "Annotations": [],
+    "X": 156.78198153217954,
+    "Y": -214.71901188277388,
+    "Zoom": 1.2852827688530044
+  }
+}

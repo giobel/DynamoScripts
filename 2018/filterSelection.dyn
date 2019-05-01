@@ -1,0 +1,121 @@
+{
+  "Uuid": "bba9456e-ec0d-4afd-adce-8251286b0f53",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "filterSelection",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\n\r\nclr.AddReference(\"RevitAPIUI\")\r\nfrom Autodesk.Revit.UI import IExternalEventHandler, ExternalEvent, TaskDialog\r\nfrom Autodesk.Revit.UI.Selection import *\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import Transaction, OverrideGraphicSettings, ElementId, Color\r\n# noinspection PyUnresolvedReferences\r\nfrom Autodesk.Revit.Exceptions import InvalidOperationException\r\n\r\n\r\nclr.AddReference('RevitServices')\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\n\r\nglobal result\r\n\r\n\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n\r\n\r\nclass CustomISelectionFilter(ISelectionFilter):\r\n\tdef __init__(self, category_name, family_name):\r\n\t\tself.category_name = category_name\r\n\t\tself.family_name = family_name\r\n\tdef AllowElement(self, e):\r\n\t\tif e.Category.Name == self.category_name and e.Name == self.family_name:\r\n\t\t\treturn True\r\n\t\telse:\r\n\t\t\treturn False\r\n\tdef AllowReference(self, ref, point):\r\n\t\treturn false\r\n\r\nfamName = IN[0]\r\n\r\nref = uidoc.Selection.PickObjects(ObjectType.Element, CustomISelectionFilter(\"Walls\", famName), \"Select Walls\")\r\n\r\nresult = []\r\n\r\n\r\n\r\nOUT = [doc.GetElement(r) for r in ref]",
+      "VariableInputPorts": true,
+      "Id": "d730c2a8c16349f7a9f03627bd244e99",
+      "Inputs": [
+        {
+          "Id": "61ff979958e447ee9ac5ca409c763dba",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "03eafac6f93c40d9b7705088dff2110c",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "\"Wall 2\";",
+      "Id": "ab8803232cc9488cb541d69df0933c45",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "b83b8ce041544facb2e0992fc93572f1",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "b83b8ce041544facb2e0992fc93572f1",
+      "End": "61ff979958e447ee9ac5ca409c763dba",
+      "Id": "aa61b8e601344ae5b54ade5ac64c49b3"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.1.5055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "d730c2a8c16349f7a9f03627bd244e99",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 550.14316945256439,
+        "Y": -101.8474631763363
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "ab8803232cc9488cb541d69df0933c45",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 321.76450529580745,
+        "Y": -88.575830389204782
+      }
+    ],
+    "Annotations": [],
+    "X": -188.44263339387669,
+    "Y": 385.71929021545174,
+    "Zoom": 0.94964849588834832
+  }
+}

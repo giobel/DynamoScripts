@@ -1,0 +1,804 @@
+{
+  "Uuid": "186415f6-c2c6-466c-ab44-73a86744b27c",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "shortestPath",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Geometry.Curves.ShortestWalk@Autodesk.DesignScript.Geometry.Curve[],double[],Autodesk.DesignScript.Geometry.Line[]",
+      "Id": "fc27466ea7334e488a8ab50845aa64e2",
+      "Inputs": [
+        {
+          "Id": "e799223d9bf3416eaa66d280a70c98d1",
+          "Name": "CurveNetwork",
+          "Description": "Curve[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "33766bb6668e41a9b6dd803d653302c1",
+          "Name": "Lengths",
+          "Description": "double[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "54ac2e1710534fd098ab7e39645df364",
+          "Name": "Paths",
+          "Description": "Line[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "8f6e62dd07004454b2d3ae2cc6b0a250",
+          "Name": "Shortest Walk",
+          "Description": "var",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "0b16c6aa42994632b27fa76cec7d0031",
+          "Name": "Links",
+          "Description": "var",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "57e4aaa162bc4b748e68e6c8ce31b94b",
+          "Name": "Direction",
+          "Description": "var",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "5060e79eef594887b4addbf40483e234",
+          "Name": "Length",
+          "Description": "var",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Curves.ShortestWalk (CurveNetwork: Curve[], Lengths: double[], Paths: Line[]): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSModelElementsSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "2a118f4b-3447-44c7-a566-033cd2529b30-0000099d",
+        "2a118f4b-3447-44c7-a566-033cd2529b30-000009a9",
+        "2a118f4b-3447-44c7-a566-033cd2529b30-000009b5",
+        "2a118f4b-3447-44c7-a566-033cd2529b30-000009c0",
+        "2a118f4b-3447-44c7-a566-033cd2529b30-000009cd",
+        "2a118f4b-3447-44c7-a566-033cd2529b30-000009d5",
+        "2a118f4b-3447-44c7-a566-033cd2529b30-000009df",
+        "2a118f4b-3447-44c7-a566-033cd2529b30-000009e9",
+        "2a118f4b-3447-44c7-a566-033cd2529b30-000009f6",
+        "2a118f4b-3447-44c7-a566-033cd2529b30-00000a12",
+        "2a118f4b-3447-44c7-a566-033cd2529b30-00000a93",
+        "2a118f4b-3447-44c7-a566-033cd2529b30-00000aa0"
+      ],
+      "Id": "c0f285ace0f543548cc5c728b500beb8",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "b92359dffe4c4e8b80e1a1dceb666ea6",
+          "Name": "Elements",
+          "Description": "The selected elements.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Revit.Elements.Element.Geometry",
+      "Id": "05a265452f2b4742944e8d95dce4f990",
+      "Inputs": [
+        {
+          "Id": "b469904a1c2f46148c6ab5c86ced0e6e",
+          "Name": "element",
+          "Description": "Revit.Elements.Element",
+          "UsingDefaultValue": false,
+          "Level": 1,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "90d4b9826cfb43db81ea51746cdd2fa5",
+          "Name": "var[]",
+          "Description": "var[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Get all of the Geometry associated with this object\n\nElement.Geometry ( ): var[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Circle.CenterPoint",
+      "Id": "aa959f5f99e7453a89056591e5dd2f0b",
+      "Inputs": [
+        {
+          "Id": "7023894bc8ea40afafc5bd953ac0d1d5",
+          "Name": "circle",
+          "Description": "Autodesk.DesignScript.Geometry.Circle",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "0ae1e3c2081b4029b70b9e8ca7e904a1",
+          "Name": "Point",
+          "Description": "Point",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "The center of the circle\n\nCircle.CenterPoint: Point"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.Flatten@var[]..[],int",
+      "Id": "a2e54cd08a09476bad2ac56f243bb417",
+      "Inputs": [
+        {
+          "Id": "ab9a3bb8876e4dc08b7fe14334753d43",
+          "Name": "list",
+          "Description": "List to flatten.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "ed135acb0f6e4783b4b59f9260e3cb3a",
+          "Name": "amt",
+          "Description": "Layers of nesting to remove.\n\nint\nDefault value : -1",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "6da93adef04e46099725b9b601790e2a",
+          "Name": "var[]..[]",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Flattens a nested list of lists by a certain amount.\n\nList.Flatten (list: var[]..[], amt: int = -1): var[]..[]"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import System\r\nimport sys\r\npf_path = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ProgramFilesX86)\r\nsys.path.append('%s\\IronPython 2.7\\Lib' % pf_path)\r\n\r\nimport math\r\nimport random\r\nfrom cStringIO import StringIO\r\n\r\nsys.stdout = StringIO()\r\n\r\ndef distL2((x1,y1), (x2,y2)):\r\n    \"\"\"Compute the L2-norm (Euclidean) distance between two points.\r\n\r\n    The distance is rounded to the closest integer, for compatibility\r\n    with the TSPLIB convention.\r\n\r\n    The two points are located on coordinates (x1,y1) and (x2,y2),\r\n    sent as parameters\"\"\"\r\n    xdiff = x2 - x1\r\n    ydiff = y2 - y1\r\n    return int(math.sqrt(xdiff*xdiff + ydiff*ydiff) + .5)\r\n\r\n\r\ndef distL1((x1,y1), (x2,y2)):\r\n    \"\"\"Compute the L1-norm (Manhattan) distance between two points.\r\n\r\n    The distance is rounded to the closest integer, for compatibility\r\n    with the TSPLIB convention.\r\n\r\n    The two points are located on coordinates (x1,y1) and (x2,y2),\r\n    sent as parameters\"\"\"\r\n    return int(abs(x2-x1) + abs(y2-y1)+.5)\r\n\r\n\r\ndef mk_matrix(coord, dist):\r\n    \"\"\"Compute a distance matrix for a set of points.\r\n\r\n    Uses function 'dist' to calculate distance between\r\n    any two points.  Parameters:\r\n    -coord -- list of tuples with coordinates of all points, [(x1,y1),...,(xn,yn)]\r\n    -dist -- distance function\r\n    \"\"\"\r\n    n = len(coord)\r\n    D = {}      # dictionary to hold n times n matrix\r\n    for i in range(n-1):\r\n        for j in range(i+1,n):\r\n            (x1,y1) = coord[i]\r\n            (x2,y2) = coord[j]\r\n            D[i,j] = dist((x1,y1), (x2,y2))\r\n            D[j,i] = D[i,j]\r\n    return n,D\r\n\r\ndef read_tsplib(filename):\r\n    \"basic function for reading a TSP problem on the TSPLIB format\"\r\n    \"NOTE: only works for 2D euclidean or manhattan distances\"\r\n    f = open(filename, 'r');\r\n\r\n    line = f.readline()\r\n    while line.find(\"EDGE_WEIGHT_TYPE\") == -1:\r\n        line = f.readline()\r\n\r\n    if line.find(\"EUC_2D\") != -1:\r\n        dist = distL2\r\n    elif line.find(\"MAN_2D\") != -1:\r\n        dist = distL1\r\n    else:\r\n        print \"cannot deal with non-euclidean or non-manhattan distances\"\r\n        raise Exception\r\n\r\n    while line.find(\"NODE_COORD_SECTION\") == -1:\r\n        line = f.readline()\r\n\r\n    xy_positions = []\r\n    while 1:\r\n        line = f.readline()\r\n        if line.find(\"EOF\") != -1: break\r\n        (i,x,y) = line.split()\r\n        x = float(x)\r\n        y = float(y)\r\n        xy_positions.append((x,y))\r\n\r\n    n,D = mk_matrix(xy_positions, dist)\r\n    return n, xy_positions, D\r\n\r\n\r\ndef mk_closest(D, n):\r\n    \"\"\"Compute a sorted list of the distances for each of the nodes.\r\n\r\n    For each node, the entry is in the form [(d1,i1), (d2,i2), ...]\r\n    where each tuple is a pair (distance,node).\r\n    \"\"\"\r\n    C = []\r\n    for i in range(n):\r\n        dlist = [(D[i,j], j) for j in range(n) if j != i]\r\n        dlist.sort()\r\n        C.append(dlist)\r\n    return C\r\n\r\n\r\ndef length(tour, D):\r\n    \"\"\"Calculate the length of a tour according to distance matrix 'D'.\"\"\"\r\n    z = D[tour[-1], tour[0]]    # edge from last to first city of the tour\r\n    for i in range(1,len(tour)):\r\n        z += D[tour[i], tour[i-1]]      # add length of edge from city i-1 to i\r\n    return z\r\n\r\n\r\ndef randtour(n):\r\n    \"\"\"Construct a random tour of size 'n'.\"\"\"\r\n    sol = range(n)      # set solution equal to [0,1,...,n-1]\r\n    random.shuffle(sol) # place it in a random order\r\n    return sol\r\n\r\n\r\ndef nearest(last, unvisited, D):\r\n    \"\"\"Return the index of the node which is closest to 'last'.\"\"\"\r\n    near = unvisited[0]\r\n    min_dist = D[last, near]\r\n    for i in unvisited[1:]:\r\n        if D[last,i] < min_dist:\r\n            near = i\r\n            min_dist = D[last, near]\r\n    return near\r\n\r\n\r\ndef nearest_neighbor(n, i, D):\r\n    \"\"\"Return tour starting from city 'i', using the Nearest Neighbor.\r\n\r\n    Uses the Nearest Neighbor heuristic to construct a solution:\r\n    - start visiting city i\r\n    - while there are unvisited cities, follow to the closest one\r\n    - return to city i\r\n    \"\"\"\r\n    unvisited = range(n)\r\n    unvisited.remove(i)\r\n    last = i\r\n    tour = [i]\r\n    while unvisited != []:\r\n        next = nearest(last, unvisited, D)\r\n        tour.append(next)\r\n        unvisited.remove(next)\r\n        last = next\r\n    return tour\r\n\r\n\r\n\r\ndef exchange_cost(tour, i, j, D):\r\n    \"\"\"Calculate the cost of exchanging two arcs in a tour.\r\n\r\n    Determine the variation in the tour length if\r\n    arcs (i,i+1) and (j,j+1) are removed,\r\n    and replaced by (i,j) and (i+1,j+1)\r\n    (note the exception for the last arc).\r\n\r\n    Parameters:\r\n    -t -- a tour\r\n    -i -- position of the first arc\r\n    -j>i -- position of the second arc\r\n    \"\"\"\r\n    n = len(tour)\r\n    a,b = tour[i],tour[(i+1)%n]\r\n    c,d = tour[j],tour[(j+1)%n]\r\n    return (D[a,c] + D[b,d]) - (D[a,b] + D[c,d])\r\n\r\n\r\ndef exchange(tour, tinv, i, j):\r\n    \"\"\"Exchange arcs (i,i+1) and (j,j+1) with (i,j) and (i+1,j+1).\r\n\r\n    For the given tour 't', remove the arcs (i,i+1) and (j,j+1) and\r\n    insert (i,j) and (i+1,j+1).\r\n\r\n    This is done by inverting the sublist of cities between i and j.\r\n    \"\"\"\r\n    n = len(tour)\r\n    if i>j:\r\n        i,j = j,i\r\n    assert i>=0 and i<j-1 and j<n\r\n    path = tour[i+1:j+1]\r\n    path.reverse()\r\n    tour[i+1:j+1] = path\r\n    for k in range(i+1,j+1):\r\n        tinv[tour[k]] = k\r\n\r\n\r\ndef improve(tour, z, D, C):\r\n    \"\"\"Try to improve tour 't' by exchanging arcs; return improved tour length.\r\n\r\n    If possible, make a series of local improvements on the solution 'tour',\r\n    using a breadth first strategy, until reaching a local optimum.\r\n    \"\"\"\r\n    n = len(tour)\r\n    tinv = [0 for i in tour]\r\n    for k in range(n):\r\n        tinv[tour[k]] = k  # position of each city in 't'\r\n    for i in range(n):\r\n        a,b = tour[i],tour[(i+1)%n]\r\n        dist_ab = D[a,b]\r\n        improved = False\r\n        for dist_ac,c in C[a]:\r\n            if dist_ac >= dist_ab:\r\n                break\r\n            j = tinv[c]\r\n            d = tour[(j+1)%n]\r\n            dist_cd = D[c,d]\r\n            dist_bd = D[b,d]\r\n            delta = (dist_ac + dist_bd) - (dist_ab + dist_cd)\r\n            if delta < 0:       # exchange decreases length\r\n                exchange(tour, tinv, i, j);\r\n                z += delta\r\n                improved = True\r\n                break\r\n        if improved:\r\n            continue\r\n        for dist_bd,d in C[b]:\r\n            if dist_bd >= dist_ab:\r\n                break\r\n            j = tinv[d]-1\r\n            if j==-1:\r\n                j=n-1\r\n            c = tour[j]\r\n            dist_cd = D[c,d]\r\n            dist_ac = D[a,c]\r\n            delta = (dist_ac + dist_bd) - (dist_ab + dist_cd)\r\n            if delta < 0:       # exchange decreases length\r\n                exchange(tour, tinv, i, j);\r\n                z += delta\r\n                break\r\n    return z\r\n\r\n\r\ndef localsearch(tour, z, D, C=None):\r\n    \"\"\"Obtain a local optimum starting from solution t; return solution length.\r\n\r\n    Parameters:\r\n      tour -- initial tour\r\n      z -- length of the initial tour\r\n      D -- distance matrix\r\n    \"\"\"\r\n    n = len(tour)\r\n    if C == None:\r\n        C = mk_closest(D, n)     # create a sorted list of distances to each node\r\n    while 1:\r\n        newz = improve(tour, z, D, C)\r\n        if newz < z:\r\n            z = newz\r\n        else:\r\n            break\r\n    return z\r\n\r\n\r\ndef multistart_localsearch(k, n, D, report=None):\r\n    \"\"\"Do k iterations of local search, starting from random solutions.\r\n\r\n    Parameters:\r\n    -k -- number of iterations\r\n    -D -- distance matrix\r\n    -report -- if not None, call it to print verbose output\r\n\r\n    Returns best solution and its cost.\r\n    \"\"\"\r\n    C = mk_closest(D, n) # create a sorted list of distances to each node\r\n    bestt=None\r\n    bestz=None\r\n    for i in range(0,k):\r\n        tour = randtour(n)\r\n        z = length(tour, D)\r\n        z = localsearch(tour, z, D, C)\r\n        if z < bestz or bestz == None:\r\n            bestz = z\r\n            bestt = list(tour)\r\n            if report:\r\n                report(z, tour)\r\n\r\n    return bestt, bestz\r\n\r\n\r\n\r\n\"\"\"Local search for the Travelling Saleman Problem: sample usage.\"\"\"\r\n\r\ncoord = [(p.X, p.Y) for p in IN[0] ]\r\nn, D = mk_matrix(coord, distL2) # create the distance matrix\r\ninstance = \"toy problem\"\r\n\r\n# function for printing best found solution when it is found\r\nfrom time import clock\r\ninit = clock()\r\ndef report_sol(obj, s=\"\"):\r\n    print \"cpu:%g\\tobj:%g\" % \\\r\n          (clock(), obj)\r\n\r\n\r\nprint \"*** travelling salesman problem ***\"\r\n\r\n# random construction\r\nprint \"random construction + local search:\"\r\ntour = randtour(n)     # create a random tour\r\nz = length(tour, D)     # calculate its length\r\nprint \"random:\", z, '  -->  ',   \r\nz = localsearch(tour, z, D)      # local search starting from the random tour\r\nprint z\r\n\r\n# greedy construction\r\nprint \"greedy with nearest neighbor + local search:\"\r\nfor i in xrange(5):\r\n    tour = nearest_neighbor(n, i, D)     # create a greedy tour, visiting city 'i' first\r\n    z = length(tour, D)\r\n    print \"nneigh attempt %i:\" % i, z, '  -->  ',\r\n    z = localsearch(tour, z, D)\r\n    print z\r\nprint\r\n\r\n# multi-start local search\r\nprint \"random start local search:\"\r\nniter = 10\r\ntour,z = multistart_localsearch(niter, n, D, report_sol)\r\nassert z == length(tour, D)\r\nprint \"best found (%i iterations): z = %g\" % (niter, z)\r\n\r\nsys.stdout.seek(0)\r\nOUT = tour, sys.stdout.read()",
+      "VariableInputPorts": true,
+      "Id": "82e72460bd924c5bac4c588a293c85c5",
+      "Inputs": [
+        {
+          "Id": "eacc64ee64204ea5b9f9d633d7ff88e4",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "ef6206e5292d412da32f8bcd5c14bbfa",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Point.ByCoordinates@double,double,double",
+      "Id": "f52ef936ed6b4263a6ad951e4318409a",
+      "Inputs": [
+        {
+          "Id": "dd81455d71be43c6822686bc81d675ef",
+          "Name": "x",
+          "Description": "double\nDefault value : 0",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "5b4731b74bca4b999d7f2202fcd95d06",
+          "Name": "y",
+          "Description": "double\nDefault value : 0",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "311ab13b05474a71a7eaba01c3f040c7",
+          "Name": "z",
+          "Description": "double\nDefault value : 0",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "01f95cf85dbd44658ff1822dd47b69a0",
+          "Name": "Point",
+          "Description": "Point",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Form a Point given 3 cartesian coordinates\n\nPoint.ByCoordinates (x: double = 0, y: double = 0, z: double = 0): Point"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "1..20;",
+      "Id": "b2b9b8f90aca4048a1c5e1ba9d4b9d36",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "9769fe170f6b479787e2c9d8d9385fb5",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.GetItemAtIndex@var[]..[],int",
+      "Id": "9466ca3225b6452297090f4a990df3e4",
+      "Inputs": [
+        {
+          "Id": "6a0a7bc273d44713a33b6f0feb6e9997",
+          "Name": "list",
+          "Description": "List to fetch an item from.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "14706aa1c662484d8dd7c562a7482e42",
+          "Name": "index",
+          "Description": "Index of the item to be fetched.\n\nint",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "e7268ca8c87b40619fb651f37378a3ae",
+          "Name": "item",
+          "Description": "Item in the list at the given index.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Returns an item from the given list that's located at the specified index.\n\nList.GetItemAtIndex (list: var[]..[], index: int): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "a[0];",
+      "Id": "d960929ccc5647a7a85f2d025d8ef21d",
+      "Inputs": [
+        {
+          "Id": "ac48f23f520c4f2ea5806de6e0ac3078",
+          "Name": "a",
+          "Description": "a",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "1c938e67c359481395bfee1103c09b71",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.PolyCurve.ByPoints@Autodesk.DesignScript.Geometry.Point[],bool",
+      "Id": "0efbd4291e5f44ebb371150c9f579eb1",
+      "Inputs": [
+        {
+          "Id": "5f43ead073ec439aad0a08202a97576d",
+          "Name": "points",
+          "Description": "Points to make polycurve\n\nPoint[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "2a898253fd824269a2327065267f6a5f",
+          "Name": "connectLastToFirst",
+          "Description": "make close or open polycurve\n\nbool\nDefault value : false",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "691791ee6fa9433394f23b7eee041606",
+          "Name": "PolyCurve",
+          "Description": "PolyCurve",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Make PolyCurve by connecting points. Set the 'connectLastToFirst' input to true to close the PolyCurve.\n\nPolyCurve.ByPoints (points: Point[], connectLastToFirst: bool = false): PolyCurve"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Geometry.Explode",
+      "Id": "0a04703d9a254d18a24683e5aa9e8677",
+      "Inputs": [
+        {
+          "Id": "153a2d3f840f4d20998c46955ea44709",
+          "Name": "geometry",
+          "Description": "Autodesk.DesignScript.Geometry.Geometry",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "a4fecdbdac1f4e0480f73bd058f8a6b4",
+          "Name": "Geometry[]",
+          "Description": "Geometry[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Separates compound or non-separated elements into their component parts.\n\nGeometry.Explode ( ): Geometry[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Curve.Length",
+      "Id": "b97fba69be164dd1995e04ddd84c8c77",
+      "Inputs": [
+        {
+          "Id": "e18f518be37049988972c67dd0bb8164",
+          "Name": "curve",
+          "Description": "Autodesk.DesignScript.Geometry.Curve",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "d85fc21bd4c54cb7b80447910a5c914a",
+          "Name": "double",
+          "Description": "double",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "The total arc length of the curve\n\nCurve.Length: double"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSModelElementSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "2a118f4b-3447-44c7-a566-033cd2529b30-00001360"
+      ],
+      "Id": "6ddb5bf61e394e7293cd11f67c48ee66",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "59b863a8cadf494e9a63f2e322188510",
+          "Name": "Element",
+          "Description": "The selected elements.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Revit.Elements.Element.Geometry",
+      "Id": "f8063f533dde448786303d9a714b58b5",
+      "Inputs": [
+        {
+          "Id": "06abda90ad5046808649196493739890",
+          "Name": "element",
+          "Description": "Revit.Elements.Element",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "9e3f527b6e574055b65406498f39d2a6",
+          "Name": "var[]",
+          "Description": "var[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Get all of the Geometry associated with this object\n\nElement.Geometry ( ): var[]"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "b92359dffe4c4e8b80e1a1dceb666ea6",
+      "End": "b469904a1c2f46148c6ab5c86ced0e6e",
+      "Id": "639db438796645fcad37dfb9028b80e0"
+    },
+    {
+      "Start": "90d4b9826cfb43db81ea51746cdd2fa5",
+      "End": "7023894bc8ea40afafc5bd953ac0d1d5",
+      "Id": "00c8b432fe8e4bc2ac1345e69ab789b8"
+    },
+    {
+      "Start": "0ae1e3c2081b4029b70b9e8ca7e904a1",
+      "End": "ab9a3bb8876e4dc08b7fe14334753d43",
+      "Id": "509b1d1e0b7f468fbb36f0a7c39eeea0"
+    },
+    {
+      "Start": "6da93adef04e46099725b9b601790e2a",
+      "End": "eacc64ee64204ea5b9f9d633d7ff88e4",
+      "Id": "c3ed01527661474dbf69c1ef7dd6fff5"
+    },
+    {
+      "Start": "6da93adef04e46099725b9b601790e2a",
+      "End": "6a0a7bc273d44713a33b6f0feb6e9997",
+      "Id": "36120fe3ab7a4ce28319aab4cdccf446"
+    },
+    {
+      "Start": "ef6206e5292d412da32f8bcd5c14bbfa",
+      "End": "14706aa1c662484d8dd7c562a7482e42",
+      "Id": "1c8b8589d5084fb1bb437152a1d57d22"
+    },
+    {
+      "Start": "9769fe170f6b479787e2c9d8d9385fb5",
+      "End": "dd81455d71be43c6822686bc81d675ef",
+      "Id": "ca025428e8da4ce590c74fb634c6818f"
+    },
+    {
+      "Start": "9769fe170f6b479787e2c9d8d9385fb5",
+      "End": "5b4731b74bca4b999d7f2202fcd95d06",
+      "Id": "0f484819c8274c169860e47dc9dcd2cf"
+    },
+    {
+      "Start": "9769fe170f6b479787e2c9d8d9385fb5",
+      "End": "311ab13b05474a71a7eaba01c3f040c7",
+      "Id": "b57932567f694ebcad3e4e07caa75b98"
+    },
+    {
+      "Start": "e7268ca8c87b40619fb651f37378a3ae",
+      "End": "ac48f23f520c4f2ea5806de6e0ac3078",
+      "Id": "4913bf46aac84e949467689c1b4eeb75"
+    },
+    {
+      "Start": "1c938e67c359481395bfee1103c09b71",
+      "End": "5f43ead073ec439aad0a08202a97576d",
+      "Id": "98cc47b5161e4e3da007d6635242713f"
+    },
+    {
+      "Start": "691791ee6fa9433394f23b7eee041606",
+      "End": "153a2d3f840f4d20998c46955ea44709",
+      "Id": "a8d9bb9a8c4741e593393beed0be0efc"
+    },
+    {
+      "Start": "a4fecdbdac1f4e0480f73bd058f8a6b4",
+      "End": "e799223d9bf3416eaa66d280a70c98d1",
+      "Id": "09e150c503cc484db76a5bce693d718d"
+    },
+    {
+      "Start": "a4fecdbdac1f4e0480f73bd058f8a6b4",
+      "End": "e18f518be37049988972c67dd0bb8164",
+      "Id": "fc80f69718c6464bb0bd602365c25e76"
+    },
+    {
+      "Start": "d85fc21bd4c54cb7b80447910a5c914a",
+      "End": "33766bb6668e41a9b6dd803d653302c1",
+      "Id": "525c8de47598451f8b718f2f16fdfea1"
+    },
+    {
+      "Start": "59b863a8cadf494e9a63f2e322188510",
+      "End": "06abda90ad5046808649196493739890",
+      "Id": "03b56a2d3d2a43748924a88c9e645843"
+    },
+    {
+      "Start": "9e3f527b6e574055b65406498f39d2a6",
+      "End": "54ac2e1710534fd098ab7e39645df364",
+      "Id": "f500fc80fdd143ae8f39f3622793c9f6"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.1.0.6255",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Curves.ShortestWalk",
+        "Id": "fc27466ea7334e488a8ab50845aa64e2",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 3171.1138190481161,
+        "Y": -230.54456740817022
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Model Elements",
+        "Id": "c0f285ace0f543548cc5c728b500beb8",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -82.350789716106647,
+        "Y": -222.21113228654889
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Element.Geometry",
+        "Id": "05a265452f2b4742944e8d95dce4f990",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 281.62280311678944,
+        "Y": -237.04385807342993
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Circle.CenterPoint",
+        "Id": "aa959f5f99e7453a89056591e5dd2f0b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 579.60156095449975,
+        "Y": -280.41228223899435
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "List.Flatten",
+        "Id": "a2e54cd08a09476bad2ac56f243bb417",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 877.70813417524016,
+        "Y": -387.47668951177872
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "82e72460bd924c5bac4c588a293c85c5",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1241.8566529521479,
+        "Y": -243.61414768383275
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Point.ByCoordinates",
+        "Id": "f52ef936ed6b4263a6ad951e4318409a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 821.28947050932641,
+        "Y": 63.5153967092956
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "b2b9b8f90aca4048a1c5e1ba9d4b9d36",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 539.0,
+        "Y": 49.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "List.GetItemAtIndex",
+        "Id": "9466ca3225b6452297090f4a990df3e4",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1524.1956442745729,
+        "Y": -387.40056716903922
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "d960929ccc5647a7a85f2d025d8ef21d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1845.6836869237368,
+        "Y": -390.84835081512739
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "PolyCurve.ByPoints",
+        "Id": "0efbd4291e5f44ebb371150c9f579eb1",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2001.5167668568376,
+        "Y": -386.17667545386348
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Geometry.Explode",
+        "Id": "0a04703d9a254d18a24683e5aa9e8677",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2366.8297096338829,
+        "Y": -406.74201285315411
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Curve.Length",
+        "Id": "b97fba69be164dd1995e04ddd84c8c77",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2694.486499658336,
+        "Y": -149.10864972908871
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Model Element",
+        "Id": "6ddb5bf61e394e7293cd11f67c48ee66",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2181.8621668781439,
+        "Y": 38.501286494589976
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Element.Geometry",
+        "Id": "f8063f533dde448786303d9a714b58b5",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2640.317433565584,
+        "Y": 267.06832147132491
+      }
+    ],
+    "Annotations": [],
+    "X": -1124.4286712794751,
+    "Y": 503.85877863252665,
+    "Zoom": 0.75688954891333737
+  }
+}

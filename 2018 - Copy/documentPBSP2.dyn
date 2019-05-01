@@ -1,0 +1,82 @@
+<Workspace Version="1.3.3.4651" X="43.4047045271523" Y="96.6483471466938" zoom="0.798825425049558" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSRevitNodesUI.ElementTypes guid="22435a19-311e-4f81-aa10-a61412ad4230" type="DSRevitNodesUI.ElementTypes" nickname="Element Types" x="469.115703276279" y="216.702504840937" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false" index="26:BasePoint" />
+    <DSRevitNodesUI.ElementsOfType guid="d47f9a7f-cecf-40f2-9977-64ad8044da76" type="DSRevitNodesUI.ElementsOfType" nickname="All Elements of Type" x="711.816023738872" y="216.721068249258" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true">
+      <PortInfo index="0" default="False" />
+    </DSRevitNodesUI.ElementsOfType>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="68f22f08-87d1-4bc9-bf74-00ec4fcbef67" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.GetParameterValueByName" x="1068.54699706438" y="302.307643980388" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="RevitNodes.dll" function="Revit.Elements.Element.GetParameterValueByName@string">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="6a4a439d-9251-4a5f-8962-ed0fa36315b1" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="806.189870626148" y="431.423173120905" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;N/S&quot;;" ShouldFocus="false" />
+    <PythonNodeModels.PythonNode guid="ff068f2e-0799-4fef-b3b0-732f503c4224" type="PythonNodeModels.PythonNode" nickname="Python Script" x="1105.02840939719" y="543.959229305388" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="2">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+ele = UnwrapElement(IN[0])
+
+name = IN[1]
+
+def GetParam(element, paramName):
+	value = []
+	for p in element.Parameters:
+		if p.Definition.Name == paramName:
+			ProjectUnits = p.DisplayUnitType
+			newVal = UnitUtils.ConvertFromInternalUnits(p.AsDouble(),ProjectUnits)
+			value.append(newVal)
+	return value
+
+result = []
+
+for e in ele:
+	sub = []
+	result.append(sub)
+	for n in name:
+		if GetParam(e,n):
+			sub.append(GetParam(e,n)[0])
+		else:
+			sub.append("N/A")
+
+
+
+OUT = result</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="78f60386-5448-4f26-bfbd-fbbaaf59ed69" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Object.Type" x="1418.92980045786" y="299.687820318974" isVisible="true" isUpstreamVisible="true" lacing="Longest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="DSCoreNodes.dll" function="DSCore.Object.Type@var">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="14f80a6a-cd4e-4b38-87b7-c0e324b0f4cd" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.Parameters" x="1102.66333917646" y="-98.0447225231931" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="RevitNodes.dll" function="Revit.Elements.Element.Parameters">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="204e86b6-c977-4109-8fc0-4d37cfc7cc66" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="677.190795962517" y="573.570402973026" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="{&quot;E/W&quot;,&quot;N/S&quot;, &quot;Angle to True North&quot;};" ShouldFocus="false" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="22435a19-311e-4f81-aa10-a61412ad4230" start_index="0" end="d47f9a7f-cecf-40f2-9977-64ad8044da76" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="d47f9a7f-cecf-40f2-9977-64ad8044da76" start_index="0" end="68f22f08-87d1-4bc9-bf74-00ec4fcbef67" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="d47f9a7f-cecf-40f2-9977-64ad8044da76" start_index="0" end="ff068f2e-0799-4fef-b3b0-732f503c4224" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="d47f9a7f-cecf-40f2-9977-64ad8044da76" start_index="0" end="14f80a6a-cd4e-4b38-87b7-c0e324b0f4cd" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="68f22f08-87d1-4bc9-bf74-00ec4fcbef67" start_index="0" end="78f60386-5448-4f26-bfbd-fbbaaf59ed69" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="6a4a439d-9251-4a5f-8962-ed0fa36315b1" start_index="0" end="68f22f08-87d1-4bc9-bf74-00ec4fcbef67" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="204e86b6-c977-4109-8fc0-4d37cfc7cc66" start_index="0" end="ff068f2e-0799-4fef-b3b0-732f503c4224" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

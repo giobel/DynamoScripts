@@ -1,0 +1,282 @@
+<Workspace Version="0.8.2.2392" X="689.691830911483" Y="-125.236087864372" zoom="0.984982767938826" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSCore.File.Filename guid="5d2d0921-d778-4dfb-acb4-2e45519a8356" type="DSCore.File.Filename" nickname="File Path" x="-1723.75428902842" y="404.534241172155" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <System.String>C:\Users\giovanni.brogiolo\Documents\Project2_giovanni.brogiolo.rvt</System.String>
+    </DSCore.File.Filename>
+    <DSIronPythonNode.PythonNode guid="17219ee3-268e-4c02-9abb-1daf52da69c0" type="DSIronPythonNode.PythonNode" nickname="Background Open" x="-717.760180070317" y="88.1410519479479" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>#Copyright(c) 2017, john pierson
+# @60secondrevit, http://sixtysecondrevit.com
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+# Import Element wrapper extension methods
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+# Import geometry conversion extension methods
+clr.ImportExtensions(Revit.GeometryConversion)
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+items = IN[0]
+
+typelist = list()
+for i in items:
+	try:
+		typelist.append(app.OpenDocumentFile(i))
+	except:
+		typelist.append(list())
+		
+OUT = typelist</Script>
+    </DSIronPythonNode.PythonNode>
+    <DSIronPythonNode.PythonNode guid="9a63e34e-7fd6-4542-a08e-725c8fbc828c" type="DSIronPythonNode.PythonNode" nickname="Get All Elements From Linked Model" x="-188.931135565595" y="215.66825961033" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>#Copyright(c) 2015, Konrad Sobon
+# @arch_laboratory, http://archi-lab.net
+
+# This node is based on Julien Benoit's Element.GetElementFromLinkedFile 
+# node. Some slight improvements were made removing unnecessary imports/references.
+# Big thank you to Julien for sharing his work. 
+
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+import System
+
+import sys
+pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
+sys.path.append(pyt_path)
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+_linkDoc = IN[0]
+_category = IN[1]
+
+try:
+	errorReport = None
+	filter = ElementCategoryFilter(System.Enum.ToObject(BuiltInCategory, _category.Id))
+	result = FilteredElementCollector(_linkDoc).WherePasses(filter).WhereElementIsNotElementType().ToElements()
+except:
+	# if error accurs anywhere in the process catch it
+	import traceback
+	errorReport = traceback.format_exc()
+
+#Assign your output to the OUT variable
+if errorReport == None:
+	OUT = result
+else:
+	OUT = errorReport</Script>
+    </DSIronPythonNode.PythonNode>
+    <DSRevitNodesUI.Categories guid="146eb1dd-3a3c-40c2-9bd3-e1f1e940e5b0" type="DSRevitNodesUI.Categories" nickname="Categories" x="-461.214362378447" y="318.155332910049" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" index="733:Sheets" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="5adf805b-e336-4e38-9052-e9093cded7d2" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-1046" y="271" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="Flatten({item});" ShouldFocus="false" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="f38d01ae-354e-416b-843c-b3b9427614a8" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-457" y="218" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="a[0];" ShouldFocus="false" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="6fbcdb06-073b-410f-a052-da92c3fc5e71" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="126.724585326476" y="214.521267938282" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="a[0];" ShouldFocus="false" />
+    <DSIronPythonNode.PythonNode guid="a7267aeb-50d2-4dd3-b07d-7fafa7a9aed7" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="488.964108067476" y="436.586170873005" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="8">
+      <Script>#Copyright(c) 2015, Konrad K Sobon
+# @arch_laboratory, http://archi-lab.net
+
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+# Import Element wrapper extension methods
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+# Import geometry conversion extension methods
+clr.ImportExtensions(Revit.GeometryConversion)
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+import sys
+pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
+sys.path.append(pyt_path)
+import System
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+sheets = IN[0]
+pRange = System.Enum.Parse(Autodesk.Revit.DB.PrintRange, IN[1])
+combined = IN[2]
+printerName = IN[3]
+printSetting = IN[4]
+filePath = IN[5]
+runIt = IN[6]
+
+if isinstance(sheets, list):
+	viewSheets = []
+	for i in sheets:
+		viewSheets.append(UnwrapElement(i))
+else:
+	viewSheets = UnwrapElement(sheets)
+
+def PrintView(doc, sheet, pRange, printerName, combined, filePath, printSetting):
+	# create view set 
+	viewSet = ViewSet()
+	viewSet.Insert(sheet)
+	# determine print range
+	printManager = doc.PrintManager
+	printManager.PrintRange = pRange
+	printManager.Apply()
+	# make new view set current
+	viewSheetSetting = printManager.ViewSheetSetting
+	viewSheetSetting.CurrentViewSheetSet.Views = viewSet
+	# set printer
+	printManager.SelectNewPrintDriver(printerName)
+	printManager.Apply()
+	# set combined and print to file
+	if printManager.IsVirtual:
+		printManager.CombinedFile = combined
+		printManager.Apply()
+		printManager.PrintToFile = True
+		printManager.Apply()
+	else:
+		printManager.CombinedFile = combined
+		printManager.Apply()
+		printManager.PrintToFile = False
+		printManager.Apply()
+	# set file path
+	printManager.PrintToFileName = filePath
+	printManager.Apply()
+	# apply print setting
+	try:
+		printSetup = printManager.PrintSetup
+		printSetup.CurrentPrintSetting = printSetting
+		printManager.Apply()
+	except:
+		pass
+	# save settings and submit print
+	TransactionManager.Instance.EnsureInTransaction(doc)
+	viewSheetSetting.SaveAs("tempSetName")
+	printManager.Apply()
+	printManager.SubmitPrint()
+	viewSheetSetting.Delete()
+	TransactionManager.Instance.TransactionTaskDone()
+	
+	return True
+
+try:
+	viewSets = FilteredElementCollector(doc).OfClass(ViewSheetSet)
+	for i in viewSets:
+		if i.Name == "tempSetName":
+			TransactionManager.Instance.EnsureInTransaction(doc)
+			doc.Delete(i.Id)
+			TransactionManager.Instance.ForceCloseTransaction()
+		else:
+			continue
+		
+	errorReport = None
+	message = "Success"
+	if runIt:
+		if isinstance(viewSheets, list) and isinstance(printSetting, list):
+			for i, j in zip(viewSheets, printSetting):
+				PrintView(doc, i, pRange, printerName, combined, filePath, j)
+		elif isinstance(viewSheets, list) and not isinstance(printSetting, list):
+			for i in viewSheets:
+				PrintView(doc, i, pRange, printerName, combined, filePath, printSetting)
+		elif not isinstance(viewSheets, list) and not isinstance(printSetting, list):
+			PrintView(doc, viewSheets, pRange, printerName, combined, filePath, printSetting)
+	else:
+		message = "Set RunIt to True"
+except:
+	# if error accurs anywhere in the process catch it
+	import traceback
+	errorReport = traceback.format_exc()
+	
+#Assign your output to the OUT variable
+if errorReport == None:
+	OUT = message
+else:
+	OUT = errorReport</Script>
+    </DSIronPythonNode.PythonNode>
+    <archilabUI.PrintSettingUI guid="e03bf3d1-525f-4ab3-aa65-83927c28dcdc" type="archilabUI.PrintSettingUI" nickname="Print Settings" x="109.680148200692" y="661.411543248591" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" index="0:a1" />
+    <DSCoreNodesUI.BoolSelector guid="ecd530ee-b528-4649-98fe-23d842f9b764" type="DSCoreNodesUI.BoolSelector" nickname="Boolean" x="151.355095275191" y="766.695620068377" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <System.Boolean>True</System.Boolean>
+    </DSCoreNodesUI.BoolSelector>
+    <Dynamo.Nodes.Function guid="5bbca0ab-bb02-4277-ad88-e22bd930afc5" type="Dynamo.Nodes.Function" nickname="Local Printers Names" x="-409.22605837882" y="622.126113931317" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="True">
+      <ID value="d9b10d29-5b00-40f3-8e8d-51f425ece54e" />
+      <Name value="Local Printers Names" />
+      <Description value="This node will query all locally installed printers and return their names." />
+      <Inputs />
+      <Outputs>
+        <Output value="OUT" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="75915d08-0158-4925-a2ea-879c2e8b4d3b" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-143.631104194567" y="624.322764817295" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="a[4];" ShouldFocus="false" />
+    <DSCore.File.Filename guid="52243eb4-3ba2-40e2-8fa5-3c163262badc" type="DSCore.File.Filename" nickname="File Path" x="-244.628104954618" y="500.837313951722" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <System.String>C:\Users\giovanni.brogiolo\Documents\bbb.pdf</System.String>
+    </DSCore.File.Filename>
+    <DSCoreNodesUI.BoolSelector guid="f88005f9-3024-41e1-a313-7ef239865987" type="DSCoreNodesUI.BoolSelector" nickname="Boolean" x="101.472612020028" y="530.231410249349" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <System.Boolean>True</System.Boolean>
+    </DSCoreNodesUI.BoolSelector>
+    <archilabUI.PrintRangeUI guid="f4924796-bb2f-4a94-aa91-9612af8770af" type="archilabUI.PrintRangeUI" nickname="Print Range" x="-52.8566923953598" y="409.548775118489" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" index="1:Select" />
+    <Dynamo.Nodes.StringInput guid="3768066c-1b9b-4706-b6de-f0fb61cc330b" type="Dynamo.Nodes.StringInput" nickname="String" x="-1351.09012300575" y="425.595491142451" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <System.String>C:\Users\giovanni.brogiolo\Desktop\Project2.rvt</System.String>
+      <System.String value="C:\Users\giovanni.brogiolo\Desktop\Project2.rvt" />
+    </Dynamo.Nodes.StringInput>
+    <Dynamo.Nodes.StringInput guid="9b3035e1-272f-4716-9567-a8eff94f4d66" type="Dynamo.Nodes.StringInput" nickname="String" x="-458.784747267327" y="492.948528249861" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <System.String>C:\Users\giovanni.brogiolo\Documents\Project33.pdf</System.String>
+      <System.String value="C:\Users\giovanni.brogiolo\Documents\Project33.pdf" />
+    </Dynamo.Nodes.StringInput>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="17219ee3-268e-4c02-9abb-1daf52da69c0" start_index="0" end="f38d01ae-354e-416b-843c-b3b9427614a8" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9a63e34e-7fd6-4542-a08e-725c8fbc828c" start_index="0" end="6fbcdb06-073b-410f-a052-da92c3fc5e71" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="146eb1dd-3a3c-40c2-9bd3-e1f1e940e5b0" start_index="0" end="9a63e34e-7fd6-4542-a08e-725c8fbc828c" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="5adf805b-e336-4e38-9052-e9093cded7d2" start_index="0" end="17219ee3-268e-4c02-9abb-1daf52da69c0" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f38d01ae-354e-416b-843c-b3b9427614a8" start_index="0" end="9a63e34e-7fd6-4542-a08e-725c8fbc828c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6fbcdb06-073b-410f-a052-da92c3fc5e71" start_index="0" end="a7267aeb-50d2-4dd3-b07d-7fafa7a9aed7" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e03bf3d1-525f-4ab3-aa65-83927c28dcdc" start_index="0" end="a7267aeb-50d2-4dd3-b07d-7fafa7a9aed7" end_index="4" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ecd530ee-b528-4649-98fe-23d842f9b764" start_index="0" end="a7267aeb-50d2-4dd3-b07d-7fafa7a9aed7" end_index="6" portType="0" />
+    <Dynamo.Models.ConnectorModel start="5bbca0ab-bb02-4277-ad88-e22bd930afc5" start_index="0" end="75915d08-0158-4925-a2ea-879c2e8b4d3b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="75915d08-0158-4925-a2ea-879c2e8b4d3b" start_index="0" end="a7267aeb-50d2-4dd3-b07d-7fafa7a9aed7" end_index="3" portType="0" />
+    <Dynamo.Models.ConnectorModel start="52243eb4-3ba2-40e2-8fa5-3c163262badc" start_index="0" end="a7267aeb-50d2-4dd3-b07d-7fafa7a9aed7" end_index="5" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f88005f9-3024-41e1-a313-7ef239865987" start_index="0" end="a7267aeb-50d2-4dd3-b07d-7fafa7a9aed7" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f4924796-bb2f-4a94-aa91-9612af8770af" start_index="0" end="a7267aeb-50d2-4dd3-b07d-7fafa7a9aed7" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3768066c-1b9b-4706-b6de-f0fb61cc330b" start_index="0" end="5adf805b-e336-4e38-9052-e9093cded7d2" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9b3035e1-272f-4716-9567-a8eff94f4d66" start_index="0" end="a7267aeb-50d2-4dd3-b07d-7fafa7a9aed7" end_index="7" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

@@ -1,0 +1,1573 @@
+{
+  "Uuid": "27fbfec8-bae7-46e5-9561-e59393c10c8e",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "Cast in plate place holder05",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\n\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.DB.Structure import *\r\n\r\nclr.AddReference('RevitAPIUI')\r\nfrom Autodesk.Revit.UI import *\r\n\r\nclr.AddReference('System')\r\nfrom System.Collections.Generic import List\r\n\r\nclr.AddReference('RevitNodes')\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference('RevitServices')\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nimport math\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n\r\n### INPUTS###\r\n\r\nif isinstance(IN[0], list):\r\n\telements = UnwrapElement(IN[0])\r\nelse:\r\n\telements = [UnwrapElement(IN[0])]\r\n\r\nfs = UnwrapElement(IN[1])\r\n\r\nexcelData = IN[2]\r\n\r\nplateOffset = IN[3]\r\n\r\n###\r\n\r\n\r\nclass beamType:\r\n\tdef __init__(self, beamType, CiPType, plateH, plateW):\r\n\t\tself.beamType = beamType\r\n\t\tself.CiPType = CiPType\r\n\t\tself.plateH = plateH\r\n\t\tself.plateW = plateW\r\n\tdef printOut(self):\r\n\t\treturn [self.beamType, self.CiPType, self.plateH, self.plateW]\r\n\r\n\r\n#loop through the beam types instances and find the instance by its name\r\ndef returnCiPInstance(beam, beamTypes):\r\n\tfor b in beamTypes:\r\n\t\tif b.beamType in beam.Name:\r\n\t\t\treturn b\r\n\t\t\t\r\nCiPs = []\r\n\r\nfor list in excelData:\r\n\tCiPs.append(beamType(list[0],list[1],list[2],list[3]))\r\n\t\r\n\r\ndef BeamLength(beam):\r\n\treturn beam.Location.Curve.Length\r\n\r\ndef BeamMidPoint(beam):\r\n\treturn beam.Location.Curve.Evaluate(0.5,True)\r\n\r\n##DIFFERENT FROM BEAM HAND ORIENTATION!\r\ndef BeamEndDirection(beam):\r\n\tstPt = beam.Location.Curve.GetEndPoint(0)\r\n\tendPt = beam.Location.Curve.GetEndPoint(0)\r\n\treturn stPt - endPt\r\n\r\ndef LocCurveDirection(beam):\r\n\treturn beam.Location.Curve.Direction\r\n\r\ndef BeamDirection(beam):\r\n\treturn beam.HandOrientation\r\n\t\r\n\r\ndef RaybounceFaceWalls(center, direction, view, beam):\r\n\ttry:\r\n\t\tfilter = ElementClassFilter(Wall);\r\n\t\trefIntersector = ReferenceIntersector(filter, FindReferenceTarget.Face, view);\r\n\t\treferenceWithContext = refIntersector.FindNearest(center, direction)\r\n\t\treference = referenceWithContext.GetReference()\r\n\t\tif abs(center.DistanceTo(reference.GlobalPoint)) - BeamLength(beam)*0.5 < IN[4]: # in feet!!\r\n\t\t\treturn [reference, reference.GlobalPoint]\r\n\t\telse:\r\n\t\t\treturn \"too far\"\r\n\texcept:\r\n\t\treturn \"not found\"\r\n\r\n\r\ndef GetBeamZOffset(element):\r\n\tp = element.get_Parameter(BuiltInParameter.Z_OFFSET_VALUE)\r\n\tProjectUnits = p.DisplayUnitType\r\n\tzOffset = UnitUtils.ConvertFromInternalUnits(p.AsDouble(),ProjectUnits)\r\n\treturn -zOffset\r\n\t\r\n\t\r\n\r\ndef SetCipInstaParam(beam, cipInstance, CiPs, offset):\r\n\tcipType = returnCiPInstance(beam, CiPs)\r\n\terrors = []\r\n\ttry:\r\n\t\tp = cipInstance.LookupParameter(\"Plate Height\")\r\n\t\tp.Set(cipType.plateH/304.8)\r\n\texcept:\r\n\t\terrors.append(\"height failed\")\r\n\ttry:\r\n\t\tp = cipInstance.LookupParameter(\"Plate Width\")\r\n\t\tp.Set(cipType.plateW/304.8)\r\n\texcept:\r\n\t\terrors.append(\"width failed\")\r\n\ttry:\r\n\t\tp = cipInstance.LookupParameter(\"Top Offset\")\r\n\t\tp.Set((GetBeamZOffset(beam)-offset)/304.8)\r\n\texcept:\r\n\t\terrors.append(\"zOffset failed\")\r\n\ttry:\r\n\t\tp = cipInstance.LookupParameter(\"Beam Level\")\r\n\t\tworkPlane = beam.LookupParameter(\"Work Plane\").AsString()\r\n\t\tp.Set(workPlane)\r\n\texcept:\r\n\t\terrors.append(\"Beam level failed\")\r\n\ttry:\r\n\t\tp = cipInstance.LookupParameter(\"Beam Type\")\r\n\t\tp.Set(beam.Name)\r\n\texcept:\r\n\t\terrors.append(\"Beam Type failed\")\r\n\ttry:\r\n\t\tp = cipInstance.LookupParameter(\"CiP Type\")\r\n\t\tp.Set(cipType.CiPType)\r\n\texcept:\r\n\t\terrors.append(\"CiP type failed\")\r\n\ttry:\r\n\t\tlevel = beam.LookupParameter(\"Reference Level\").AsElementId()\r\n\t\tp = cipInstance.LookupParameter(\"Schedule Level\")\r\n\t\tp.Set(level)\r\n\texcept:\r\n\t\terrors.append(\"Schedule Level Failed\")\r\n\treturn errors\r\n\r\n\r\n\r\n\r\n\r\n\r\nview = doc.ActiveView\r\n\r\n\r\nbeams = []\r\npoints = []\r\n\r\n\r\nvoid = []\r\nerrors = []\r\nreferences = []\r\ncipList = []\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nfor e in elements:\r\n\tif e.Category.Name == \"Structural Framing\":\r\n\t\ttry:\r\n\t\t\tbeams.append(e)\r\n\t\t\tcenter = BeamMidPoint(e)\r\n\t\t\trayDirection = BeamDirection(e)\r\n\t\t\trb = RaybounceFaceWalls(center, rayDirection, view, e) #ray in beam direction from beam mid point\r\n\t\t\treverseDirection = -rayDirection\r\n\t\t\trc = RaybounceFaceWalls(center, reverseDirection, view, e) #ray in beam inverse direction from beam mid point\r\n\t\t\tif rb != \"not found\" and rc != \"not found\":\r\n\t\t\t\treferences.append(rb[0])\r\n\t\t\t\tpoints.append(rb[1])\r\n\t\t\t\treferences.append(rc[0])\r\n\t\t\t\tpoints.append(rc[1])\r\n\t\t\t\tcip1 = doc.Create.NewFamilyInstance.Overloads[Reference, XYZ, XYZ, FamilySymbol](rb[0], rb[1], rayDirection.CrossProduct(XYZ(0,0,1)), fs)\r\n\t\t\t\terrors.append(SetCipInstaParam(e, cip1, CiPs, plateOffset))\t#SetCipInstaParam(beam, cipInstance, beamTypes, offset):\r\n\t\t\t\tcipList.append(cip1)\r\n\t\t\t\tcip2 = doc.Create.NewFamilyInstance.Overloads[Reference, XYZ, XYZ, FamilySymbol](rc[0], rc[1], reverseDirection.CrossProduct(XYZ(0,0,1)), fs)\r\n\t\t\t\terrors.append(SetCipInstaParam(e, cip2, CiPs, plateOffset))\r\n\t\t\t\tcipList.append(cip2)\r\n\t\t\t\terrors.append(\"beam start point\")\r\n\t\t\t\terrors.append(\"beam end point\")\r\n\t\t\telif rc != \"not found\":\r\n\t\t\t\treferences.append(rc[0])\r\n\t\t\t\tpoints.append(rc[1])\r\n\t\t\t\tcip = doc.Create.NewFamilyInstance.Overloads[Reference, XYZ, XYZ, FamilySymbol](rc[0], rc[1], reverseDirection.CrossProduct(XYZ(0,0,1)), fs)\r\n\t\t\t\terrors.append(SetCipInstaParam(e, cip, CiPs, plateOffset))\r\n\t\t\t\tcipList.append(cip)\r\n\t\t\t\terrors.append(\"reverse direction\")\r\n\t\t\telif rb != \"not found\":\r\n\t\t\t\treferences.append(rb[0])\r\n\t\t\t\tpoints.append(rb[1])\r\n\t\t\t\treferences.append(rc[0])\r\n\t\t\t\tpoints.append(rc[1])\r\n\t\t\t\tcip = doc.Create.NewFamilyInstance.Overloads[Reference, XYZ, XYZ, FamilySymbol](rb[0], rb[1], rayDirection.CrossProduct(XYZ(0,0,1)), fs)\r\n\t\t\t\terrors.append(SetCipInstaParam(e, cip, CiPs, plateOffset))\r\n\t\t\t\tcipList.append(cip)\r\n\t\t\telse:\r\n\t\t\t\terrors.append(\"wall not found\")\r\n\t\texcept:\r\n\t\t\terrors.append(\"Uh-oh something went wrong\")\r\n\t\t\t\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n#p = [p.ToPoint() for p in points]\r\n\r\n\r\nOUT = beams, errors, references, points, cipList",
+      "VariableInputPorts": true,
+      "Id": "4c5d25c952aa4678bae221f279d9b569",
+      "Inputs": [
+        {
+          "Id": "ea09fa02e13643eb81504ebcb3632dfe",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "178319b227a54192b8efe66e5b7733f5",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "79c28717fbc34db3970f546a2c3b1bd7",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "e1d18e7860c6438ebf7073236d844d47",
+          "Name": "IN[3]",
+          "Description": "Input #3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "a12e40815d524f69b83b182ca26df1e5",
+          "Name": "IN[4]",
+          "Description": "Input #4",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "e276850b1a0e40018db58205e9a1bfb8",
+          "Name": "IN[5]",
+          "Description": "Input #5",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "e8367006ce8e405d8c701131eb0fcdcf",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSModelElementsSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "0d9b68f2-fe68-4765-9dc9-e4dfa905b763-000b50df",
+        "6148287f-7b02-4288-8fce-71392d3196f1-000b53b0",
+        "99e45376-0d1e-4f08-abf5-825dbe95d7e1-000b8207",
+        "97df81e8-9235-498d-9f7e-bb958302ae43-000b8424",
+        "97df81e8-9235-498d-9f7e-bb958302ae43-000b8592",
+        "97df81e8-9235-498d-9f7e-bb958302ae43-000b870d",
+        "97df81e8-9235-498d-9f7e-bb958302ae43-000b87f8",
+        "97df81e8-9235-498d-9f7e-bb958302ae43-000b88a0",
+        "97df81e8-9235-498d-9f7e-bb958302ae43-000b8b7b",
+        "97df81e8-9235-498d-9f7e-bb958302ae43-000b8ce6",
+        "97df81e8-9235-498d-9f7e-bb958302ae43-000b8d89",
+        "5d55a8e9-9882-4932-b020-d344c81c05b2-000b9111",
+        "be3aac9d-d52f-4b13-b625-6881254531fc-000b925b",
+        "d3e33600-53a7-480d-bfbe-aef0ffb6081c-000b92fd",
+        "94d1be41-6b63-4f41-8dca-91bb6043f934-000b9594",
+        "94d1be41-6b63-4f41-8dca-91bb6043f934-000b972c",
+        "94d1be41-6b63-4f41-8dca-91bb6043f934-000b97c4",
+        "94d1be41-6b63-4f41-8dca-91bb6043f934-000b9879",
+        "94d1be41-6b63-4f41-8dca-91bb6043f934-000b9a24",
+        "94d1be41-6b63-4f41-8dca-91bb6043f934-000b9acf",
+        "94d1be41-6b63-4f41-8dca-91bb6043f934-000b9b24",
+        "999e7939-52f6-4926-9a5c-25e854795bb6-000bb106",
+        "999e7939-52f6-4926-9a5c-25e854795bb6-000bb16a",
+        "999e7939-52f6-4926-9a5c-25e854795bb6-000bb399",
+        "d91cf564-f138-4bc3-8ffa-801dbc6b5599-000bb491",
+        "5bdf2299-b2c1-47a6-acda-697ed9d8ca84-000bb58f",
+        "5bdf2299-b2c1-47a6-acda-697ed9d8ca84-000bb640",
+        "5bdf2299-b2c1-47a6-acda-697ed9d8ca84-000bb79f",
+        "3098997c-eaf4-48fd-91e6-54aebbfa50a5-000bcf3f",
+        "3098997c-eaf4-48fd-91e6-54aebbfa50a5-000bcfce",
+        "3098997c-eaf4-48fd-91e6-54aebbfa50a5-000bd048",
+        "dab73269-785d-4d13-b8f7-83a6712a3f1e-000bdafc",
+        "dab73269-785d-4d13-b8f7-83a6712a3f1e-000bdc88",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be733",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be735",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be737",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be739",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be73b",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be73d",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be73f",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be741",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be743",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be745",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be749",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be74d",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be752",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be754",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be75a",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be75f",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be763",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be768",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be76a",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be76e",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be772",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be78b",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be792",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be79c",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be79e",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be7a6",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be7b0",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be7b4",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be7cf",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be7d1",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be7d3",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be7d5",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be7d7",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be7f1",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be7f5",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be7f7",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be7f9",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be7fb",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be803",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be80f",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be829",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be835",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beafa",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beafc",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beafe",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beb02",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beb04",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beb06",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beb08",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beb0a",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beb0c",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beb10",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beb14",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beb19",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beb1b",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beb21",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beb26",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beb2a",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beb2f",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beb31",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beb35",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beb39",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beb52",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beb59",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beb63",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beb65",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beb6d",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beb77",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beb7b",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beb96",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beb98",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beb9a",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beb9c",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beb9e",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bebb8",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bebbc",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bebbe",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bebc0",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bebc2",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bebca",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bebd6",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bebf0",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bebfc",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beec1",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beec3",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beec5",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beec7",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beec9",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beecb",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beecd",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beecf",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beed1",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beed3",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beed7",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beedb",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beee0",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beee2",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beee8",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beeed",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beef1",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beef6",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beef8",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001beefc",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bef00",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bef19",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bef20",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bef2a",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bef2c",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bef34",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bef3e",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bef42",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bef5d",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bef5f",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bef61",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bef63",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bef65",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bef7f",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bef83",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bef85",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bef87",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bef89",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bef91",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bef9d",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001befb7",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001befc3",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf288",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf28a",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf28c",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf28e",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf290",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf292",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf294",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf296",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf298",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf29a",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf29e",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf2a2",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf2a7",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf2a9",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf2af",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf2b4",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf2b8",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf2bd",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf2bf",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf2c3",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf2c7",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf2e0",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf2e7",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf2f1",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf2f3",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf2fb",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf305",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf309",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf324",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf326",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf328",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf32a",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf32c",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf346",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf34a",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf34c",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf34e",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf350",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf358",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf364",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf37e",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf38a",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf64f",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf651",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf653",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf655",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf657",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf659",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf65b",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf65d",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf65f",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf661",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf665",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf669",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf66e",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf670",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf676",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf67b",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf67f",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf684",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf686",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf68a",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf68e",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf6a7",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf6ae",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf6b8",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf6ba",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf6c2",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf6cc",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf6d0",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf6eb",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf6ed",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf6ef",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf6f1",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf6f3",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf70d",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf711",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf713",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf715",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf717",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf71f",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf72b",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf745",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf751",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfa16",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfa18",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfa1a",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfa1c",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfa1e",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfa20",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfa22",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfa24",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfa26",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfa28",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfa2c",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfa30",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfa35",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfa37",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfa3d",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfa42",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfa46",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfa4b",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfa4d",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfa51",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfa55",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfa6e",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfa75",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfa7f",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfa81",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfa89",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfa93",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfa97",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfab2",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfab4",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfab6",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfab8",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfaba",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfad4",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfad8",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfada",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfadc",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfade",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfae6",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfaf2",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfb0c",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfb18",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfddd",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfddf",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfde1",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfde3",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfde5",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfde7",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfde9",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfdeb",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfded",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfdef",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfdf3",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfdf7",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfdfc",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfdfe",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfe04",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfe09",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfe0d",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfe12",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfe14",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfe18",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfe1c",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfe35",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfe3c",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfe46",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfe48",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfe50",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfe5a",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfe5e",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfe79",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfe7b",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfe7d",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfe7f",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfe81",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfe9b",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfe9f",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfea1",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfea3",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfea5",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfead",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfeb9",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfed3",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfedf",
+        "1c467de7-7101-4625-9c32-9532b635a3c1-003caceb",
+        "1c467de7-7101-4625-9c32-9532b635a3c1-003caced",
+        "1c467de7-7101-4625-9c32-9532b635a3c1-003cacf1",
+        "1c467de7-7101-4625-9c32-9532b635a3c1-003cacfc",
+        "1c467de7-7101-4625-9c32-9532b635a3c1-003cad07",
+        "1c467de7-7101-4625-9c32-9532b635a3c1-003cad12",
+        "1c467de7-7101-4625-9c32-9532b635a3c1-003caddc",
+        "be480ebd-411c-4806-97bb-9f3b24997375-004940a6"
+      ],
+      "Id": "f826ac3578db4b13a03e6aae6b87bfcb",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "70e817ce38824f7aa2c0a7c8e1555ace",
+          "Name": "Elements",
+          "Description": "The selected elements.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": true,
+      "Id": "047b316ca63845bd9f80be9c78a57c34",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "af3a2e1aec6f4540a050234221dfc300",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Selection between a true and false."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Revit.Elements.FamilyType.ByName@string",
+      "Id": "8ef07852277f41edad594d6ab448d41d",
+      "Inputs": [
+        {
+          "Id": "9c6ad16133fb4babb607aa6ebb0a5e1c",
+          "Name": "name",
+          "Description": "The name of the FamilyType\n\nstring",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "fdbe272df87d4963bc60bf130ddb6876",
+          "Name": "FamilyType",
+          "Description": "FamilyType",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Select a FamilyType given it's name. This method will return the first FamilyType it finds if there are two or more FamilyTypes with the same name.\n\nFamilyType.ByName (name: string): FamilyType"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "\"CasIntPlateFaceBasedBars\";",
+      "Id": "01f3a6fd15bd484e8f980775bc7e1791",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "10bd5792f4c246eaa3b31665f195649b",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "10;",
+      "Id": "a801dc8ca87f4df08842ddfd9a5f0afa",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "af99c7686a6040d3ac38485346f210aa",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\n\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.DB.Structure import *\r\n\r\nclr.AddReference('RevitAPIUI')\r\nfrom Autodesk.Revit.UI import *\r\n\r\nclr.AddReference('System')\r\nfrom System.Collections.Generic import List\r\n\r\nclr.AddReference('RevitNodes')\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference('RevitServices')\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nimport math\r\nfrom System.Collections.Generic import Dictionary,List\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n\r\n\r\ndef BeamMidPoint(beam):\r\n\treturn beam.Location.Curve.Evaluate(0.5,True)\r\n\r\n##DIFFERENT FROM BEAM HAND ORIENTATION!\r\ndef BeamEndDirection(beam):\r\n\tstPt = beam.Location.Curve.GetEndPoint(0)\r\n\tendPt = beam.Location.Curve.GetEndPoint(0)\r\n\treturn stPt - endPt\r\n\r\ndef LocCurveDirection(beam):\r\n\treturn beam.Location.Curve.Direction\r\n\r\ndef BeamDirection(beam):\r\n\treturn beam.HandOrientation\r\n\t\r\n\"\"\"\r\ndef RaybounceFaceWalls(center, direction, view):\r\n\ttry:\r\n\t\tfilter = ElementClassFilter(Wall);\r\n\t\trefIntersector = ReferenceIntersector(filter, FindReferenceTarget.Face, view);\r\n\t\treferenceWithContext = refIntersector.FindNearest(center, direction)\r\n\t\treference = referenceWithContext.GetReference()\r\n\t\treturn [reference, reference.GlobalPoint]\r\n\texcept:\r\n\t\treturn \"not found\"\r\n\t\t\"\"\"\r\n\t\t\r\ndef RaybounceFaceWalls(center, direction, view, beam):\r\n\ttry:\r\n\t\tfilter = ElementClassFilter(Wall);\r\n\t\trefIntersector = ReferenceIntersector(filter, FindReferenceTarget.Face, view);\r\n\t\treferenceWithContext = refIntersector.FindNearest(center, direction)\r\n\t\treference = referenceWithContext.GetReference()\r\n\t\tif abs(center.DistanceTo(reference.GlobalPoint)) - BeamLength(beam)*0.5 <2: # 2 feet!!\r\n\t\t\treturn [reference, reference.GlobalPoint]\r\n\t\telse:\r\n\t\t\treturn \"too far\"\r\n\texcept:\r\n\t\treturn \"not found\"\r\n\r\n\r\ndef GetBeamZOffset(element):\r\n\tp = element.get_Parameter(BuiltInParameter.Z_OFFSET_VALUE)\r\n\tProjectUnits = p.DisplayUnitType\r\n\tzOffset = UnitUtils.ConvertFromInternalUnits(p.AsDouble(),ProjectUnits)\r\n\treturn -zOffset\r\n\t\r\n\t\r\n\r\n\r\ne = UnwrapElement(IN[0])\r\n\r\nexcelData = IN[1]\r\n\r\nclass beamType:\r\n\tdef __init__(self, beamType, CiPType, plateH, plateW):\r\n\t\tself.beamType = beamType\r\n\t\tself.CiPType = CiPType\r\n\t\tself.plateH = plateH\r\n\t\tself.plateW = plateW\r\n\tdef printOut(self):\r\n\t\treturn [self.beamType, self.CiPType, self.plateH, self.plateW]\r\n\r\n\r\ndef returnCiPInstance(beam, beamTypes):\r\n\tfor b in beamTypes:\r\n\t\tif b.beamType in beam.Name:\r\n\t\t\treturn b\r\n\t\t\r\n\t\r\n\r\nbeamTypes = []\r\n\r\nfor list in excelData:\r\n\tbeamTypes.append(beamType(list[0],list[1],list[2],list[3]))\r\n\"\"\"\r\nfor b in beamTypes:\r\n\tif b.beamType in elements[0].Name:\r\n\t\tOUT = b.printOut()\r\n\"\"\"\r\n\r\n\r\n\r\n\r\ndef returnCiPInstance(beam, beamTypes):\r\n\tfor b in beamTypes:\r\n\t\tif b.beamType in beam.Name:\r\n\t\t\treturn b\r\n\t\t\t\r\nCiPs = []\r\n\r\nfor list in excelData:\r\n\tCiPs.append(beamType(list[0],list[1],list[2],list[3]))\r\n\r\ncip = returnCiPInstance(e, beamTypes)\r\n\r\ncenter = BeamMidPoint(e)\r\n\r\ndir = LocCurveDirection(e)\r\n\r\ndef BeamLength(beam):\r\n\treturn beam.Location.Curve.Length\r\n\r\n\r\ndef SetCipInstaParam(beam, cipInstance, CiPs, offset):\r\n\tcipType = returnCiPInstance(beam, CiPs)\r\n\terrors = []\r\n\ttry:\r\n\t\tp = cipInstance.LookupParameter(\"Plate Height\")\r\n\t\tp.Set(cipType.plateH/304.8)\r\n\texcept:\r\n\t\terrors.append(\"height failed\")\r\n\ttry:\r\n\t\tp = cipInstance.LookupParameter(\"Plate Width\")\r\n\t\tp.Set(cipType.plateW/304.8)\r\n\texcept:\r\n\t\terrors.append(\"width failed\")\r\n\ttry:\r\n\t\tp = cipInstance.LookupParameter(\"Top Offset\")\r\n\t\tp.Set((GetBeamZOffset(beam)-offset)/304.8)\r\n\texcept:\r\n\t\terrors.append(\"zOffset failed\")\r\n\ttry:\r\n\t\tp = cipInstance.LookupParameter(\"Beam Level\")\r\n\t\tworkPlane = beam.LookupParameter(\"Work Plane\").AsString()\r\n\t\tp.Set(workPlane)\r\n\texcept:\r\n\t\terrors.append(\"Beam level failed\")\r\n\ttry:\r\n\t\tp = cipInstance.LookupParameter(\"Beam Type\")\r\n\t\tp.Set(beam.Name)\r\n\texcept:\r\n\t\terrors.append(\"Beam Type failed\")\r\n\ttry:\r\n\t\tp = cipInstance.LookupParameter(\"CiP Type\")\r\n\t\tp.Set(cipType.CiPType)\r\n\texcept:\r\n\t\terrors.append(\"CiP type failed\")\r\n\ttry:\r\n\t\tlevel = beam.LookupParameter(\"Reference Level\").AsElementId()\r\n\t\tp = cip.LookupParameter(\"Schedule Level\")\r\n\t\tp.Set(level)\r\n\texcept:\r\n\t\terrors.append(\"Schedule Level failed\")\r\n\treturn errors\r\n\r\nrb = RaybounceFaceWalls(center, -dir, doc.ActiveView, e)\r\n\t\r\nfs = UnwrapElement(IN[2])\r\n\r\nrayDirection = BeamDirection(e)\r\n\r\nview = doc.ActiveView\r\n\r\ncenter = BeamMidPoint(e)\r\nrayDirection = BeamDirection(e)\r\nrb = RaybounceFaceWalls(center, rayDirection, view, e) #ray in beam direction from beam mid point\r\nreverseDirection = -rayDirection\r\nrc = RaybounceFaceWalls(center, reverseDirection, view, e) #ray in beam inverse direction from beam mid point\r\n\r\n\t\r\nerrors = []\r\n\r\n\r\ndef wallOrientation(wall):\r\n\treturn doc.GetElement(wall).Orientation\r\n\t\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\ntry:\r\n\tcip = doc.Create.NewFamilyInstance.Overloads[Reference, XYZ, XYZ, FamilySymbol](rb[0], rb[1], rayDirection.CrossProduct(XYZ(0,0,1)), fs)\r\nexcept:\r\n\tpass\r\n\tcip = doc.Create.NewFamilyInstance.Overloads[Reference, XYZ, XYZ, FamilySymbol](rc[0], rc[1], rayDirection.CrossProduct(XYZ(0,0,1)), fs)\r\n\r\n\r\n\t\t\r\nerrors.append(SetCipInstaParam(e, cip, CiPs, 10))\r\n\t\t\t\t\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n\r\nOUT = rb, rc, wallOrientation(rb[0]), e.LookupParameter(\"Reference Level\").AsElementId()\r\n",
+      "VariableInputPorts": true,
+      "Id": "6d1e21a48f664a86ae16cfd494d7030a",
+      "Inputs": [
+        {
+          "Id": "8c93e18c2ac248aa8a52dd76495e7a60",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "f091d440ec354a6c9aec6ff8142912d3",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "44652f470456452f9a5e41d13719f0b0",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "52eeedd222c645e388f30c06d45610bf",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSModelElementSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfc95"
+      ],
+      "Id": "0e91f1c5e9bf41e59bc1953dfe9d06ae",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "7dba955bdc0a491fba45eb28fa0df241",
+          "Name": "Element",
+          "Description": "The selected elements.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSOffice.Data.ImportExcel@var,string,bool,bool",
+      "Id": "82194bea8bc34e13b0e016943baf22f0",
+      "Inputs": [
+        {
+          "Id": "d051bf8333e1466eb6e27e29ab5f07a4",
+          "Name": "file",
+          "Description": "File representing the Microsoft Excel spreadsheet.\n\nvar",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "bef38356d21b478d91e5bec8681c54ac",
+          "Name": "sheetName",
+          "Description": "Name of the worksheet containing the data.\n\nstring",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "5573826bb3824ca1ad971ba1e47c7b64",
+          "Name": "readAsStrings",
+          "Description": "Toggle to switch between reading Excel file as strings.\n\nbool\nDefault value : false",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "a6bc6017a52d4e26950f47e6034733c2",
+          "Name": "showExcel",
+          "Description": "Toggle to switch between showing and hiding the main Excel window.\n\nbool\nDefault value : true",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "3af52f7bcb0a48a9bbc88c663539d56f",
+          "Name": "data",
+          "Description": "Rows of data from the Excel worksheet.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Read data from a Microsoft Excel spreadsheet. Data is read by row and returned in a series of lists by row. Rows and columns are zero-indexed; for example, the value in cell A1 will appear in the data list at [0,0]. This node requires Microsoft Excel to be installed.\n\nData.ImportExcel (file: var, sheetName: string, readAsStrings: bool = false, showExcel: bool = true): var[][]"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.Filename, CoreNodeModels",
+      "HintPath": "\\\\global.arup.com\\australasia\\SYD\\Projects\\256000\\256686-00 CQT Sydney\\Work\\Internal\\Drawings\\Struct\\01_RVT\\05_Dynamo Scripts\\Detached Model\\181120_CiP Sizes_GB.xlsx",
+      "InputValue": "\\\\global.arup.com\\australasia\\SYD\\Projects\\256000\\256686-00 CQT Sydney\\Work\\Internal\\Drawings\\Struct\\01_RVT\\05_Dynamo Scripts\\Detached Model\\181120_CiP Sizes_GB.xlsx",
+      "NodeType": "ExtensionNode",
+      "Id": "403afb6e90bf4242abdcb01a8872dbd9",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "d2169bf73d2c44d492a44cdcec9a09ea",
+          "Name": "",
+          "Description": "Filename",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows you to select a file on the system to get its filename"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.FileObject, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "977f7db7d59b46f9bb5a475fe7ddca22",
+      "Inputs": [
+        {
+          "Id": "eeb2b153494548679f74bf400909b039",
+          "Name": "path",
+          "Description": "Path to the file.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "8b60b9d6d8184c1c8bc886613dcd44b3",
+          "Name": "file",
+          "Description": "File object",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Creates a file object from a path."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "\"TypicalFloors\";",
+      "Id": "15e3a00e939342b8a6d5919991cdc8d4",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "647ebaf2a8fb4bed85baef4faebe0941",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "2;",
+      "Id": "84c624a817654c18abb63f16770951c6",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "7b734fac438a4795b67636a899f0ec97",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSOffice.Data.ImportExcel@var,string,bool,bool",
+      "Id": "5510e430710d4daa99431ed9374718e0",
+      "Inputs": [
+        {
+          "Id": "8f62c290cd3d4ddaa599e5cc64112057",
+          "Name": "file",
+          "Description": "File representing the Microsoft Excel spreadsheet.\n\nvar",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "5d40e61e123f4cd688526fe57cacd458",
+          "Name": "sheetName",
+          "Description": "Name of the worksheet containing the data.\n\nstring",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "64e26e2437d64454a18762158ff07750",
+          "Name": "readAsStrings",
+          "Description": "Toggle to switch between reading Excel file as strings.\n\nbool\nDefault value : false",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "f20f2eabeb854dec9899f0da4eb77ce7",
+          "Name": "showExcel",
+          "Description": "Toggle to switch between showing and hiding the main Excel window.\n\nbool\nDefault value : true",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "26fbcffac0c9425ca511731c268ed951",
+          "Name": "data",
+          "Description": "Rows of data from the Excel worksheet.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Read data from a Microsoft Excel spreadsheet. Data is read by row and returned in a series of lists by row. Rows and columns are zero-indexed; for example, the value in cell A1 will appear in the data list at [0,0]. This node requires Microsoft Excel to be installed.\n\nData.ImportExcel (file: var, sheetName: string, readAsStrings: bool = false, showExcel: bool = true): var[][]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "\"CiP3\";",
+      "Id": "a1daf112d8e643f8be1f70e2761f476e",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "b4ce50dd7da24e5ca988927f5d1603f3",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\n\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.DB.Structure import *\r\n\r\nclr.AddReference('RevitAPIUI')\r\nfrom Autodesk.Revit.UI import *\r\n\r\nclr.AddReference('System')\r\nfrom System.Collections.Generic import List\r\n\r\nclr.AddReference('RevitNodes')\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference('RevitServices')\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nimport math\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n\r\n### INPUTS###\r\n\r\nif isinstance(IN[0], list):\r\n\telements = UnwrapElement(IN[0])\r\nelse:\r\n\telements = [UnwrapElement(IN[0])]\r\n\r\nfs = UnwrapElement(IN[1])\r\n\r\nexcelData = IN[2]\r\n\r\nplateOffset = IN[3]\r\n\r\n###\r\n\r\n\r\nclass beamType:\r\n\tdef __init__(self, beamType, CiPType, plateH, plateW):\r\n\t\tself.beamType = beamType\r\n\t\tself.CiPType = CiPType\r\n\t\tself.plateH = plateH\r\n\t\tself.plateW = plateW\r\n\tdef printOut(self):\r\n\t\treturn [self.beamType, self.CiPType, self.plateH, self.plateW]\r\n\r\n\r\n#loop through the beam types instances and find the instance by its name\r\ndef returnCiPInstance(beam, beamTypes):\r\n\tfor b in beamTypes:\r\n\t\tif b.beamType in beam.Name:\r\n\t\t\treturn b\r\n\t\t\t\r\nCiPs = []\r\n\r\nfor list in excelData:\r\n\tCiPs.append(beamType(list[0],list[1],list[2],list[3]))\r\n\t\r\n\r\ndef BeamLength(beam):\r\n\treturn beam.Location.Curve.Length\r\n\r\ndef BeamMidPoint(beam):\r\n\treturn beam.Location.Curve.Evaluate(0.5,True)\r\n\r\n##DIFFERENT FROM BEAM HAND ORIENTATION!\r\ndef BeamEndDirection(beam):\r\n\tstPt = beam.Location.Curve.GetEndPoint(0)\r\n\tendPt = beam.Location.Curve.GetEndPoint(0)\r\n\treturn stPt - endPt\r\n\r\ndef LocCurveDirection(beam):\r\n\treturn beam.Location.Curve.Direction\r\n\r\ndef BeamDirection(beam):\r\n\treturn beam.HandOrientation\r\n\t\r\n\r\ndef RaybounceFaceWalls(center, direction, view, beam):\r\n\ttry:\r\n\t\tfilter = ElementClassFilter(Wall);\r\n\t\trefIntersector = ReferenceIntersector(filter, FindReferenceTarget.Face, view);\r\n\t\treferenceWithContext = refIntersector.FindNearest(center, direction)\r\n\t\treference = referenceWithContext.GetReference()\r\n\t\tif abs(center.DistanceTo(reference.GlobalPoint)) - BeamLength(beam)*0.5 < IN[4]: # in feet!!\r\n\t\t\treturn [reference, reference.GlobalPoint]\r\n\t\telse:\r\n\t\t\treturn \"too far\"\r\n\texcept:\r\n\t\treturn \"not found\"\r\n\r\n\r\ndef GetBeamZOffset(element):\r\n\tp = element.get_Parameter(BuiltInParameter.Z_OFFSET_VALUE)\r\n\tProjectUnits = p.DisplayUnitType\r\n\tzOffset = UnitUtils.ConvertFromInternalUnits(p.AsDouble(),ProjectUnits)\r\n\treturn -zOffset\r\n\t\r\n\t\r\n\r\ndef SetCipInstaParam(beam, cipInstance, CiPs, offset):\r\n\tcipType = returnCiPInstance(beam, CiPs)\r\n\terrors = []\r\n\ttry:\r\n\t\tp = cipInstance.LookupParameter(\"Plate Height\")\r\n\t\tp.Set(cipType.plateH/304.8)\r\n\texcept:\r\n\t\terrors.append(\"height failed\")\r\n\ttry:\r\n\t\tp = cipInstance.LookupParameter(\"Plate Width\")\r\n\t\tp.Set(cipType.plateW/304.8)\r\n\texcept:\r\n\t\terrors.append(\"width failed\")\r\n\ttry:\r\n\t\tp = cipInstance.LookupParameter(\"Top Offset\")\r\n\t\tp.Set((GetBeamZOffset(beam)-offset)/304.8)\r\n\texcept:\r\n\t\terrors.append(\"zOffset failed\")\r\n\ttry:\r\n\t\tp = cipInstance.LookupParameter(\"Beam Level\")\r\n\t\tworkPlane = beam.LookupParameter(\"Work Plane\").AsString()\r\n\t\tp.Set(workPlane)\r\n\texcept:\r\n\t\terrors.append(\"Beam level failed\")\r\n\ttry:\r\n\t\tp = cipInstance.LookupParameter(\"Beam Type\")\r\n\t\tp.Set(beam.Name)\r\n\texcept:\r\n\t\terrors.append(\"Beam Type failed\")\r\n\ttry:\r\n\t\tp = cipInstance.LookupParameter(\"CiP Type\")\r\n\t\tp.Set(cipType.CiPType)\r\n\texcept:\r\n\t\terrors.append(\"CiP type failed\")\r\n\ttry:\r\n\t\tlevel = beam.LookupParameter(\"Reference Level\").AsElementId()\r\n\t\tp = cipInstance.LookupParameter(\"Schedule Level\")\r\n\t\tp.Set(level)\r\n\texcept:\r\n\t\terrors.append(\"CiP Schedule Level failed\")\r\n\treturn errors\r\n\r\n\r\n\r\n\r\n\r\n\r\nview = doc.ActiveView\r\n\r\n\r\nbeams = []\r\npoints = []\r\n\r\n\r\nvoid = []\r\nerrors = []\r\nreferences = []\r\ncipList = []\r\n\r\nrbs = []\r\nrcs = []\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nfor e in elements:\r\n\tif e.Category.Name == \"Structural Framing\":\r\n\t\ttry:\r\n\t\t\tbeams.append(e)\r\n\t\t\tcenter = BeamMidPoint(e)\r\n\t\t\trayDirection = BeamDirection(e)\r\n\t\t\trb = RaybounceFaceWalls(center, rayDirection, view, e) #ray in beam direction from beam mid point\r\n\t\t\trbs.append(rb)\r\n\t\t\treverseDirection = -rayDirection\r\n\t\t\trc = RaybounceFaceWalls(center, reverseDirection, view, e) #ray in beam inverse direction from beam mid point\r\n\t\t\trcs.append(rcs)\r\n\t\t\tif rb != \"not found\" and rc != \"not found\":\r\n\t\t\t\treferences.append(rb[0])\r\n\t\t\t\tpoints.append(rb[1])\r\n\t\t\t\treferences.append(rc[0])\r\n\t\t\t\tpoints.append(rc[1])\r\n\t\t\t\tcip1 = doc.Create.NewFamilyInstance.Overloads[Reference, XYZ, XYZ, FamilySymbol](rb[0], rb[1], rayDirection.CrossProduct(XYZ(0,0,1)), fs)\r\n\t\t\t\terrors.append(SetCipInstaParam(e, cip1, CiPs, plateOffset))\t#SetCipInstaParam(beam, cipInstance, beamTypes, offset):\r\n\t\t\t\tcipList.append(cip1)\r\n\t\t\t\tcip2 = doc.Create.NewFamilyInstance.Overloads[Reference, XYZ, XYZ, FamilySymbol](rc[0], rc[1], reverseDirection.CrossProduct(XYZ(0,0,1)), fs)\r\n\t\t\t\terrors.append(SetCipInstaParam(e, cip2, CiPs, plateOffset))\r\n\t\t\t\tcipList.append(cip2)\r\n\t\t\t\terrors.append(\"beam start point\")\r\n\t\t\t\terrors.append(\"beam end point\")\r\n\t\t\telif rc != \"not found\":\r\n\t\t\t\treferences.append(rc[0])\r\n\t\t\t\tpoints.append(rc[1])\r\n\t\t\t\tcip = doc.Create.NewFamilyInstance.Overloads[Reference, XYZ, XYZ, FamilySymbol](rc[0], rc[1], reverseDirection.CrossProduct(XYZ(0,0,1)), fs)\r\n\t\t\t\terrors.append(SetCipInstaParam(e, cip, CiPs, plateOffset))\r\n\t\t\t\tcipList.append(cip)\r\n\t\t\t\terrors.append(\"reverse direction\")\r\n\t\t\telif rb != \"not found\":\r\n\t\t\t\treferences.append(rb[0])\r\n\t\t\t\tpoints.append(rb[1])\r\n\t\t\t\treferences.append(rc[0])\r\n\t\t\t\tpoints.append(rc[1])\r\n\t\t\t\tcip = doc.Create.NewFamilyInstance.Overloads[Reference, XYZ, XYZ, FamilySymbol](rb[0], rb[1], rayDirection.CrossProduct(XYZ(0,0,1)), fs)\r\n\t\t\t\terrors.append(SetCipInstaParam(e, cip, CiPs, plateOffset))\r\n\t\t\t\tcipList.append(cip)\r\n\t\t\telse:\r\n\t\t\t\terrors.append(\"wall not found\")\r\n\t\texcept:\r\n\t\t\terrors.append(\"Uh-oh something went wrong\")\r\n\t\t\t\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n#p = [p.ToPoint() for p in points]\r\n\r\n\r\nOUT = beams, errors, references, points, cipList, rbs, rcs",
+      "VariableInputPorts": true,
+      "Id": "3581a1f9d2e34f50b4ebd75cbae9671a",
+      "Inputs": [
+        {
+          "Id": "1b09c542119d484ebd05f1c43463d628",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "5d1f8a57c3944327b43372411b08ce9d",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "2374c5a2e503439486437861bc6f6532",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "b2b7d5c108e843bba2ddacf18596de74",
+          "Name": "IN[3]",
+          "Description": "Input #3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "6da0af46cd074d8f98b0945bd2bdfbf1",
+          "Name": "IN[4]",
+          "Description": "Input #4",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "868dff696b7a4a96a96de2829f4bb4ca",
+          "Name": "IN[5]",
+          "Description": "Input #5",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "40fd9c247d3546b48b56fbd53fade0e3",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSModelElementsSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "a5f2c1cb-534e-4e4f-a3b1-36c00cd0a39e-0010beb4",
+        "fcf11ead-3f2e-46ea-91e2-4fe94626d3f3-001b1abc",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bc7b3",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bcb7a",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bcf41",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bd308",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bd6cf",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bda96",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bde5d",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be224",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be5eb",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001be9b2",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bed79",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf140",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf507",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bf8ce",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001bfc95",
+        "8639d5b0-84be-4301-97e0-c4ed9ca4f687-001c005c"
+      ],
+      "Id": "e99a4792c4bc42099682f3cf9b0be4bb",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "982951cfe3b04a55b43727394bb3d985",
+          "Name": "Elements",
+          "Description": "The selected elements.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "",
+      "Id": "9ee73daa9e8649f0ab867796ff37bc8a",
+      "Inputs": [],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Revit.Elements.Element.SetParameterByName@string,var",
+      "Id": "95a9e2b5171046b4b77b1424ca0dbe60",
+      "Inputs": [
+        {
+          "Id": "eaaf151270934c06bcefd97d63ced8ee",
+          "Name": "element",
+          "Description": "Revit.Elements.Element",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "5f3a246da6b1441783091a6321192f45",
+          "Name": "parameterName",
+          "Description": "The name of the parameter to set.\n\nstring",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d671bb59144743728fd5c519b4b4bc4d",
+          "Name": "value",
+          "Description": "The value.\n\nvar",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "505ea47461364a79bb7fbd906e62e930",
+          "Name": "Element",
+          "Description": "Element",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Set one of the element's parameters.\n\nElement.SetParameterByName (parameterName: string, value: var): Element"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSModelElementSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "6784893a-0b08-4e6f-bcfa-2b72e4b3e7c5-00651a99"
+      ],
+      "Id": "98c18faab9bb4bba81284fd5160aa25e",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "d8a7c7e8f37a45248a58c41b65e208c2",
+          "Name": "Element",
+          "Description": "The selected elements.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "\"Schedule Level\";",
+      "Id": "377bd466ad4a4cd7b4d22c77242c9419",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "3fc09f4b674b4763a6b1dc4f77c2129c",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "DSRevitNodesUI.Levels, DSRevitNodesUI",
+      "SelectedIndex": 11,
+      "NodeType": "ExtensionNode",
+      "Id": "3f83debc74f74486b11c3104802a1eb1",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "e06a531b40924cdf8f45921cc669be68",
+          "Name": "Levels",
+          "Description": "The selected Levels",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Select a level in the active document"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": true,
+      "Id": "fa787aa1526d46939593dd7832166bc6",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "269f6501ebe8458eb70462e8a9c58800",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Selection between a true and false."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "70e817ce38824f7aa2c0a7c8e1555ace",
+      "End": "ea09fa02e13643eb81504ebcb3632dfe",
+      "Id": "1106f95ba2964172ab30f3dbc3389df8"
+    },
+    {
+      "Start": "af3a2e1aec6f4540a050234221dfc300",
+      "End": "e276850b1a0e40018db58205e9a1bfb8",
+      "Id": "84412df62e2d487ca23293211a0c6925"
+    },
+    {
+      "Start": "fdbe272df87d4963bc60bf130ddb6876",
+      "End": "178319b227a54192b8efe66e5b7733f5",
+      "Id": "aa8352968d5449f3800eff0edf5aa0a6"
+    },
+    {
+      "Start": "fdbe272df87d4963bc60bf130ddb6876",
+      "End": "5d1f8a57c3944327b43372411b08ce9d",
+      "Id": "8b740601282e4d1d9b3059b27264dd0f"
+    },
+    {
+      "Start": "fdbe272df87d4963bc60bf130ddb6876",
+      "End": "44652f470456452f9a5e41d13719f0b0",
+      "Id": "bfe4e80b74df4804a5faa7c9d7e977d1"
+    },
+    {
+      "Start": "10bd5792f4c246eaa3b31665f195649b",
+      "End": "9c6ad16133fb4babb607aa6ebb0a5e1c",
+      "Id": "10bd46c9ab184e38b9e427f1d1bf1e6d"
+    },
+    {
+      "Start": "af99c7686a6040d3ac38485346f210aa",
+      "End": "e1d18e7860c6438ebf7073236d844d47",
+      "Id": "fa61a293ef164f23b48f4cd662df7c69"
+    },
+    {
+      "Start": "af99c7686a6040d3ac38485346f210aa",
+      "End": "b2b7d5c108e843bba2ddacf18596de74",
+      "Id": "881d5a9d1ba2447cb592822ffb5c0b35"
+    },
+    {
+      "Start": "7dba955bdc0a491fba45eb28fa0df241",
+      "End": "8c93e18c2ac248aa8a52dd76495e7a60",
+      "Id": "a256b351d91e4a2e8842f72c946920ec"
+    },
+    {
+      "Start": "3af52f7bcb0a48a9bbc88c663539d56f",
+      "End": "f091d440ec354a6c9aec6ff8142912d3",
+      "Id": "1ddf335c243d4979bd7670b7ffb6acae"
+    },
+    {
+      "Start": "3af52f7bcb0a48a9bbc88c663539d56f",
+      "End": "79c28717fbc34db3970f546a2c3b1bd7",
+      "Id": "95f628cceaa04b3ead7f053fb59689a7"
+    },
+    {
+      "Start": "d2169bf73d2c44d492a44cdcec9a09ea",
+      "End": "eeb2b153494548679f74bf400909b039",
+      "Id": "75f1bdeab49649c893abcfed938b33d7"
+    },
+    {
+      "Start": "8b60b9d6d8184c1c8bc886613dcd44b3",
+      "End": "d051bf8333e1466eb6e27e29ab5f07a4",
+      "Id": "e25e698836c54e30a26c49096483c5d8"
+    },
+    {
+      "Start": "8b60b9d6d8184c1c8bc886613dcd44b3",
+      "End": "8f62c290cd3d4ddaa599e5cc64112057",
+      "Id": "b8e212aa68ff4775905cdedd5338f3f3"
+    },
+    {
+      "Start": "647ebaf2a8fb4bed85baef4faebe0941",
+      "End": "bef38356d21b478d91e5bec8681c54ac",
+      "Id": "1b08611a03144f759173eb5fc7e258f7"
+    },
+    {
+      "Start": "7b734fac438a4795b67636a899f0ec97",
+      "End": "a12e40815d524f69b83b182ca26df1e5",
+      "Id": "4765b80d8fcf4d9098580f11446ef6e5"
+    },
+    {
+      "Start": "7b734fac438a4795b67636a899f0ec97",
+      "End": "6da0af46cd074d8f98b0945bd2bdfbf1",
+      "Id": "b804018250d44f0f99053d40fce9f30e"
+    },
+    {
+      "Start": "26fbcffac0c9425ca511731c268ed951",
+      "End": "2374c5a2e503439486437861bc6f6532",
+      "Id": "92c93bae0eef49b7a77d47fb55a743dd"
+    },
+    {
+      "Start": "b4ce50dd7da24e5ca988927f5d1603f3",
+      "End": "5d40e61e123f4cd688526fe57cacd458",
+      "Id": "8342ff902c0b4e4798ebf3d1de30a00c"
+    },
+    {
+      "Start": "982951cfe3b04a55b43727394bb3d985",
+      "End": "1b09c542119d484ebd05f1c43463d628",
+      "Id": "8185d42f82ac4ce9b1cfad15f4bbc754"
+    },
+    {
+      "Start": "d8a7c7e8f37a45248a58c41b65e208c2",
+      "End": "eaaf151270934c06bcefd97d63ced8ee",
+      "Id": "1bf2c7c098294dca94252922841d43e4"
+    },
+    {
+      "Start": "3fc09f4b674b4763a6b1dc4f77c2129c",
+      "End": "5f3a246da6b1441783091a6321192f45",
+      "Id": "7887e22724d9449aa2306297a88abbdf"
+    },
+    {
+      "Start": "e06a531b40924cdf8f45921cc669be68",
+      "End": "d671bb59144743728fd5c519b4b4bc4d",
+      "Id": "81976a42982d4c65a268e23535fc713c"
+    },
+    {
+      "Start": "269f6501ebe8458eb70462e8a9c58800",
+      "End": "868dff696b7a4a96a96de2829f4bb4ca",
+      "Id": "0f414f952d9b46488a370f51738bcc8d"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.1.5055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "4c5d25c952aa4678bae221f279d9b569",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": true,
+        "X": 1714.4832859361784,
+        "Y": 282.79454238152846
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Model Elements",
+        "Id": "f826ac3578db4b13a03e6aae6b87bfcb",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1225.0612129461483,
+        "Y": 251.95853647402583
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Refresh",
+        "Id": "047b316ca63845bd9f80be9c78a57c34",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 729.20465684551368,
+        "Y": 545.93556756089015
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "FamilyType.ByName",
+        "Id": "8ef07852277f41edad594d6ab448d41d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 709.145074938457,
+        "Y": 451.0405101796988
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "01f3a6fd15bd484e8f980775bc7e1791",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 382.2243118168617,
+        "Y": 457.84964023852069
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "a801dc8ca87f4df08842ddfd9a5f0afa",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 639.89129288137042,
+        "Y": 780.202971623141
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "6d1e21a48f664a86ae16cfd494d7030a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2525.936216137472,
+        "Y": 763.132030361677
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Model Element",
+        "Id": "0e91f1c5e9bf41e59bc1953dfe9d06ae",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2092.8558655393826,
+        "Y": 850.86344348160867
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Data.ImportExcel",
+        "Id": "82194bea8bc34e13b0e016943baf22f0",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 596.14584470211173,
+        "Y": 1016.1636604104281
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "File Path",
+        "Id": "403afb6e90bf4242abdcb01a8872dbd9",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -320.79312527345166,
+        "Y": 995.796845276377
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "File From Path",
+        "Id": "977f7db7d59b46f9bb5a475fe7ddca22",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 272.65580239440487,
+        "Y": 1016.9884301227053
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "15e3a00e939342b8a6d5919991cdc8d4",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 370.53179313842168,
+        "Y": 1112.1450344922969
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "84c624a817654c18abb63f16770951c6",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1336.3203833559214,
+        "Y": 719.15528988245308
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Data.ImportExcel",
+        "Id": "5510e430710d4daa99431ed9374718e0",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 616.739637625394,
+        "Y": 1264.2204192102242
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "a1daf112d8e643f8be1f70e2761f476e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 357.0,
+        "Y": 1314.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "3581a1f9d2e34f50b4ebd75cbae9671a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1652.5028435824713,
+        "Y": 1093.8938817306025
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Model Elements",
+        "Id": "e99a4792c4bc42099682f3cf9b0be4bb",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1036.5107505759529,
+        "Y": 1099.9255685208
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "9ee73daa9e8649f0ab867796ff37bc8a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1946.0,
+        "Y": 160.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Element.SetParameterByName",
+        "Id": "95a9e2b5171046b4b77b1424ca0dbe60",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2337.9776063202689,
+        "Y": 1174.2081624741668
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Model Element",
+        "Id": "98c18faab9bb4bba81284fd5160aa25e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1999.803681514763,
+        "Y": 1094.6064992430845
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "377bd466ad4a4cd7b4d22c77242c9419",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1989.0,
+        "Y": 1235.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Levels",
+        "Id": "3f83debc74f74486b11c3104802a1eb1",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2040.0836593112947,
+        "Y": 1362.3517079535193
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Refresh",
+        "Id": "fa787aa1526d46939593dd7832166bc6",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1382.2025934723692,
+        "Y": 1320.7136902609677
+      }
+    ],
+    "Annotations": [
+      {
+        "Id": "0b1fc875d96641bb924d0db09a76598a",
+        "Title": "Offset above TOS",
+        "Nodes": [
+          "a801dc8ca87f4df08842ddfd9a5f0afa",
+          "5fb547e5272e4099b427ead0551674e8"
+        ],
+        "Left": 629.89129288137042,
+        "Top": 741.202971623141,
+        "Width": 289.17002512725151,
+        "Height": 125.4521744625323,
+        "FontSize": 24.0,
+        "InitialTop": 780.202971623141,
+        "InitialHeight": 182.4521744625323,
+        "TextblockHeight": 29.0,
+        "Background": "#FFC1D676"
+      },
+      {
+        "Id": "0362f392f8c04ec081dc8297626232d2",
+        "Title": "single beam",
+        "Nodes": [
+          "6d1e21a48f664a86ae16cfd494d7030a"
+        ],
+        "Left": 2515.936216137472,
+        "Top": 667.132030361677,
+        "Width": 144.0,
+        "Height": 241.0,
+        "FontSize": 36.0,
+        "InitialTop": 763.132030361677,
+        "InitialHeight": 145.0,
+        "TextblockHeight": 86.0,
+        "Background": "#FFC1D676"
+      },
+      {
+        "Id": "13c67f673e924f7aa2cf91a962ecd568",
+        "Title": "Ignore walls distant more than 2 feet from the beam end",
+        "Nodes": [
+          "84c624a817654c18abb63f16770951c6",
+          "9d2cb3a68e2640969dc2e185288503fc"
+        ],
+        "Left": 1326.3203833559214,
+        "Top": 651.15528988245308,
+        "Width": 487.04560438270596,
+        "Height": 153.94332239903542,
+        "FontSize": 24.0,
+        "InitialTop": 719.15528988245308,
+        "InitialHeight": 181.94332239903542,
+        "TextblockHeight": 58.0,
+        "Background": "#FFC1D676"
+      },
+      {
+        "Id": "d185f74323aa4836b960f94d189af35c",
+        "Title": "CiP3",
+        "Nodes": [
+          "3581a1f9d2e34f50b4ebd75cbae9671a"
+        ],
+        "Left": 1642.5028435824713,
+        "Top": 1040.8938817306025,
+        "Width": 144.0,
+        "Height": 276.0,
+        "FontSize": 36.0,
+        "InitialTop": 1093.8938817306025,
+        "InitialHeight": 145.0,
+        "TextblockHeight": 43.0,
+        "Background": "#FFC1D676"
+      },
+      {
+        "Id": "fcb659f58def494d97d5af3bb930aa5d",
+        "Title": "Typical",
+        "Nodes": [
+          "4c5d25c952aa4678bae221f279d9b569"
+        ],
+        "Left": 1704.4832859361784,
+        "Top": 229.79454238152846,
+        "Width": 144.0,
+        "Height": 276.0,
+        "FontSize": 36.0,
+        "InitialTop": 282.79454238152846,
+        "InitialHeight": 145.0,
+        "TextblockHeight": 43.0,
+        "Background": "#FFC1D676"
+      },
+      {
+        "Id": "5fb547e5272e4099b427ead0551674e8",
+        "Title": "",
+        "Nodes": [],
+        "Left": 859.06131800862192,
+        "Top": 822.65514608567332,
+        "Width": 0.0,
+        "Height": 0.0,
+        "FontSize": 36.0,
+        "InitialTop": 0.0,
+        "InitialHeight": 0.0,
+        "TextblockHeight": 0.0,
+        "Background": "#FFC1D676"
+      },
+      {
+        "Id": "9d2cb3a68e2640969dc2e185288503fc",
+        "Title": "",
+        "Nodes": [],
+        "Left": 1753.3659877386274,
+        "Top": 761.0986122814885,
+        "Width": 0.0,
+        "Height": 0.0,
+        "FontSize": 36.0,
+        "InitialTop": 0.0,
+        "InitialHeight": 0.0,
+        "TextblockHeight": 0.0,
+        "Background": "#FFC1D676"
+      }
+    ],
+    "X": -412.04165936553977,
+    "Y": -431.39484483645106,
+    "Zoom": 0.703903656127467
+  }
+}

@@ -1,0 +1,116 @@
+<Workspace Version="2.0.0.3911" X="5.62887802285445" Y="-853.23515382529" zoom="0.773058570320948" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <CoreNodeModels.Input.StringInput guid="bb914a95-9721-48e6-b108-0ea908422752" type="CoreNodeModels.Input.StringInput" nickname="String" x="-47.7945978235724" y="1325.09012083087" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>C:\Users\giovanni.brogiolo\Dropbox\QTO\2b4</System.String>
+      <System.String value="C:\Users\giovanni.brogiolo\Dropbox\QTO\2b4" />
+    </CoreNodeModels.Input.StringInput>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="c910d86d-c012-4ce7-8efa-a94cb575019a" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Directory.Contents+" x="354.385047930342" y="1495.06265542503" isVisible="true" isUpstreamVisible="true" lacing="Auto" isSelectedInput="False" IsFrozen="false" isPinned="true">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="True" />
+      <ID value="2276a44a-c7cc-4438-ac43-2ae6b821d4c9" />
+      <Name value="Directory.ContentsAll" />
+      <Description value="Unlike the built-in node Directory.Contents, this node browses a directory recursively and returns all relevant files contained in subfolders as well." />
+      <Inputs>
+        <Input value="directoryPath" />
+        <Input value="searchString" />
+      </Inputs>
+      <Outputs>
+        <Output value="files" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="a4ba906f-50b3-4079-bc9a-4b4b677faacc" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="931.94038372399" y="1805.06354666217" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;.xls&quot;;" ShouldFocus="false">
+      <OutPortInfo LineIndex="0" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="bfd6d71b-4d77-4696-b84e-8993ede2e8c3" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="915.9300186533" y="1652.20700899219" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;.csv&quot;;" ShouldFocus="false">
+      <OutPortInfo LineIndex="0" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="f26944ea-f0a0-4298-9542-fed710ba9832" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="String.Replace" x="1279.59161846113" y="1706.22073035389" isVisible="true" isUpstreamVisible="true" lacing="Longest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="DSCoreNodes.dll" function="DSCore.String.Replace@string,string,string">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <PythonNodeModels.PythonNode guid="27e913b2-e8ea-46b0-b7a9-dacb5c1d44c3" type="PythonNodeModels.PythonNode" nickname="Python Script" x="1999.13160338129" y="1762.47061137116" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="4">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <PortInfo index="3" default="False" />
+      <Script># Copyright(c) 2016, Konrad Sobon
+# @arch_laboratory, http://archi-lab.net
+
+import sys
+pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
+sys.path.append(pyt_path)
+
+import os
+
+filePath = IN[0]
+identifiers = IN[1]
+newNames = IN[2]
+RunIt = IN[3]
+
+files = os.listdir(filePath)
+
+if RunIt:
+	try:
+		errorReport = None
+		for file in files:
+			currentFileName = filePath + "\\" + file
+		
+			for i, j in zip(identifiers, newNames):
+				newFileName = filePath + "\\" + j
+	
+				if i in file and currentFileName != newFileName:
+					os.rename(currentFileName, newFileName)
+	except:
+		# if error accurs anywhere in the process catch it
+		import traceback
+		errorReport = traceback.format_exc()
+else:
+	errorReport = "Set RunMe to True."
+
+#Assign your output to the OUT variable
+if errorReport == None:
+	OUT = newNames
+else:
+	OUT = errorReport,files
+	
+</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="c14a79ab-ccb7-4eb8-93cd-35f40fe2601e" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1755.36615530849" y="1886.35104878058" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="1;" ShouldFocus="false">
+      <OutPortInfo LineIndex="0" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="70ec8a00-e47b-4d77-871c-789b915e285a" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="FilePath.FileName" x="867.849842252042" y="1339.89101563426" isVisible="true" isUpstreamVisible="true" lacing="Auto" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.IO.FilePath.FileName@string,bool">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="True" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="3d2d8d90-248c-4852-9217-cfce777d1fa6" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="703.359501003396" y="1391.18343257681" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="1;" ShouldFocus="false">
+      <OutPortInfo LineIndex="0" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <CoreNodeModels.Input.StringInput guid="a787b73e-30a7-42d7-abda-3f13751debc8" type="CoreNodeModels.Input.StringInput" nickname="String" x="1676.38264166137" y="1623.21347924141" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>C:\Users\giovanni.brogiolo\Dropbox\QTO\1b1</System.String>
+      <System.String value="C:\Users\giovanni.brogiolo\Dropbox\QTO\1b1" />
+    </CoreNodeModels.Input.StringInput>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="4232ad45-8caf-4130-9413-89be0c206066" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1028.05308164879" y="1578.46621316043" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;.txt&quot;;" ShouldFocus="false">
+      <OutPortInfo LineIndex="0" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="bb914a95-9721-48e6-b108-0ea908422752" start_index="0" end="27e913b2-e8ea-46b0-b7a9-dacb5c1d44c3" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="bb914a95-9721-48e6-b108-0ea908422752" start_index="0" end="c910d86d-c012-4ce7-8efa-a94cb575019a" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c910d86d-c012-4ce7-8efa-a94cb575019a" start_index="0" end="70ec8a00-e47b-4d77-871c-789b915e285a" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="a4ba906f-50b3-4079-bc9a-4b4b677faacc" start_index="0" end="f26944ea-f0a0-4298-9542-fed710ba9832" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="bfd6d71b-4d77-4696-b84e-8993ede2e8c3" start_index="0" end="f26944ea-f0a0-4298-9542-fed710ba9832" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="f26944ea-f0a0-4298-9542-fed710ba9832" start_index="0" end="27e913b2-e8ea-46b0-b7a9-dacb5c1d44c3" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c14a79ab-ccb7-4eb8-93cd-35f40fe2601e" start_index="0" end="27e913b2-e8ea-46b0-b7a9-dacb5c1d44c3" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="70ec8a00-e47b-4d77-871c-789b915e285a" start_index="0" end="f26944ea-f0a0-4298-9542-fed710ba9832" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="70ec8a00-e47b-4d77-871c-789b915e285a" start_index="0" end="27e913b2-e8ea-46b0-b7a9-dacb5c1d44c3" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="3d2d8d90-248c-4852-9217-cfce777d1fa6" start_index="0" end="70ec8a00-e47b-4d77-871c-789b915e285a" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

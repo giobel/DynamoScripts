@@ -1,0 +1,85 @@
+{
+  "Uuid": "d0ae5b9d-57f2-47d4-86e1-1703fb16db97",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "docDelete",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import FilteredElementCollector\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nview  = doc.ActiveView\r\n\r\ncollector = FilteredElementCollector( doc, view.Id ).WhereElementIsNotElementType()\r\n\r\nelems = []\r\n\r\nfor c in collector:\r\n\t#if c.Category.Name == \"Walls\":\r\n\tif c.Category.HasMaterialQuantities == True:\r\n\t\telems.append(c)\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nresult = []\t\r\n\r\nfor e in elems:\r\n\teid = e.Id\r\n\ttry:\r\n\t\tdel_id = doc.Delete(eid)\r\n\t\tresult.append(str(eid)+\" deleted\")\r\n\texcept:\r\n\t\tresult.append(str(eid)+\" failed\")\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n\r\nOUT = result",
+      "VariableInputPorts": true,
+      "Id": "568df3c99f68466eaabb5f6d294047b5",
+      "Inputs": [
+        {
+          "Id": "bf8737534dfc4b3f909754c62bb3bd9c",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "2991c1280f094fd9bc7cdf7c28fb2db9",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    }
+  ],
+  "Connectors": [],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.1.0.6255",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "Id": "568df3c99f68466eaabb5f6d294047b5",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 543.0,
+        "Y": 242.0
+      }
+    ],
+    "Annotations": [],
+    "X": 0.0,
+    "Y": 0.0,
+    "Zoom": 1.0
+  }
+}

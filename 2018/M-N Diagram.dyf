@@ -1,0 +1,215 @@
+<Workspace Version="1.3.1.1736" X="-83.4338879781596" Y="38.5738011865488" zoom="0.729950825270788" ScaleFactor="1" Name="M-N Diagram" Description="" ID="499ca102-405e-43c7-932d-2d988184e1f9" Category="Calcs">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="Math" resolvedName="DSCore.Math" assemblyName="DSCoreNodes.dll" />
+    <ClassMap partialName="Line" resolvedName="Autodesk.DesignScript.Geometry.Line" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Point" resolvedName="Autodesk.DesignScript.Geometry.Point" assemblyName="ProtoGeometry.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <PythonNodeModels.PythonNode guid="1a165649-54c9-4714-a3d9-2f115c7092ce" type="PythonNodeModels.PythonNode" nickname="Python Script" x="541.126134361342" y="85.521362744852" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="7">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <PortInfo index="3" default="False" />
+      <PortInfo index="4" default="False" />
+      <PortInfo index="5" default="False" />
+      <PortInfo index="6" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variables.
+#import json
+import math
+
+import sys
+sys.path.append("C:\pyTest\pysection")
+import shape
+import material
+import section
+import slab
+import bisect
+
+def dump_json(obj,indent=None):
+    return json.dumps(obj, default=lambda o: o.__dict__,indent=indent)
+
+def test_rect_section():
+    #create materials
+    conc = material.Concrete(IN[0])
+    steel = material.Steel(IN[1],IN[2])
+
+    #define profile
+    profile = shape.Rectangle(IN[3],IN[4])
+    bars = [
+        section.Bar(steel,section.Bar.diam_20M,IN[5]),
+        section.Bar(steel,section.Bar.diam_20M,IN[5]),
+        section.Bar(steel,section.Bar.diam_20M,IN[5]),
+        section.Bar(steel,section.Bar.diam_20M,IN[5]),
+        section.Bar(steel,section.Bar.diam_30M,IN[6]),
+        section.Bar(steel,section.Bar.diam_30M,IN[6]),
+        section.Bar(steel,section.Bar.diam_30M,IN[6]),
+        section.Bar(steel,section.Bar.diam_30M,IN[6])]
+    sec = section.Section(conc,profile,bars)
+
+    #set material factors
+    sec.concrete_factor = 0.65
+    sec.steel_factor = 0.85
+
+    #calc peak axial strength
+    #print(sec.calc_peak_axial_strength())
+
+    #print MN Chart
+    file = open('C:\pyTest\pysection\mn.csv', 'w')
+    Mvalues = []
+    Nvalues = []
+	
+    for M,N in sec.calc_M_N().entries:
+    	Mvalues.append(M)
+    	Nvalues.append(N)
+        file.write(str(M) + "," + str(N) + "\n")
+        
+    return Mvalues,Nvalues
+
+
+
+
+
+def test_materials():
+    print(dump_json(conc))
+    print()
+
+    print("Hognestad")
+    print(conc.calc_stress_hognestad(-0.0040))
+    print(conc.calc_stress_hognestad(-0.0030))
+    print(conc.calc_stress_hognestad(-0.0020))
+    print(conc.calc_stress_hognestad(-0.0010))
+    print(conc.calc_stress_hognestad( 0.0000))
+    print(conc.calc_stress_hognestad( 0.0010))
+    print(conc.calc_stress_hognestad( 0.0020))
+    print(conc.calc_stress_hognestad( 0.0030))
+    print()
+
+    print("Popovics NSC")
+    print(conc.calc_stress_popovics_nsc(-0.0040))
+    print(conc.calc_stress_popovics_nsc(-0.0030))
+    print(conc.calc_stress_popovics_nsc(-0.0020))
+    print(conc.calc_stress_popovics_nsc(-0.0010))
+    print(conc.calc_stress_popovics_nsc( 0.0000))
+    print(conc.calc_stress_popovics_nsc( 0.0010))
+    print(conc.calc_stress_popovics_nsc( 0.0020))
+    print(conc.calc_stress_popovics_nsc( 0.0030))
+    print()
+
+    print("Popovics HSC")
+    print(conc.calc_stress_popovics_hsc(-0.0040))
+    print(conc.calc_stress_popovics_hsc(-0.0030))
+    print(conc.calc_stress_popovics_hsc(-0.0020))
+    print(conc.calc_stress_popovics_hsc(-0.0010))
+    print(conc.calc_stress_popovics_hsc( 0.0000))
+    print(conc.calc_stress_popovics_hsc( 0.0010))
+    print(conc.calc_stress_popovics_hsc( 0.0020))
+    print(conc.calc_stress_popovics_hsc( 0.0030))
+    print()
+
+    print("Hoshikuma")
+    print(conc.calc_stress_hoshikuma(-0.0040))
+    print(conc.calc_stress_hoshikuma(-0.0030))
+    print(conc.calc_stress_hoshikuma(-0.0020))
+    print(conc.calc_stress_hoshikuma(-0.0010))
+    print(conc.calc_stress_hoshikuma( 0.0000))
+    print(conc.calc_stress_hoshikuma( 0.0010))
+    print(conc.calc_stress_hoshikuma( 0.0020))
+    print(conc.calc_stress_hoshikuma( 0.0030))
+    print()
+
+    print(dump_json(steel))
+    print()
+
+    print(steel.calc_stress(-0.0020))
+    print(steel.calc_stress(-0.0010))
+    print(steel.calc_stress( 0.0000))
+    print(steel.calc_stress( 0.0000))
+    print(steel.calc_stress( 0.0010))
+    print(steel.calc_stress( 0.0020))
+    print(steel.calc_stress( 0.0030))
+    print(steel.calc_stress( 0.0040))
+    print(steel.calc_stress( 0.0050))
+    print(steel.calc_stress( 0.0060))
+    print(steel.calc_stress( 0.0070))
+    print(steel.calc_stress( 0.0080))
+    print()
+
+
+#Assign your output to the OUT variable.
+OUT = test_rect_section()</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="03f3981a-19ca-499e-a759-11b6853caad5" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="749.117713150599" y="178.762825309391" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="a[1];" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="117d22a5-f4ae-42f7-a2e4-a171ec4f81e4" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="795.375411174342" y="1.81034097418461" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="a[0];" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="f664741a-8d10-4d11-8ce1-b0df2cc6b47f" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="844.575919501056" y="265.122870032792" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="-a/10;" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="82de0b02-1538-4bc6-aedb-2c7c740fe35e" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Point.ByCoordinates" x="1114.23747322449" y="-25.5285050600432" isVisible="false" isUpstreamVisible="true" lacing="Auto" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Point.ByCoordinates@double,double">
+      <PortInfo index="0" default="True" />
+      <PortInfo index="1" default="True" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="740e4316-9f0b-48f3-9c79-0e58ba147e05" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="NurbsCurve.ByControlPoints" x="1430.02767874786" y="30.6697542159518" isVisible="true" isUpstreamVisible="true" lacing="Auto" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.NurbsCurve.ByControlPoints@Autodesk.DesignScript.Geometry.Point[]">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="52c6b9a1-aa92-48a1-9c60-91e5a7ef7b01" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="249.772503004983" y="-111.791277665949" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="Concrete Grade" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="31acf8e8-e315-464e-a6a5-5ab593b922d1" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="269.805031949439" y="92.7807086779658" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="Steel Grade" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="b85ce428-10c6-40a4-b0a4-dcffa4903464" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="278.77209201473" y="222.05582461925" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="Es" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="cea16097-1b85-494b-a070-65a97056a8ce" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="275.090305888453" y="160.890713955454" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="b" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="d567b8e6-0f53-4060-9c52-8c1e2d219f6f" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="378.519347020171" y="246.809808648589" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="H" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="03085900-b64e-4145-9360-8b7a26f32778" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="293.780639710152" y="320.182487475539" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="Top Cover" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="c3978928-9687-4990-a269-d036be5d23bf" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="315.625748594673" y="385.570385756108" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="d" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="8bb3965f-f832-43f4-b634-d4b2ac85cb69" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="935.30618674182" y="-66.2279825762849" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="M" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="d59432eb-c508-4e36-b7da-63b2f772673f" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="999.090787029189" y="334.116120570429" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="N" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="1a165649-54c9-4714-a3d9-2f115c7092ce" start_index="0" end="03f3981a-19ca-499e-a759-11b6853caad5" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="1a165649-54c9-4714-a3d9-2f115c7092ce" start_index="0" end="117d22a5-f4ae-42f7-a2e4-a171ec4f81e4" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="03f3981a-19ca-499e-a759-11b6853caad5" start_index="0" end="f664741a-8d10-4d11-8ce1-b0df2cc6b47f" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="117d22a5-f4ae-42f7-a2e4-a171ec4f81e4" start_index="0" end="82de0b02-1538-4bc6-aedb-2c7c740fe35e" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="117d22a5-f4ae-42f7-a2e4-a171ec4f81e4" start_index="0" end="8bb3965f-f832-43f4-b634-d4b2ac85cb69" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="f664741a-8d10-4d11-8ce1-b0df2cc6b47f" start_index="0" end="82de0b02-1538-4bc6-aedb-2c7c740fe35e" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="f664741a-8d10-4d11-8ce1-b0df2cc6b47f" start_index="0" end="d59432eb-c508-4e36-b7da-63b2f772673f" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="82de0b02-1538-4bc6-aedb-2c7c740fe35e" start_index="0" end="740e4316-9f0b-48f3-9c79-0e58ba147e05" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="52c6b9a1-aa92-48a1-9c60-91e5a7ef7b01" start_index="0" end="1a165649-54c9-4714-a3d9-2f115c7092ce" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="31acf8e8-e315-464e-a6a5-5ab593b922d1" start_index="0" end="1a165649-54c9-4714-a3d9-2f115c7092ce" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="b85ce428-10c6-40a4-b0a4-dcffa4903464" start_index="0" end="1a165649-54c9-4714-a3d9-2f115c7092ce" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="cea16097-1b85-494b-a070-65a97056a8ce" start_index="0" end="1a165649-54c9-4714-a3d9-2f115c7092ce" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="d567b8e6-0f53-4060-9c52-8c1e2d219f6f" start_index="0" end="1a165649-54c9-4714-a3d9-2f115c7092ce" end_index="4" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="03085900-b64e-4145-9360-8b7a26f32778" start_index="0" end="1a165649-54c9-4714-a3d9-2f115c7092ce" end_index="5" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c3978928-9687-4990-a269-d036be5d23bf" start_index="0" end="1a165649-54c9-4714-a3d9-2f115c7092ce" end_index="6" portType="0" />
+  </Connectors>
+  <Notes>
+    <Dynamo.Graph.Notes.NoteModel guid="5af6f97e-693d-4788-9ae7-36c73ba7266e" text="N divided by 10 for graphic scale reasons" x="780.672674718396" y="338.857757626436" />
+  </Notes>
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-27.8991928100586" eyeY="29079.25" eyeZ="-2371.78002929688" lookX="27.8991928100586" lookY="-29079.25" lookZ="1971.78002929688" upX="-0.0139923011884093" upY="0.147809445858002" upZ="-0.98891681432724" />
+  </Cameras>
+</Workspace>

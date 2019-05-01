@@ -1,0 +1,177 @@
+{
+  "Uuid": "9f8900c2-623a-42f0-b704-441641933faa",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "audit",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\n\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.DB.Structure import *\r\n\r\nclr.AddReference('RevitAPIUI')\r\nfrom Autodesk.Revit.UI import *\r\n\r\nclr.AddReference('System')\r\nfrom System.Collections.Generic import List\r\n\r\nclr.AddReference('RevitNodes')\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference('RevitServices')\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n\r\n\r\ncollector = FilteredElementCollector( doc ).WhereElementIsNotElementType()\r\n\r\ncat = []\r\ncatNames = []\r\n\r\nfor c in collector:\r\n\tif (None != c.Category and c.Category.HasMaterialQuantities):\r\n\t\tcat.append(c)\r\n\t\tcatNames.append(c.Name)\r\n\r\nunique = list(set(catNames))\r\n\r\nindexes = []\r\n\r\nf = lambda my_list, value:filter(lambda x: my_list[x] == value, range(len(my_list)))\r\n\r\nfor x in unique:\r\n\tindexes.append(f(catNames, x))\r\n\r\nresult = []\r\n\r\n\r\nfor i in indexes:\r\n\tsub = []\r\n\tresult.append(sub)\t\r\n\tfor j in i:\r\n\t\tsub.append(cat[j])\r\n\r\n\r\nOUT = result, unique, [len(r) for r in result]\r\n",
+      "VariableInputPorts": true,
+      "Id": "49a51acc70e4457a8b3b00381998e658",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "152cc804dcae451097ccecd53559d8c4",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "46a3a667-ec7a-49ed-8675-ed77333ecd8e",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "ed0692f608c948168dcec17769a24e4c",
+      "Inputs": [
+        {
+          "Id": "6fe2930589664f3aae289b2830aecd47",
+          "Name": "input",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "70d66d0390c4478a9636ad310867ce45",
+          "Name": "addIndexes",
+          "Description": "bool\nDefault value : true",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "2d26cf8b43f14d078466457c2f5285b9",
+          "Name": "reset",
+          "Description": "bool\nDefault value : true",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "53fbf97dd38a45019bb3d85f0eb1311d",
+          "Name": "str",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "This node that serializes the input information and presents it in a resizable text window."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "0;",
+      "Id": "6997c3d9d724481190d2a1cb8f06a0e2",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "cf40b9e8808842b7a00ecc08016818bf",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "152cc804dcae451097ccecd53559d8c4",
+      "End": "6fe2930589664f3aae289b2830aecd47",
+      "Id": "0eacca9c7bdf4444a48e7df52ec3de06"
+    },
+    {
+      "Start": "cf40b9e8808842b7a00ecc08016818bf",
+      "End": "70d66d0390c4478a9636ad310867ce45",
+      "Id": "e5af1105970d4999ae9e7d28b5580679"
+    }
+  ],
+  "Dependencies": [
+    "46a3a667-ec7a-49ed-8675-ed77333ecd8e"
+  ],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.1.4955",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "49a51acc70e4457a8b3b00381998e658",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 700.60115016195107,
+        "Y": 154.85604746480846
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Springs.Watch+",
+        "Id": "ed0692f608c948168dcec17769a24e4c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1260.3769351737885,
+        "Y": 296.59195114406731
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "6997c3d9d724481190d2a1cb8f06a0e2",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1068.0,
+        "Y": 354.0
+      }
+    ],
+    "Annotations": [],
+    "X": -436.64041047705643,
+    "Y": -58.253489722005895,
+    "Zoom": 1.3461373047445631
+  }
+}

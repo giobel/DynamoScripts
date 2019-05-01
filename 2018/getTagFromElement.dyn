@@ -1,0 +1,152 @@
+<Workspace Version="1.3.2.2480" X="-180.763853133816" Y="196.879702397073" zoom="1.17292707806196" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.DSModelElementsSelection guid="98e2b9cf-0188-4210-bfb9-bdacf8441bbd" type="Dynamo.Nodes.DSModelElementsSelection" nickname="Select Model Elements" x="374.380357786097" y="428.454801830303" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="true">
+      <instance id="82a7fb6c-bbbc-4fea-a9cf-cb8fa6088aa8-00166648" />
+    </Dynamo.Nodes.DSModelElementsSelection>
+    <PythonNodeModels.PythonNode guid="8cf250e3-7c01-4925-a64e-064ffb204fe0" type="PythonNodeModels.PythonNode" nickname="Python Script" x="825.645366148172" y="288.855898056913" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>#Author Konstantin Zhukoven @ https://zhukoven.com
+#Tested to work with Dynamo 1.3.0+
+import clr
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+doc = DocumentManager.Instance.CurrentDBDocument
+
+elements = UnwrapElement(IN[0])
+thost = []
+for e in elements:
+	eid = e.Id
+	thost.append(doc.GetElement(e.TaggedLocalElementId))
+	
+OUT = thost</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="2407760e-5a0e-407b-9502-c5070f788a38" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="552.492085314057" y="312.842900026103" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="{a};" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="5f253c9c-4c8a-4126-8499-4a6ef9033d7d" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Tag.TaggedElement" x="631.601995646397" y="541.092682775192" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="RevitNodes.dll" function="Revit.Elements.Tag.TaggedElement">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="4adace6d-6964-4138-908a-3c89258700e4" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Get Tagged Element Id" x="912.309596471735" y="475.953156353521" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <ID value="42d676dd-3909-4ff8-8eaf-4fa7128f1991" />
+      <Name value="Get Tagged Element Id" />
+      <Description value="Retrives an Element Id from input of element tags. For example if wall tags are inputted it will return tagged wall Ids." />
+      <Inputs>
+        <Input value="Tags" />
+      </Inputs>
+      <Outputs>
+        <Output value="ElementId(s)" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <PythonNodeModels.PythonNode guid="3d4876ca-95b9-4fc1-942c-61ef4f9bb48e" type="PythonNodeModels.PythonNode" nickname="Python Script" x="683.970172871157" y="-134.833160114619" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>#Author Konstantin Zhukoven @ https://zhukoven.com
+#Tested to work with Dynamo 1.3.0+
+import clr
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+doc = DocumentManager.Instance.CurrentDBDocument
+
+elements = UnwrapElement(IN[0])
+thost = []
+	
+tags = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_StructuralFramingTags).ToElements()
+result = []
+
+for e in elements:
+	subList = []
+	result.append(subList)
+	for t in tags:
+		try:
+			tid = t.Id
+			thost = doc.GetElement(t.TaggedLocalElementId)
+			if thost.Id == e.Id:
+				subList.append(t)	
+		except:
+			""
+
+OUT = result</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="aacc51a8-223a-47b6-825f-27d0476c593b" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Get Actual Elements from Linked Tag Ids" x="1565.43790529755" y="570.485357932101" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <ID value="ffa67246-834b-4523-a10c-ba0c52ead7c8" />
+      <Name value="Get Actual Elements from Linked Tag Ids" />
+      <Description value="very slow for the elements..." />
+      <Inputs>
+        <Input value="tagInfoList" />
+      </Inputs>
+      <Outputs>
+        <Output value="not a Linked Tag" />
+        <Output value="Link Tags Used" />
+        <Output value="Link Element Ids" />
+        <Output value="Link Docs" />
+        <Output value="Link Tag Elements Used" />
+        <Output value="Link Actual Elements" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="012293dd-bcc3-41a8-b454-42288b9cf995" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Select Taggable Elements Not Tagged in Active View" x="929.655444276744" y="851.794239601302" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="True" IsFrozen="false" isPinned="true">
+      <ID value="5d66ffc3-1814-4e7d-93b4-e07dde1e5927" />
+      <Name value="Select Taggable Elements Not Tagged in Active View" />
+      <Description value="from the Dynamo Player samples" />
+      <Inputs />
+      <Outputs>
+        <Output value="selected" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="d9a850b6-e408-40c9-a7af-e9b18564d3ad" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Get Tagged Linked Element Id" x="848.072283858142" y="714.73453009805" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <ID value="3c0dd314-3f39-4a1e-8a58-af7a516040b2" />
+      <Name value="Get Tagged Linked Element Id" />
+      <Description value="" />
+      <Inputs>
+        <Input value="Tags" />
+      </Inputs>
+      <Outputs>
+        <Output value="tagInfoList" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="e78b9eca-0e84-4596-b854-b79e8ad28a52" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Element.IsTagged" x="1429.76234337355" y="378.480041315392" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <ID value="6e95cf1b-971e-4c90-a26d-e638b6c669af" />
+      <Name value="Element.IsTagged" />
+      <Description value="Checks if all Elements are tagged in the project" />
+      <Inputs>
+        <Input value="Tags of Category" />
+        <Input value="Elements of Category" />
+      </Inputs>
+      <Outputs>
+        <Output value="Tag's ID" />
+        <Output value="Untagged Element(s)" />
+        <Output value="Tagged Element(s)" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Nodes.DSModelElementsSelection guid="c46182f1-2435-4300-9e82-b9f8dc40d934" type="Dynamo.Nodes.DSModelElementsSelection" nickname="Select Model Elements" x="306.749359251818" y="-133.257093784216" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="true">
+      <instance id="e021b7a9-1e57-428c-87db-8e087322cd49-0015a041" />
+      <instance id="82a7fb6c-bbbc-4fea-a9cf-cb8fa6088aa8-001666db" />
+    </Dynamo.Nodes.DSModelElementsSelection>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="98e2b9cf-0188-4210-bfb9-bdacf8441bbd" start_index="0" end="2407760e-5a0e-407b-9502-c5070f788a38" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="98e2b9cf-0188-4210-bfb9-bdacf8441bbd" start_index="0" end="5f253c9c-4c8a-4126-8499-4a6ef9033d7d" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="2407760e-5a0e-407b-9502-c5070f788a38" start_index="0" end="8cf250e3-7c01-4925-a64e-064ffb204fe0" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c46182f1-2435-4300-9e82-b9f8dc40d934" start_index="0" end="3d4876ca-95b9-4fc1-942c-61ef4f9bb48e" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

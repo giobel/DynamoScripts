@@ -1,0 +1,172 @@
+{
+  "Uuid": "27fbfec8-bae7-46e5-9561-e59393c10c8e",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "Cast in plate place holder03",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\n\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.DB.Structure import *\r\n\r\nclr.AddReference('RevitAPIUI')\r\nfrom Autodesk.Revit.UI import *\r\n\r\nclr.AddReference('System')\r\nfrom System.Collections.Generic import List\r\n\r\nclr.AddReference('RevitNodes')\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference('RevitServices')\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n\r\n\r\ndef BeamMidPoint(beam):\r\n\treturn beam.Location.Curve.Evaluate(0.5,True)\r\n\r\n##DIFFERENT FROM BEAM HAND ORIENTATION!\r\ndef BeamEndDirection(beam):\r\n\tstPt = beam.Location.Curve.GetEndPoint(0)\r\n\tendPt = beam.Location.Curve.GetEndPoint(0)\r\n\treturn stPt - endPt\r\n\r\ndef LocCurveDirection(beam):\r\n\treturn beam.Location.Curve.Direction\r\n\r\ndef BeamDirection(beam):\r\n\treturn beam.HandOrientation\r\n\t\r\n\r\ndef RaybounceFaceWalls(center, direction, view):\r\n\ttry:\r\n\t\tfilter = ElementClassFilter(Wall);\r\n\t\trefIntersector = ReferenceIntersector(filter, FindReferenceTarget.Face, view);\r\n\t\treferenceWithContext = refIntersector.FindNearest(center, direction)\r\n\t\treference = referenceWithContext.GetReference()\r\n\t\treturn [reference, reference.GlobalPoint]\r\n\texcept:\r\n\t\treturn \"not found\"\r\n\r\n\r\n\r\nif isinstance(IN[0], list):\r\n\telements = UnwrapElement(IN[0])\r\nelse:\r\n\telements = [UnwrapElement(IN[0])]\r\n\r\nfs = UnwrapElement(IN[1])\r\n\r\nview = doc.ActiveView\r\n\r\n\r\nbeams = []\r\npoints = []\r\n\r\n\r\nvoid = []\r\nerrors = []\r\nreferences = []\r\ncip = []\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nfor e in elements:\r\n\tif e.Category.Name == \"Structural Framing\":\r\n\t\tbeams.append(e)\r\n\t\tcenter = BeamMidPoint(e)\r\n\t\trayDirection = BeamDirection(e)\r\n\t\trb = RaybounceFaceWalls(center, rayDirection, view)\r\n\t\tif rb != \"not found\":\r\n\t\t\treferences.append(rb[0])\r\n\t\t\tpoints.append(rb[1])\r\n\t\t\tcip.append(doc.Create.NewFamilyInstance.Overloads[Reference, XYZ, XYZ, FamilySymbol](rb[0], rb[1], rayDirection.CrossProduct(XYZ(0,0,1)), fs));\r\n\t\t\terrors.append(\"beam direction\")\r\n\t\telse:\r\n\t\t\treverseDirection = -rayDirection\r\n\t\t\trc = RaybounceFaceWalls(center, reverseDirection, view)\r\n\t\t\tif rc != \"not found\":\r\n\t\t\t\treferences.append(rc[0])\r\n\t\t\t\tpoints.append(rc[1])\r\n\t\t\t\tcip.append(doc.Create.NewFamilyInstance.Overloads[Reference, XYZ, XYZ, FamilySymbol](rc[0], rc[1], reverseDirection.CrossProduct(XYZ(0,0,1)), fs));\r\n\t\t\t\terrors.append(\"reverse direction\")\r\n\t\t\telse:\r\n\t\t\t\terrors.append(\"wall not found\")\r\n\r\n\t\t\t\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n#p = [p.ToPoint() for p in points]\r\n\r\n\r\nOUT = beams, errors, references, points, cip",
+      "VariableInputPorts": true,
+      "Id": "4c5d25c952aa4678bae221f279d9b569",
+      "Inputs": [
+        {
+          "Id": "ea09fa02e13643eb81504ebcb3632dfe",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "178319b227a54192b8efe66e5b7733f5",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "e8367006ce8e405d8c701131eb0fcdcf",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSModelElementsSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "f639058b-6f89-44e4-adc7-1667e866437a-001adb7c",
+        "f639058b-6f89-44e4-adc7-1667e866437a-001adb94",
+        "f639058b-6f89-44e4-adc7-1667e866437a-001adb98",
+        "f639058b-6f89-44e4-adc7-1667e866437a-001adbb8",
+        "f639058b-6f89-44e4-adc7-1667e866437a-001adbba",
+        "f639058b-6f89-44e4-adc7-1667e866437a-001adbc2",
+        "f639058b-6f89-44e4-adc7-1667e866437a-001adbd8"
+      ],
+      "Id": "f826ac3578db4b13a03e6aae6b87bfcb",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "70e817ce38824f7aa2c0a7c8e1555ace",
+          "Name": "Elements",
+          "Description": "The selected elements.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "DSRevitNodesUI.FamilyTypes, DSRevitNodesUI",
+      "SelectedIndex": 908,
+      "NodeType": "ExtensionNode",
+      "Id": "7a4f83db0f6d437cbaec6f80c1253c1e",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "0ceda42160904cd0829eca0aba60cf1f",
+          "Name": "Family Type",
+          "Description": "The selected Family Type",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "All family types available in the document."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "70e817ce38824f7aa2c0a7c8e1555ace",
+      "End": "ea09fa02e13643eb81504ebcb3632dfe",
+      "Id": "80d84e279bb249afae2b6f7a9ee57dc0"
+    },
+    {
+      "Start": "0ceda42160904cd0829eca0aba60cf1f",
+      "End": "178319b227a54192b8efe66e5b7733f5",
+      "Id": "d96ac1cddbab44158777a2851cee4e2b"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.1.0.5696",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "4c5d25c952aa4678bae221f279d9b569",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1065.358682356208,
+        "Y": 403.94138569310314
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Model Elements",
+        "Id": "f826ac3578db4b13a03e6aae6b87bfcb",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 563.52753427797177,
+        "Y": 365.33015488610073
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Family Types",
+        "Id": "7a4f83db0f6d437cbaec6f80c1253c1e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 499.71047269314124,
+        "Y": 541.36644254085081
+      }
+    ],
+    "Annotations": [],
+    "X": -187.89363638839063,
+    "Y": -174.71834703999332,
+    "Zoom": 1.1047642563030273
+  }
+}

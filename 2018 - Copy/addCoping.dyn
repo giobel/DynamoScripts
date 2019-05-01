@@ -1,0 +1,67 @@
+<Workspace Version="0.8.2.2392" X="-910.948824242363" Y="-1801.26555401482" zoom="1.38571068305882" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Function guid="9e142725-825f-4d04-920f-58b5e705b422" type="Dynamo.Nodes.Function" nickname="FamilyInstance.AddCoping" x="1362.20967456958" y="1493.86242799674" isVisible="true" isUpstreamVisible="true" lacing="Longest" isSelectedInput="False">
+      <ID value="c64064f2-6d0c-415e-95b8-a2685e79778e" />
+      <Name value="FamilyInstance.AddCoping" />
+      <Description value="Adds a coping (cut) to a steel beam" />
+      <Inputs>
+        <Input value="familyInstance" />
+        <Input value="cuttingElement" />
+      </Inputs>
+      <Outputs>
+        <Output value="success" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSIronPythonNode.PythonNode guid="26b8000b-b34b-47d7-9a1b-8a4da04f591f" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="1402.00045373417" y="1711.86384241641" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>import clr
+import System
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+fams = UnwrapElement(IN[0])
+cutters = UnwrapElement(IN[1])
+booleans = list()
+counter = 0
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+for fam in fams:
+	try:
+		fam.AddCoping(cutters[0])
+		fam.AddCoping(cutters[1])
+		booleans.append(True)
+	except:	booleans.append(False)
+	
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = booleans</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSModelElementsSelection guid="5b96577e-5975-4e18-b021-60fe8e50b021" type="Dynamo.Nodes.DSModelElementsSelection" nickname="Select Model Elements" x="847.078647385389" y="1462.15417519401" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <instance id="78051cdc-19fc-4e33-a9ce-a20c98a59d97-00442c3e" />
+      <instance id="78051cdc-19fc-4e33-a9ce-a20c98a59d97-00442c40" />
+      <instance id="78051cdc-19fc-4e33-a9ce-a20c98a59d97-00442c42" />
+      <instance id="78051cdc-19fc-4e33-a9ce-a20c98a59d97-00442ce2" />
+      <instance id="78051cdc-19fc-4e33-a9ce-a20c98a59d97-00442ce4" />
+    </Dynamo.Nodes.DSModelElementsSelection>
+    <Dynamo.Nodes.DSModelElementsSelection guid="734802f5-c599-4983-b228-4d6a7e309ec5" type="Dynamo.Nodes.DSModelElementsSelection" nickname="Select Model Elements" x="847.422295414376" y="1677.35876257244" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <instance id="78051cdc-19fc-4e33-a9ce-a20c98a59d97-00442ac2" />
+      <instance id="78051cdc-19fc-4e33-a9ce-a20c98a59d97-00442b68" />
+    </Dynamo.Nodes.DSModelElementsSelection>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="5b96577e-5975-4e18-b021-60fe8e50b021" start_index="0" end="9e142725-825f-4d04-920f-58b5e705b422" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="734802f5-c599-4983-b228-4d6a7e309ec5" start_index="0" end="9e142725-825f-4d04-920f-58b5e705b422" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

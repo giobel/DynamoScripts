@@ -1,0 +1,68 @@
+<Workspace Version="1.3.0.875" X="-4580.05761450597" Y="-293.647276806505" zoom="1.26387230475743" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.DSModelElementsSelection guid="01eb74cc-0a44-4049-b567-52808327a0a0" type="Dynamo.Nodes.DSModelElementsSelection" nickname="Select Model Elements" x="3861.91410593926" y="487.918117395064" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="true">
+      <instance id="43ab695f-c66f-44ec-910c-2d88539bbd68-001b9282" />
+    </Dynamo.Nodes.DSModelElementsSelection>
+    <Dynamo.Nodes.DSModelElementSelection guid="e0c5ee0f-1df7-4445-93cc-1031f318bcef" type="Dynamo.Nodes.DSModelElementSelection" nickname="Select Model Element" x="3798.03404935788" y="335.096058953302" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <instance id="43ab695f-c66f-44ec-910c-2d88539bbd68-001b9396" />
+    </Dynamo.Nodes.DSModelElementSelection>
+    <PythonNodeModels.PythonNode guid="6b29dab0-7675-408d-af70-d2521b880448" type="PythonNodeModels.PythonNode" nickname="Python Script" x="4234.45493915138" y="356.242868513082" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="2">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <Script>import clr
+ 
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+doc =  DocumentManager.Instance.CurrentDBDocument
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+clr.ImportExtensions(Revit.GeometryConversion)
+
+clr.AddReference("RevitAPI")
+from Autodesk.Revit.DB import *
+from Autodesk.Revit.DB import ColumnAttachment
+
+# Import System Collections...
+import System
+from System.Collections.Generic import *
+from System import Enum
+
+ 
+
+target = UnwrapElement(IN[0])
+column = UnwrapElement(IN[1])
+
+
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+cSt = ColumnAttachmentCutStyle.CutColumn
+cAt = ColumnAttachmentJustification.Minimum
+
+#cS = ColumnAttachment.CutStyle.SetValue(column,"CutColumn")
+
+ca = ColumnAttachment.AddColumnAttachment(doc,column,target,1,cSt,cAt,0)
+
+#trans = ColumnAttachment.GetColumnAttachment(column, 1)
+
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = ca</Script>
+    </PythonNodeModels.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="01eb74cc-0a44-4049-b567-52808327a0a0" start_index="0" end="6b29dab0-7675-408d-af70-d2521b880448" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="e0c5ee0f-1df7-4445-93cc-1031f318bcef" start_index="0" end="6b29dab0-7675-408d-af70-d2521b880448" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

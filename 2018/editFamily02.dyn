@@ -1,0 +1,110 @@
+<Workspace Version="1.3.3.4651" X="236.089185102291" Y="43.7363240805814" zoom="1.03605787560061" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="c79d2ac7-adc0-41b5-84eb-017cdb4a902e" type="PythonNodeModels.PythonNode" nickname="Python Script" x="722.357678976246" y="259.110873506085" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="2">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <Script>import clr
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+clr.AddReference('RevitAPI')
+clr.AddReference('RevitAPIUI')
+from Autodesk.Revit.DB import *
+from Autodesk.Revit.UI import *
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+
+app = DocumentManager.Instance.CurrentUIApplication.Application
+
+filePath = IN[0]
+
+
+
+def purgeFamily(app, filePath):
+	open_file = app.OpenAndActivateDocument(filePath)
+	fm = open_file.FamilyManager
+	deleted = 0
+	error = []
+	y = Transaction(open_file, "Put in parameter")
+	y.Start()
+
+	subTr = SubTransaction(open_file)
+	subTr.Start()
+	
+	familyTypes = fm.Types
+	
+	count = familyTypes.Size
+	
+	while count &gt; 1:
+		fm.DeleteCurrentType()
+		count -=1
+	
+	try:
+		fm.RenameCurrentType("Default")
+	except:
+		error.append("Default Type already present")
+	
+	#run the purge command remove if it does not work
+	familyApp = open_file.Application;
+	uiapp = UIApplication( familyApp )
+	
+	pCmd = RevitCommandId.LookupPostableCommandId(PostableCommand.PurgeUnused)
+	uiapp.PostCommand(pCmd)
+	# end purge command
+	
+	subTr.Commit()
+	
+	y.Commit()
+	
+	open_file.Close()
+	
+	return count
+
+error = []
+
+for file in filePath:
+	error.append(purgeFamily(app, file))
+	
+
+OUT = error</Script>
+    </PythonNodeModels.PythonNode>
+    <CoreNodeModels.Input.BoolSelector guid="028cbfff-40a2-415c-85f3-2a4961bf31f8" type="CoreNodeModels.Input.BoolSelector" nickname="Refresh" x="508.257512428395" y="328.758719137778" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.Boolean>False</System.Boolean>
+    </CoreNodeModels.Input.BoolSelector>
+    <CoreNodeModels.Input.StringInput guid="fa723b66-a7bc-44f4-a25f-019e4e333e1b" type="CoreNodeModels.Input.StringInput" nickname="String" x="-52" y="70" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>C:\Users\giovanni.brogiolo\Documents\GioBro</System.String>
+      <System.String value="C:\Users\giovanni.brogiolo\Documents\GioBro" />
+    </CoreNodeModels.Input.StringInput>
+    <PythonNodeModels.PythonNode guid="7a1e31c8-e3af-4efc-bb42-d3b11af2a676" type="PythonNodeModels.PythonNode" nickname="Python Script" x="278" y="77" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="2">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <Script>from System.IO import Directory, SearchOption
+dir = IN[0]
+
+if Directory.Exists(dir):
+	OUT = Directory.GetFiles(dir)
+else:
+	OUT = list()</Script>
+    </PythonNodeModels.PythonNode>
+    <CoreNodeModels.Input.BoolSelector guid="28409074-5ead-44bb-8a87-4d11c7b1f686" type="CoreNodeModels.Input.BoolSelector" nickname="Refresh" x="-32" y="199" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.Boolean>False</System.Boolean>
+    </CoreNodeModels.Input.BoolSelector>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="028cbfff-40a2-415c-85f3-2a4961bf31f8" start_index="0" end="c79d2ac7-adc0-41b5-84eb-017cdb4a902e" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="fa723b66-a7bc-44f4-a25f-019e4e333e1b" start_index="0" end="7a1e31c8-e3af-4efc-bb42-d3b11af2a676" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="7a1e31c8-e3af-4efc-bb42-d3b11af2a676" start_index="0" end="c79d2ac7-adc0-41b5-84eb-017cdb4a902e" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="28409074-5ead-44bb-8a87-4d11c7b1f686" start_index="0" end="7a1e31c8-e3af-4efc-bb42-d3b11af2a676" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

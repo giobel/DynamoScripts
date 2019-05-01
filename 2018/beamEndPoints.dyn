@@ -1,0 +1,550 @@
+{
+  "Uuid": "3c9d0464-8643-5ffe-96e5-ab1769818209",
+  "IsCustomNode": false,
+  "Description": "",
+  "Name": "beamEndPoints",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\n\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.DB.Structure import *\r\n\r\nclr.AddReference('RevitAPIUI')\r\nfrom Autodesk.Revit.UI import *\r\n\r\nclr.AddReference('System')\r\nfrom System.Collections.Generic import List\r\n\r\nclr.AddReference('RevitNodes')\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference('RevitServices')\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n\r\n\r\ndef LeftMostEnd(beam):\r\n\ttry:\r\n\t\tstPt = beam.Location.Curve.GetEndPoint(0).ToPoint()\r\n\t\tendPt = beam.Location.Curve.GetEndPoint(1).ToPoint()\r\n\t\tleftMostPoint = None\r\n\t\tif stPt.X == endPt.X:\r\n\t\t\tif stPt.Y < endPt.Y:\r\n\t\t\t\tleftMostPoint = stPt\r\n\t\t\telse:\r\n\t\t\t\tleftMostPoint = endPt\r\n\t\telif stPt.X < endPt.X:\r\n\t\t\tleftMostPoint = stPt\r\n\t\telse:\r\n\t\t\tleftMostPoint = endPt\r\n\t\treturn leftMostPoint\r\n\texcept:\r\n\t\treturn \"Uh-oh something went wrong\"\r\n\r\nele = UnwrapElement(IN[0])\r\n\r\nopeningCuts = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_StructuralFramingOpening)\r\n\r\n\r\ndef FindOpeningCut(beam):\r\n\topeningCuts = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_StructuralFramingOpening)\r\n\treturn [o for o in openingCuts if o.Host.Id == beam.Id]\r\n\t\r\n\t\r\ndef CutElement(opening):\r\n\tfor o in openig:\r\n\t\tElementTransformUtils.CopyElement(doc, o.Id, XYZ(0,0,0))\r\n\t\r\n\r\ndef BBoxOrigin(bbox):\r\n\treturn (bbox.Max - bbox.Min)/2\r\n\t\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nope = FindOpeningCut(ele[0])\r\n\r\nbbox = []\r\n\r\nfor o in ope:\r\n\tbbox.append(o.get_BoundingBox(doc.ActiveView))\r\n\r\nStructuralFramingUtils.FlipEnds(ele[0])\r\n\r\nfor o,b in zip(ope,bbox):\r\n\tElementTransformUtils.MoveElement(doc, o.Id, BBoxOrigin(b))\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = FindOpeningCut(ele[0]), bbox",
+      "VariableInputPorts": true,
+      "Id": "eed70ff1ace944639bac663db9669b37",
+      "Inputs": [
+        {
+          "Id": "e9d73da6f2204625a6865e757b8d5d2b",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "ac9ccb0ec69c4b60a6899b4bca5bd737",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "c3e2aafc43ad404a873580a81cbe8e60",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSModelElementSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "f639058b-6f89-44e4-adc7-1667e866437a-001ad3cc"
+      ],
+      "Id": "80ddee67dec449c5b818acaa7fef2946",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "acba31a92a7e4d829b9e56e1506646eb",
+          "Name": "Element",
+          "Description": "The selected elements.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Revit.Application.Document.ActiveView",
+      "Id": "37da6827b11845a0bdf20842cf6f39ca",
+      "Inputs": [
+        {
+          "Id": "ce3205b237564d85a758cb3ae7b69751",
+          "Name": "document",
+          "Description": "Revit.Application.Document",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "07e17f1124fc4ace802be33e953cbd55",
+          "Name": "View",
+          "Description": "View",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Get the active view for the document\n\nDocument.ActiveView: View"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Revit.Application.Document.Current",
+      "Id": "a81c6b80330f4f7c9b4b1c9d216bf2ea",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "9b75352ce7c242d3894dbcc1609beb92",
+          "Name": "Document",
+          "Description": "Document",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Get the current document\n\nDocument.Current: Document"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Revit.Elements.TextNote.ByLocation@Revit.Elements.Views.View,Autodesk.DesignScript.Geometry.Point,string,string,Revit.Elements.TextNoteType,bool,double",
+      "Id": "0ce838d8dbc5474a9329f69fea545c30",
+      "Inputs": [
+        {
+          "Id": "8c0ebbb06a6340d497d6fa935588a32a",
+          "Name": "view",
+          "Description": "View to place text element on\n\nView",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "a7363f37cbee47968a5857391e3df46c",
+          "Name": "location",
+          "Description": "Location in view\n\nPoint",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "614198ad3c1e4584b8af610a57dcd273",
+          "Name": "text",
+          "Description": "Text\n\nstring",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "adfcfd48f07c46b0af35a054f832301d",
+          "Name": "alignment",
+          "Description": "Text alignment\n\nstring",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "7ed6fd8d2c734eb792cd1db93475e580",
+          "Name": "type",
+          "Description": "Revit TextNote Type\n\nTextNoteType\nDefault value : Revit.Elements.TextNoteType.Default()",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "901f3559f4d14abe91c1a385891e33c0",
+          "Name": "keepRotatedTextReadable",
+          "Description": "Keep text horizontal\n\nbool\nDefault value : true",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d5abe7fe486d4ff8931d904a97bbedd6",
+          "Name": "rotation",
+          "Description": "Rotation in degrees\n\ndouble\nDefault value : 0",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "a5748ba41a2e4abfb1959c9e65de86b5",
+          "Name": "TextNote",
+          "Description": "TextNote",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Longest",
+      "Description": "Construct a new Revit TextNote by Location\n\nTextNote.ByLocation (view: View, location: Point, text: string, alignment: string, type: TextNoteType = Revit.Elements.TextNoteType.Default(), keepRotatedTextReadable: bool = true, rotation: double = 0): TextNote"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "\"1\";",
+      "Id": "7d52b99e1486432d9dc31ac5e3e3fdf8",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "0f3344ea052a4561994b35166f2c4942",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "\"Center\";",
+      "Id": "c8a37096413d4643b0fad474ff056cd6",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "1a4f7eb4b5724047b0a1e46bb200712e",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSModelElementsSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "f639058b-6f89-44e4-adc7-1667e866437a-001adcb5",
+        "f639058b-6f89-44e4-adc7-1667e866437a-001adcbc",
+        "a41e9fc1-dec0-44b2-9f9e-4e944a3cf537-002a0cca",
+        "a41e9fc1-dec0-44b2-9f9e-4e944a3cf537-002a0ccc",
+        "a41e9fc1-dec0-44b2-9f9e-4e944a3cf537-002a0cce"
+      ],
+      "Id": "9c0c4e7efd754743a1d5228960f169aa",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "10122a8531ed4e528c52bc841199712a",
+          "Name": "Elements",
+          "Description": "The selected elements.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "[a];",
+      "Id": "58bcd8a9cbc6489c8fd58509eaddbd4e",
+      "Inputs": [
+        {
+          "Id": "59391333387841be81d5f7d6af6c2a6a",
+          "Name": "a",
+          "Description": "a",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "ef90e7bd47d34901b5d13a3ee2e4553b",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": false,
+      "Id": "2f1feb9fdb914b54a153004d356a8888",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "7aae518e28da46a4b1778c30fce5ab5f",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Selection between a true and false."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\n\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.DB.Structure import *\r\n\r\nclr.AddReference('RevitAPIUI')\r\nfrom Autodesk.Revit.UI import *\r\n\r\nclr.AddReference('System')\r\nfrom System.Collections.Generic import List\r\n\r\nclr.AddReference('RevitNodes')\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference('RevitServices')\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n\r\n\r\ndef LeftMostEnd(beam):\r\n\ttry:\r\n\t\tstPt = beam.Location.Curve.GetEndPoint(0).ToPoint()\r\n\t\tendPt = beam.Location.Curve.GetEndPoint(1).ToPoint()\r\n\t\tleftMostPoint = None\r\n\t\tif stPt.X == endPt.X:\r\n\t\t\tif stPt.Y < endPt.Y:\r\n\t\t\t\tleftMostPoint = stPt\r\n\t\t\telse:\r\n\t\t\t\tleftMostPoint = endPt\r\n\t\telif stPt.X < endPt.X:\r\n\t\t\tleftMostPoint = stPt\r\n\t\telse:\r\n\t\t\tleftMostPoint = endPt\r\n\t\treturn leftMostPoint\r\n\texcept:\r\n\t\treturn \"Uh-oh something went wrong\"\r\n\r\nele = UnwrapElement(IN[0])\r\n\r\nopeningCuts = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_StructuralFramingOpening)\r\n\r\n\r\ndef FindOpeningCut(beam):\r\n\topeningCuts = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_StructuralFramingOpening)\r\n\treturn [o for o in openingCuts if o.Host.Id == beam.Id]\r\n\t\r\n\t\r\ndef CutElement(opening):\r\n\tfor o in openig:\r\n\t\tElementTransformUtils.CopyElement(doc, o.Id, XYZ(0,0,0))\r\n\t\r\n\r\ndef BBoxOrigin(bbox):\r\n\treturn (bbox.Max - bbox.Min)/2\r\n\t\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\n\r\nnewBeam = ElementTransformUtils.CopyElement(doc, ele[0].Id, XYZ(0,0,0))\r\nStructuralFramingUtils.FlipEnds(doc.GetElement(newBeam[0]))\r\ndoc.Delete(ele[0].Id)\r\n\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = newBeam",
+      "VariableInputPorts": true,
+      "Id": "f4847350b8e040c594409b543b18e040",
+      "Inputs": [
+        {
+          "Id": "2d7024f2a8034cb9a1df9bd71bd68eec",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "7ea23ab103a2458b97d937afef198585",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "e33c1d7c711543b5a0021f0f0a6ae729",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "c3e2aafc43ad404a873580a81cbe8e60",
+      "End": "a7363f37cbee47968a5857391e3df46c",
+      "Id": "85b009e9318a483fbb3ce373e50aa492"
+    },
+    {
+      "Start": "acba31a92a7e4d829b9e56e1506646eb",
+      "End": "59391333387841be81d5f7d6af6c2a6a",
+      "Id": "36242e583c814aefb2e523dc61e2ad60"
+    },
+    {
+      "Start": "9b75352ce7c242d3894dbcc1609beb92",
+      "End": "ce3205b237564d85a758cb3ae7b69751",
+      "Id": "f36647c267a04063b779d57d2f1cf883"
+    },
+    {
+      "Start": "0f3344ea052a4561994b35166f2c4942",
+      "End": "614198ad3c1e4584b8af610a57dcd273",
+      "Id": "f83d50ee997441f2a01469ae50539f55"
+    },
+    {
+      "Start": "1a4f7eb4b5724047b0a1e46bb200712e",
+      "End": "adfcfd48f07c46b0af35a054f832301d",
+      "Id": "0dc0dac6274e4a84a39795a5ca702be6"
+    },
+    {
+      "Start": "ef90e7bd47d34901b5d13a3ee2e4553b",
+      "End": "e9d73da6f2204625a6865e757b8d5d2b",
+      "Id": "561444b3ab0e476f991e6c670fce0ce9"
+    },
+    {
+      "Start": "ef90e7bd47d34901b5d13a3ee2e4553b",
+      "End": "2d7024f2a8034cb9a1df9bd71bd68eec",
+      "Id": "4e868a22130a4e98b67f6190e2244ca4"
+    },
+    {
+      "Start": "7aae518e28da46a4b1778c30fce5ab5f",
+      "End": "ac9ccb0ec69c4b60a6899b4bca5bd737",
+      "Id": "f6993a7b25aa40f3a4285726fa96eb88"
+    },
+    {
+      "Start": "7aae518e28da46a4b1778c30fce5ab5f",
+      "End": "7ea23ab103a2458b97d937afef198585",
+      "Id": "df1e244ba59840a2845295443355cb40"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.1.5055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "eed70ff1ace944639bac663db9669b37",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 621.534682378806,
+        "Y": 406.16307116849782
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Model Element",
+        "Id": "80ddee67dec449c5b818acaa7fef2946",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 84.826140697070457,
+        "Y": 332.8338205509628
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Document.ActiveView",
+        "Id": "37da6827b11845a0bdf20842cf6f39ca",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 396.23559045820809,
+        "Y": 194.88001292236225
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Document.Current",
+        "Id": "a81c6b80330f4f7c9b4b1c9d216bf2ea",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 240.54060654581212,
+        "Y": 211.71190307505367
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "TextNote.ByLocation",
+        "Id": "0ce838d8dbc5474a9329f69fea545c30",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1142.4493872275293,
+        "Y": 193.47735540963782
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "7d52b99e1486432d9dc31ac5e3e3fdf8",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 848.275008231969,
+        "Y": 195.45983837129114
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "c8a37096413d4643b0fad474ff056cd6",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 829.26172066834761,
+        "Y": 256.39340055318388
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Model Elements",
+        "Id": "9c0c4e7efd754743a1d5228960f169aa",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 73.624362531621955,
+        "Y": 518.89389836167288
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "58bcd8a9cbc6489c8fd58509eaddbd4e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 319.14616319983588,
+        "Y": 413.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Boolean",
+        "Id": "2f1feb9fdb914b54a153004d356a8888",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 353.861425112781,
+        "Y": 736.22511946251814
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "f4847350b8e040c594409b543b18e040",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": true,
+        "X": 673.896730889586,
+        "Y": 682.73599425046393
+      }
+    ],
+    "Annotations": [],
+    "X": -122.04466273785977,
+    "Y": -112.22142943459482,
+    "Zoom": 1.0992168298902731
+  }
+}

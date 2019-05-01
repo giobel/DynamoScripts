@@ -1,0 +1,454 @@
+{
+  "Uuid": "27fbfec8-bae7-46e5-9561-e59393c10c8e",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "Cast in plate place holder04",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\n\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.DB.Structure import *\r\n\r\nclr.AddReference('RevitAPIUI')\r\nfrom Autodesk.Revit.UI import *\r\n\r\nclr.AddReference('System')\r\nfrom System.Collections.Generic import List\r\n\r\nclr.AddReference('RevitNodes')\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference('RevitServices')\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nimport math\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n\r\n\r\ndef BeamMidPoint(beam):\r\n\treturn beam.Location.Curve.Evaluate(0.5,True)\r\n\r\n##DIFFERENT FROM BEAM HAND ORIENTATION!\r\ndef BeamEndDirection(beam):\r\n\tstPt = beam.Location.Curve.GetEndPoint(0)\r\n\tendPt = beam.Location.Curve.GetEndPoint(0)\r\n\treturn stPt - endPt\r\n\r\ndef LocCurveDirection(beam):\r\n\treturn beam.Location.Curve.Direction\r\n\r\ndef BeamDirection(beam):\r\n\treturn beam.HandOrientation\r\n\t\r\n\r\ndef RaybounceFaceWalls(center, direction, view):\r\n\ttry:\r\n\t\tfilter = ElementClassFilter(Wall);\r\n\t\trefIntersector = ReferenceIntersector(filter, FindReferenceTarget.Face, view);\r\n\t\treferenceWithContext = refIntersector.FindNearest(center, direction)\r\n\t\treference = referenceWithContext.GetReference()\r\n\t\treturn [reference, reference.GlobalPoint]\r\n\texcept:\r\n\t\treturn \"not found\"\r\n\r\ndef GetBeamHeight(element, view):\r\n\tbb = element.get_BoundingBox(view)\r\n\tmax = bb.Max.Z\r\n\tmin = bb.Min.Z\r\n\tp = element.get_Parameter(BuiltInParameter.Z_OFFSET_VALUE)\r\n\tProjectUnits = p.DisplayUnitType\r\n\tzOffset = UnitUtils.ConvertFromInternalUnits(p.AsDouble(),ProjectUnits)\r\n\treturn math.ceil((max-min)*304.8) + zOffset\r\n\r\ndef GetBeamWidth(element, view):\r\n\tbb = element.get_BoundingBox(view)\r\n\tmax = bb.Max.Y\r\n\tmin = bb.Min.Y\r\n\treturn math.ceil((max-min)*304.8)\r\n\r\n\r\ndef GetBeamWidthBBox(beam):\r\n\topt = Options()\r\n\topt.ComputeReferences = True\r\n\topt.IncludeNonVisibleObjects = False\r\n\topt.View = doc.ActiveView\r\n\tgeomInst = None;\r\n\tinstTransform = None;\r\n\tobj = beam.get_Geometry(opt)\r\n\tbb = obj.GetBoundingBox()\r\n\ttype = []\r\n\tfor instance in obj:\r\n\t\ttry:\r\n\t\t\ttype.append(instance.GetType())\r\n\t\t\tgeomInst = instance.GetSymbolGeometry()\r\n\t\t\tinstTransform = instance.Transform;\r\n\t\texcept:\r\n\t\t\tcontinue\r\n\tgeoBox = geomInst.GetBoundingBox()\r\n\treturn int((geoBox.Max.Y - geoBox.Min.Y)*304.8)\r\n\r\ndef GetBeamZOffset(element):\r\n\tp = element.get_Parameter(BuiltInParameter.Z_OFFSET_VALUE)\r\n\tProjectUnits = p.DisplayUnitType\r\n\tzOffset = UnitUtils.ConvertFromInternalUnits(p.AsDouble(),ProjectUnits)\r\n\treturn -zOffset\r\n\t\r\ndef SetCipInstaParam(beam, cip):\r\n\terrors = []\r\n\ttry:\r\n\t\tp = cip.LookupParameter(\"Plate Height\")\r\n\t\th = GetBeamHeight(beam,view)\r\n\t\tif h>310:\r\n\t\t\tp.Set(h/304.8)\r\n\t\telse:\r\n\t\t\tp.Set(300/304.8)\r\n\texcept:\r\n\t\terrors.append(\"height failed\")\r\n\ttry:\r\n\t\tp = cip.LookupParameter(\"Plate Width\")\r\n\t\tp.Set((GetBeamWidthBBox(beam)+100)/304.8)\r\n\texcept:\r\n\t\terrors.append(\"width failed\")\r\n\ttry:\r\n\t\tp = cip.LookupParameter(\"Top Offset\")\r\n\t\tp.Set(GetBeamZOffset(beam)/304.8)\r\n\texcept:\r\n\t\terrors.append(\"zOffset failed\")\r\n\treturn errors\r\n\r\n\r\nif isinstance(IN[0], list):\r\n\telements = UnwrapElement(IN[0])\r\nelse:\r\n\telements = [UnwrapElement(IN[0])]\r\n\r\nfs = UnwrapElement(IN[1])\r\n\r\nview = doc.ActiveView\r\n\r\n\r\nbeams = []\r\npoints = []\r\n\r\n\r\nvoid = []\r\nerrors = []\r\nreferences = []\r\ncipList = []\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nfor e in elements:\r\n\tif e.Category.Name == \"Structural Framing\":\r\n\t\ttry:\r\n\t\t\tbeams.append(e)\r\n\t\t\tcenter = BeamMidPoint(e)\r\n\t\t\trayDirection = BeamDirection(e)\r\n\t\t\trb = RaybounceFaceWalls(center, rayDirection, view) #ray in beam direction\r\n\t\t\treverseDirection = -rayDirection\r\n\t\t\trc = RaybounceFaceWalls(center, reverseDirection, view) #ray in beam inverse direction\r\n\t\t\tif rb != \"not found\" and rc != \"not found\":\r\n\t\t\t\treferences.append(rb[0])\r\n\t\t\t\tpoints.append(rb[1])\r\n\t\t\t\treferences.append(rc[0])\r\n\t\t\t\tpoints.append(rc[1])\r\n\t\t\t\tcip1 = doc.Create.NewFamilyInstance.Overloads[Reference, XYZ, XYZ, FamilySymbol](rb[0], rb[1], rayDirection.CrossProduct(XYZ(0,0,1)), fs)\r\n\t\t\t\terrors.append(SetCipInstaParam(e, cip1))\r\n\t\t\t\tcipList.append(cip1)\r\n\t\t\t\tcip2 = doc.Create.NewFamilyInstance.Overloads[Reference, XYZ, XYZ, FamilySymbol](rc[0], rc[1], reverseDirection.CrossProduct(XYZ(0,0,1)), fs)\r\n\t\t\t\terrors.append(SetCipInstaParam(e, cip2))\r\n\t\t\t\tcipList.append(cip2)\r\n\t\t\t\terrors.append(\"beam start point\")\r\n\t\t\t\terrors.append(\"beam end point\")\r\n\t\t\telif rc != \"not found\":\r\n\t\t\t\treferences.append(rc[0])\r\n\t\t\t\tpoints.append(rc[1])\r\n\t\t\t\tcip = doc.Create.NewFamilyInstance.Overloads[Reference, XYZ, XYZ, FamilySymbol](rc[0], rc[1], reverseDirection.CrossProduct(XYZ(0,0,1)), fs)\r\n\t\t\t\terrors.append(SetCipInstaParam(e, cip))\r\n\t\t\t\tcipList.append(cip)\r\n\t\t\t\terrors.append(\"reverse direction\")\r\n\t\t\telif rb != \"not found\":\r\n\t\t\t\treferences.append(rb[0])\r\n\t\t\t\tpoints.append(rb[1])\r\n\t\t\t\treferences.append(rc[0])\r\n\t\t\t\tpoints.append(rc[1])\r\n\t\t\t\tcip = doc.Create.NewFamilyInstance.Overloads[Reference, XYZ, XYZ, FamilySymbol](rb[0], rb[1], rayDirection.CrossProduct(XYZ(0,0,1)), fs)\r\n\t\t\t\terrors.append(SetCipInstaParam(e, cip))\r\n\t\t\t\tcipList.append(cip)\r\n\t\t\telse:\r\n\t\t\t\terrors.append(\"wall not found\")\r\n\t\texcept:\r\n\t\t\terrors.append(\"Uh-oh something went wrong\")\r\n\t\t\t\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n#p = [p.ToPoint() for p in points]\r\n\r\n\r\nOUT = beams, errors, references, points, cipList",
+      "VariableInputPorts": true,
+      "Id": "4c5d25c952aa4678bae221f279d9b569",
+      "Inputs": [
+        {
+          "Id": "ea09fa02e13643eb81504ebcb3632dfe",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "178319b227a54192b8efe66e5b7733f5",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "79c28717fbc34db3970f546a2c3b1bd7",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "e8367006ce8e405d8c701131eb0fcdcf",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSModelElementsSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "f639058b-6f89-44e4-adc7-1667e866437a-001adbd8",
+        "e9055e9b-3f00-4fcf-8bb0-09a7c53255ab-0063979c"
+      ],
+      "Id": "f826ac3578db4b13a03e6aae6b87bfcb",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "70e817ce38824f7aa2c0a7c8e1555ace",
+          "Name": "Elements",
+          "Description": "The selected elements.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\n\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.DB.Structure import *\r\n\r\nclr.AddReference('RevitAPIUI')\r\nfrom Autodesk.Revit.UI import *\r\n\r\nclr.AddReference('System')\r\nfrom System.Collections.Generic import List\r\n\r\nclr.AddReference('RevitNodes')\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference('RevitServices')\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nimport math\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n\r\n\r\ndef BeamMidPoint(beam):\r\n\treturn beam.Location.Curve.Evaluate(0.5,True)\r\n\r\n##DIFFERENT FROM BEAM HAND ORIENTATION!\r\ndef BeamEndDirection(beam):\r\n\tstPt = beam.Location.Curve.GetEndPoint(0)\r\n\tendPt = beam.Location.Curve.GetEndPoint(0)\r\n\treturn stPt - endPt\r\n\r\ndef LocCurveDirection(beam):\r\n\treturn beam.Location.Curve.Direction\r\n\r\ndef BeamDirection(beam):\r\n\treturn beam.HandOrientation\r\n\t\r\n\r\ndef RaybounceFaceWalls(center, direction, view):\r\n\ttry:\r\n\t\tfilter = ElementClassFilter(Wall);\r\n\t\trefIntersector = ReferenceIntersector(filter, FindReferenceTarget.Face, view);\r\n\t\treferenceWithContext = refIntersector.FindNearest(center, direction)\r\n\t\treference = referenceWithContext.GetReference()\r\n\t\treturn [reference, reference.GlobalPoint]\r\n\texcept:\r\n\t\treturn \"not found\"\r\n\r\n\r\ndef GetBeamHeight(element, view):\r\n\tbb = element.get_BoundingBox(view)\r\n\tmax = bb.Max.Z\r\n\tmin = bb.Min.Z\r\n\tp = element.get_Parameter(BuiltInParameter.Z_OFFSET_VALUE)\r\n\tProjectUnits = p.DisplayUnitType\r\n\tzOffset = UnitUtils.ConvertFromInternalUnits(p.AsDouble(),ProjectUnits)\r\n\treturn math.ceil((max-min)*304.8) + zOffset\r\n\t\r\n\r\ndef GetBeamWidth(element, view):\r\n\tbb = element.get_BoundingBox(view)\r\n\tmax = bb.Max.Y\r\n\tmin = bb.Min.Y\r\n\treturn math.ceil((max-min)*304.8)\r\n\t\r\ndef GetBeamZOffset(element):\r\n\tp = element.get_Parameter(BuiltInParameter.Z_OFFSET_VALUE)\r\n\tProjectUnits = p.DisplayUnitType\r\n\tzOffset = UnitUtils.ConvertFromInternalUnits(p.AsDouble(),ProjectUnits)\r\n\treturn -zOffset\r\n\t\r\nbeam = UnwrapElement(IN[0])\r\ncip =  UnwrapElement(IN[1])\r\nview = doc.ActiveView\r\n\r\ndef SetCipInstaParam(beam, cip):\r\n\terrors = []\r\n\ttry:\r\n\t\tp = cip.LookupParameter(\"Plate Height\")\r\n\t\tp.Set(GetBeamHeight(beam,view)/304.8)\r\n\texcept:\r\n\t\terrors.append(\"height failed\")\r\n\ttry:\r\n\t\tp = cip.LookupParameter(\"Plate Width\")\r\n\t\tp.Set((GetBeamWidth(beam,view)+100)/304.8)\r\n\texcept:\r\n\t\terrors.append(\"width failed\")\r\n\ttry:\r\n\t\tp = cip.LookupParameter(\"Top Offset\")\r\n\t\tp.Set(GetBeamZOffset(beam)/304.8)\r\n\texcept:\r\n\t\terrors.append(\"zOffset failed\")\r\n\treturn errors\r\n\t\r\ndef GetBottomCorners(b, z ):\r\n      return [( b.Min.X, b.Min.Y, z ), ( b.Max.X, b.Min.Y, z ), ( b.Max.X, b.Max.Y, z ), ( b.Min.X, b.Max.Y, z )]\r\n\r\ndef GetBottomCornersMinZ( b ):\r\n      return GetBottomCorners( b, b.Min.Z )\r\n\r\n\r\n\r\ndef GetBeamWidth(beam):\r\n\topt = Options()\r\n\topt.ComputeReferences = True\r\n\topt.IncludeNonVisibleObjects = False\r\n\topt.View = doc.ActiveView\r\n\tgeomInst = None;\r\n\tinstTransform = None;\r\n\tobj = beam.get_Geometry(opt)\r\n\tbb = obj.GetBoundingBox()\r\n\ttype = []\r\n\tfor instance in obj:\r\n\t\ttry:\r\n\t\t\ttype.append(instance.GetType())\r\n\t\t\tgeomInst = instance.GetSymbolGeometry()\r\n\t\t\tinstTransform = instance.Transform;\r\n\t\texcept:\r\n\t\t\treturn \"can't get the beam width\"\r\n\tgeoBox = geomInst.GetBoundingBox()\r\n\treturn int((geoBox.Max.Y - geoBox.Min.Y)*304.8)\r\n\r\nOUT =  GetBeamWidth(beam)",
+      "VariableInputPorts": true,
+      "Id": "8ef50e7aee1546f5ab458d022c1ae089",
+      "Inputs": [
+        {
+          "Id": "1aed1d5c7479444493c908c7b1b3eb80",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "12c39dbd6c904802b660a5a35c59eb7c",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "96faea68a3034d55a03d62de84f3a432",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSModelElementsSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "805bba75-fb09-4fec-b433-33d198539167-000018a8"
+      ],
+      "Id": "50b6876eb02d42aeb976813f97184d70",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "04a55faaad82430cb6870fb9a4a033d4",
+          "Name": "Elements",
+          "Description": "The selected elements.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSModelElementsSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "f639058b-6f89-44e4-adc7-1667e866437a-001adbb8"
+      ],
+      "Id": "e0d3d57d1bd14a79886dd51ffb550ff2",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "1a5cc1382d03421998813b31b6cf1839",
+          "Name": "Elements",
+          "Description": "The selected elements.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": false,
+      "Id": "047b316ca63845bd9f80be9c78a57c34",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "af3a2e1aec6f4540a050234221dfc300",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Selection between a true and false."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Revit.Elements.FamilyType.ByName@string",
+      "Id": "8ef07852277f41edad594d6ab448d41d",
+      "Inputs": [
+        {
+          "Id": "9c6ad16133fb4babb607aa6ebb0a5e1c",
+          "Name": "name",
+          "Description": "The name of the FamilyType\n\nstring",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "fdbe272df87d4963bc60bf130ddb6876",
+          "Name": "FamilyType",
+          "Description": "FamilyType",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Select a FamilyType given it's name. This method will return the first FamilyType it finds if there are two or more FamilyTypes with the same name.\n\nFamilyType.ByName (name: string): FamilyType"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "\"CasIntPlateFaceBasedBars\";",
+      "Id": "01f3a6fd15bd484e8f980775bc7e1791",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "10bd5792f4c246eaa3b31665f195649b",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "19ce6b9f-f4cf-4a3f-9788-1482e94528d6",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "bb043b9b569542e5937d9390dda267fd",
+      "Inputs": [
+        {
+          "Id": "3a3eac02d04649c49d7def665a0b273d",
+          "Name": "filePath",
+          "Description": " File path to save to. File extension (*.rvt/*.rfa) will be automatically added.\n\nstring",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "3f4e54484cdb4a6c9f50519e3c7c0398",
+          "Name": "compactFile",
+          "Description": " Should the file be compacted?\n\nbool\nDefault value : false",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "22ba3785a05249e287c1076fea29e3a3",
+          "Name": "saveAsCentral",
+          "Description": " Should the file be saved as a new central file? Will be ignored for non-workshared projects and families\n\nbool\nDefault value : false",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "8f2cfacbc4274a5192b2bcbfc14f121d",
+          "Name": "success",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Saves the active Revit document under the given name."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "",
+      "Id": "51ecd5de9fad45bdb8f171bf353ba209",
+      "Inputs": [],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "70e817ce38824f7aa2c0a7c8e1555ace",
+      "End": "ea09fa02e13643eb81504ebcb3632dfe",
+      "Id": "74b95f772e47463ebe653e7a40a79359"
+    },
+    {
+      "Start": "1a5cc1382d03421998813b31b6cf1839",
+      "End": "1aed1d5c7479444493c908c7b1b3eb80",
+      "Id": "b88bde86182747d3962a370e5a7dc1e8"
+    },
+    {
+      "Start": "af3a2e1aec6f4540a050234221dfc300",
+      "End": "79c28717fbc34db3970f546a2c3b1bd7",
+      "Id": "0815e6e5b1c14e8397398d0d19c995e6"
+    },
+    {
+      "Start": "fdbe272df87d4963bc60bf130ddb6876",
+      "End": "178319b227a54192b8efe66e5b7733f5",
+      "Id": "aa8352968d5449f3800eff0edf5aa0a6"
+    },
+    {
+      "Start": "10bd5792f4c246eaa3b31665f195649b",
+      "End": "9c6ad16133fb4babb607aa6ebb0a5e1c",
+      "Id": "10bd46c9ab184e38b9e427f1d1bf1e6d"
+    }
+  ],
+  "Dependencies": [
+    "19ce6b9f-f4cf-4a3f-9788-1482e94528d6"
+  ],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.1.0.5696",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "4c5d25c952aa4678bae221f279d9b569",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1128.1897213139111,
+        "Y": 403.0407225333438
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Model Elements",
+        "Id": "f826ac3578db4b13a03e6aae6b87bfcb",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 596.15802857709309,
+        "Y": 312.6710515722981
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "8ef50e7aee1546f5ab458d022c1ae089",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1050.94594415218,
+        "Y": 917.75014056702
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Model Elements",
+        "Id": "50b6876eb02d42aeb976813f97184d70",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 745.895627328232,
+        "Y": 971.681274948877
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Model Elements",
+        "Id": "e0d3d57d1bd14a79886dd51ffb550ff2",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 695.617470943991,
+        "Y": 826.252071248224
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Refresh",
+        "Id": "047b316ca63845bd9f80be9c78a57c34",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 746.70573786413661,
+        "Y": 647.23065993108082
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "FamilyType.ByName",
+        "Id": "8ef07852277f41edad594d6ab448d41d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 721.07080314608788,
+        "Y": 444.535567520991
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "01f3a6fd15bd484e8f980775bc7e1791",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 382.2243118168617,
+        "Y": 457.84964023852069
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Document.SaveAs",
+        "Id": "bb043b9b569542e5937d9390dda267fd",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 640.23876839796,
+        "Y": 814.065052141387
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "51ecd5de9fad45bdb8f171bf353ba209",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 324.0,
+        "Y": 749.0
+      }
+    ],
+    "Annotations": [],
+    "X": -86.9805908296729,
+    "Y": -94.710510308167045,
+    "Zoom": 0.58752218578006621
+  }
+}

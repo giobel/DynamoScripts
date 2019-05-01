@@ -1,0 +1,250 @@
+{
+  "Uuid": "3c9d0464-8643-5ffe-96e5-ab1769818209",
+  "IsCustomNode": false,
+  "Description": "",
+  "Name": "beamEndPoints02",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\n\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.DB.Structure import *\r\n\r\nclr.AddReference('RevitAPIUI')\r\nfrom Autodesk.Revit.UI import *\r\n\r\nclr.AddReference('System')\r\nfrom System.Collections.Generic import List\r\n\r\nclr.AddReference('RevitNodes')\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference('RevitServices')\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n\r\n\r\ndef LeftMostEnd(beam):\r\n\ttry:\r\n\t\tstPt = beam.Location.Curve.GetEndPoint(0).ToPoint()\r\n\t\tendPt = beam.Location.Curve.GetEndPoint(1).ToPoint()\r\n\t\tleftMostPoint = None\r\n\t\tif stPt.X == endPt.X:\r\n\t\t\tif stPt.Y < endPt.Y:\r\n\t\t\t\tleftMostPoint = stPt\r\n\t\t\telse:\r\n\t\t\t\tleftMostPoint = endPt\r\n\t\telif stPt.X < endPt.X:\r\n\t\t\tleftMostPoint = stPt\r\n\t\telse:\r\n\t\t\tleftMostPoint = endPt\r\n\t\treturn leftMostPoint\r\n\texcept:\r\n\t\treturn \"Uh-oh something went wrong\"\r\n\r\ndef BeamsOnly(beam):\r\n\treturn [b for b in inputs if b.Category.Name == \"Structural Framing\"]\r\n\r\nif isinstance(IN[0], list):\r\n\tinputs = UnwrapElement(IN[0])\r\nelse:\r\n\tinputs = [UnwrapElement(IN[0])]\r\n\r\n\r\n\r\nbeams = BeamsOnly(inputs)\r\n\r\n\t\r\nflip = []\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nfor b in beams:\r\n\ttry:\r\n\t\tp = b.LookupParameter(\"Start Join Cutback\")\r\n\t\tp.Set(20/304.8)\r\n\t\tp = b.LookupParameter(\"End Join Cutback\")\r\n\t\tp.Set(20/304.8)\r\n\texcept:\r\n\t\tcontinue\r\n\r\nfor b in beams:\r\n\tif LeftMostEnd(b) != b.Location.Curve.GetEndPoint(0).ToPoint():\r\n\t\tStructuralFramingUtils.FlipEnds(b)\r\n\t\tflip.append(\"Flipped\")\r\n\telse:\r\n\t\tflip.append(\"Not Flipped\")\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = flip\r\n\r\n\r\n",
+      "VariableInputPorts": true,
+      "Id": "eed70ff1ace944639bac663db9669b37",
+      "Inputs": [
+        {
+          "Id": "e9d73da6f2204625a6865e757b8d5d2b",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "9f760913640a48d381996cb469169b46",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "c3e2aafc43ad404a873580a81cbe8e60",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSModelElementsSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "0f035be1-e1cc-4339-b297-b9912db961b1-000d2426",
+        "93ed9045-87a6-4118-93fd-01ab8194b12f-000efe53",
+        "f639058b-6f89-44e4-adc7-1667e866437a-001adf5f",
+        "f639058b-6f89-44e4-adc7-1667e866437a-001adf61",
+        "f639058b-6f89-44e4-adc7-1667e866437a-001adf77",
+        "f639058b-6f89-44e4-adc7-1667e866437a-001adf80",
+        "f639058b-6f89-44e4-adc7-1667e866437a-001adf82",
+        "f639058b-6f89-44e4-adc7-1667e866437a-001adf8a",
+        "f639058b-6f89-44e4-adc7-1667e866437a-001adf8f",
+        "f639058b-6f89-44e4-adc7-1667e866437a-001adf9b",
+        "f639058b-6f89-44e4-adc7-1667e866437a-001adf9d",
+        "f639058b-6f89-44e4-adc7-1667e866437a-001adf9f",
+        "f639058b-6f89-44e4-adc7-1667e866437a-001adfa1",
+        "f639058b-6f89-44e4-adc7-1667e866437a-001adfa5",
+        "f639058b-6f89-44e4-adc7-1667e866437a-001adfac",
+        "f639058b-6f89-44e4-adc7-1667e866437a-001adfb3",
+        "f639058b-6f89-44e4-adc7-1667e866437a-001adfbb",
+        "f639058b-6f89-44e4-adc7-1667e866437a-001adfc6",
+        "f639058b-6f89-44e4-adc7-1667e866437a-001ae071",
+        "f639058b-6f89-44e4-adc7-1667e866437a-001ae078",
+        "f639058b-6f89-44e4-adc7-1667e866437a-001ae07e",
+        "f639058b-6f89-44e4-adc7-1667e866437a-001ae0e0",
+        "f639058b-6f89-44e4-adc7-1667e866437a-001ae0e2",
+        "f639058b-6f89-44e4-adc7-1667e866437a-001ae124",
+        "f639058b-6f89-44e4-adc7-1667e866437a-001ae152",
+        "f639058b-6f89-44e4-adc7-1667e866437a-001ae177",
+        "f639058b-6f89-44e4-adc7-1667e866437a-001ae17e",
+        "3ea6d1da-51d6-4e2c-a6d0-bf60fd6c40db-002426a7",
+        "a4fff56f-a538-485e-b333-be0c5995d6b8-0024d3fe",
+        "a41e9fc1-dec0-44b2-9f9e-4e944a3cf537-002a0cf2",
+        "a41e9fc1-dec0-44b2-9f9e-4e944a3cf537-002a0cf4",
+        "a41e9fc1-dec0-44b2-9f9e-4e944a3cf537-002a0cf6",
+        "a41e9fc1-dec0-44b2-9f9e-4e944a3cf537-002a0cf8",
+        "a41e9fc1-dec0-44b2-9f9e-4e944a3cf537-002a0cfa",
+        "a41e9fc1-dec0-44b2-9f9e-4e944a3cf537-002a0cfc",
+        "f246358c-0014-494f-a894-bc6003ee1caa-00371a7a",
+        "f246358c-0014-494f-a894-bc6003ee1caa-00371a83",
+        "f246358c-0014-494f-a894-bc6003ee1caa-00371d4a",
+        "f246358c-0014-494f-a894-bc6003ee1caa-00372298",
+        "3cd36411-e061-4d0a-b2f2-fe2e48ecf0e2-003745e9",
+        "9283dccd-e55e-4a4e-a80f-cd5ee1b293fb-00389242",
+        "d2562792-2775-4e4c-9668-890cef5ee910-003963a1",
+        "d87fffbf-7b79-4837-b723-7bc3377fa4c9-003d8371",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-004776a6",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-004776a7",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-004776ae",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-004776b7",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-004776b8",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-0047782f",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-00477830",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-00477833",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-00477993",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-00477bfb",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-00477bfc",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-00477c02",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-00477c06",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-00477c07",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-00477c08",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-00477c09",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-00477c0a",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-00477c0b",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-00477c0c",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-00477c0f",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-00477c24",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-00477c25",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-00477c26",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-00477c2c",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-00477c2d",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-00477c2e",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-00477c3f",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-00477c40",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-00477c41",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-00477c42",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-00477c43",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-00477c49",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-00477c52",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-00477c53",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-00477c58",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-00477c59",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-00477c60",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-00477f36",
+        "618f77b0-fb82-4fe4-be27-978065fb1e31-00477f38",
+        "d00041bf-52db-42ce-b57f-483a97205cc5-006394f1",
+        "d00041bf-52db-42ce-b57f-483a97205cc5-0063952a",
+        "d00041bf-52db-42ce-b57f-483a97205cc5-00639537"
+      ],
+      "Id": "9c0c4e7efd754743a1d5228960f169aa",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "38425437483f469a9ba2ebb9757eebe7",
+          "Name": "Elements",
+          "Description": "The selected elements.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": false,
+      "Id": "2f1feb9fdb914b54a153004d356a8888",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "83e444cff53a4f4d9147f8dae6c11e0d",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Selection between a true and false."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "38425437483f469a9ba2ebb9757eebe7",
+      "End": "e9d73da6f2204625a6865e757b8d5d2b",
+      "Id": "e3f8f2f98a2943e199aa192b80dbc640"
+    },
+    {
+      "Start": "83e444cff53a4f4d9147f8dae6c11e0d",
+      "End": "9f760913640a48d381996cb469169b46",
+      "Id": "f6993a7b25aa40f3a4285726fa96eb88"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.1.5055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "eed70ff1ace944639bac663db9669b37",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 789.61798077999447,
+        "Y": 502.48837953036912
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Model Elements",
+        "Id": "9c0c4e7efd754743a1d5228960f169aa",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 196.01186457155865,
+        "Y": 362.79950293846485
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Boolean",
+        "Id": "2f1feb9fdb914b54a153004d356a8888",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 499.49643555462325,
+        "Y": 648.16910825261857
+      }
+    ],
+    "Annotations": [],
+    "X": -101.47187111359722,
+    "Y": -300.52065255630868,
+    "Zoom": 0.98355129210355219
+  }
+}

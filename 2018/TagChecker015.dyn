@@ -1,0 +1,547 @@
+{
+  "Uuid": "541468e2-7c13-480d-a8e7-cf4aff6492b9",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "TagChecker",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\n\r\nclr.AddReference(\"System.Windows.Forms\")\r\nfrom System.Windows.Forms import Application, Button, Form, Label, TextBox, CheckBox, FolderBrowserDialog, OpenFileDialog, DialogResult, ComboBox, FormBorderStyle, FormStartPosition\r\n\r\nclr.AddReference(\"System.Drawing\")\r\nfrom System.Drawing import Point as dPoint\r\nfrom System.Drawing import Size as dSize\r\n\r\n\r\nclr.AddReference(\"System\")\r\nfrom System import EventHandler\r\n\r\n\r\nclr.AddReference(\"RevitAPIUI\")\r\nfrom Autodesk.Revit.UI import IExternalEventHandler, ExternalEvent, TaskDialog\r\nfrom Autodesk.Revit.UI.Selection import *\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import Transaction, OverrideGraphicSettings, ElementId, Color\r\n# noinspection PyUnresolvedReferences\r\nfrom Autodesk.Revit.Exceptions import InvalidOperationException\r\n\r\n\r\nclr.AddReference('RevitServices')\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\n\r\nglobal result\r\n\r\n\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n\r\n\r\nclass CustomISelectionFilter(ISelectionFilter):\r\n\tdef __init__(self, category_name):\r\n\t\tself.category_name = category_name\r\n\tdef AllowElement(self, e):\r\n\t\tif e.Category.Name == self.category_name:\r\n\t\t\treturn True\r\n\t\telse:\r\n\t\t\treturn False\r\n\tdef AllowReference(self, ref, point):\r\n\t\treturn false\r\n\t\t\r\n\r\n\r\n\r\n    \r\n\r\n\r\nusage = {\"Primary\" : \"PB\", \"Secondary\" : \"SB\", \"Vertical Bracing\" : \"VB\", \"Diaphragm\" : \"DB\"}\r\n\r\n\r\ndef MarkGenerator(beamId):\r\n\tbeam = doc.GetElement(beamId)\r\n\txDist = abs((beam.Location.Curve.Evaluate(0.5, True).X*304.8 + 67286.598)/1000)\r\n\tyDist = abs((beam.Location.Curve.Evaluate(0.5, True).Y*304.8 - 559.835)/1000)\r\n\tlvlId = beam.LookupParameter(\"Reference Level\").AsElementId()\r\n\tlvlName = doc.GetElement(lvlId).Name\r\n\ts = lvlName.Split(' ')\r\n\tif s[1] == \"Ground\":\r\n\t\ts = [\"Upper Ground\",\"UG\"]\r\n\ttry:\r\n\t\tusageValue = usage[beam.LookupParameter(\"Str Framing Use\").AsString()]\r\n\texcept:\r\n\t\tusageValue = \"Usage error\"\r\n\tif xDist<9.5 and yDist<10:\r\n\t\tvalue = '{}{}0{:.0f}0{:.0f}'.format(s[1],usageValue, xDist,yDist)\r\n\telif xDist<9.5:\r\n\t\tvalue = '{}{}0{:.0f}{:.0f}'.format(s[1],usageValue, xDist,yDist)\r\n\telif yDist<9.5:\r\n\t\tvalue = '{}{}{:.0f}0{:.0f}'.format(s[1],usageValue, xDist,yDist)\r\n\telse:\r\n\t\tvalue = '{}{}{:.0f}{:.0f}'.format(s[1],usageValue, xDist,yDist)\r\n\treturn value\r\n\r\ndef GetMark(beamId):\r\n\tp = doc.GetElement(beamId).LookupParameter(\"Mark\")\r\n\treturn p.AsString()\r\n\r\n\r\ndef SetTagAndOverride(elementsIds):\r\n\tt = Transaction(doc, \"Set Tag and Override\")\r\n\tt.Start()\r\n\t[OverrideColor(elid) for elid in elementsIds]\r\n\t[setTemporaryMark(elid) for elid in elementsIds]\r\n\tt.Commit()\r\n\r\ndef TagAndOverride():\r\n\t#elementsIds = uidoc.Selection.GetElementIds() GIVES ERROR WITH WB AND PG BEAMS!\r\n\tref = uidoc.Selection.PickObject(ObjectType.Element, CustomISelectionFilter(\"Structural Framing\"), \"Select a Beam\")\r\n\telementsIds = [doc.GetElement(ref).Id]\r\n\tform.addElements(elementsIds)\r\n\tSetTagAndOverride(elementsIds)\r\n\t#TaskDialog.Show(\"resu;t\", \":Tagg\")\r\n\r\ndef TagAndOverrideMultiple():\r\n\tref = uidoc.Selection.PickObjects(ObjectType.Element, CustomISelectionFilter(\"Structural Framing\"), \"Select multiple beams\")\r\n\telementsIds = [doc.GetElement(r).Id for r in ref]\r\n\tform.addElements(elementsIds)\r\n\tSetTagAndOverride(elementsIds)\r\n\r\ndef DiscardChanges(elementIds, originalMarks):\r\n\tt = Transaction(doc, \"Discard changes\")\r\n\tt.Start()\r\n\tResetOverrideColor(elementIds)\r\n\tassignOriginalMark(elementIds, originalMarks)\r\n\tt.Commit()\r\n\tform.elementsIds = []\t# Reset list elements\r\n\tform.originalMarks = []\t# Reset marks\r\n\t\r\n\r\ndef AcceptChanges(elementIds):\r\n\tt = Transaction(doc, \"Cancel operation\")\r\n\tt.Start()\r\n\tResetOverrideColor(elementIds)\r\n\tassignMark(elementIds)\r\n\tt.Commit()\r\n\tform.elementsIds = []\t# Reset list elements\r\n\tform.originalMarks = []\t# Reset marks\r\n\t\r\n\t\r\n\r\ndef ResetOverrideColor(elements):\r\n\tv = doc.ActiveView\r\n\tbooleans = []\r\n\toverride = OverrideGraphicSettings()\t\r\n\tfor item in elements:\r\n\t\ttry:\r\n\t\t\tv.SetElementOverrides(item, override)\r\n\t\t\tbooleans.append(True)\r\n\t\texcept:\r\n\t\t\tbooleans.append(False)\r\n\t#TaskDialog.Show(\"result\", str( len(elements) ) )\r\n\treturn booleans\r\n\t\r\n\r\ndef setTemporaryMark(elid):\r\n\ttag = MarkGenerator(elid)\r\n\tp = doc.GetElement(elid).LookupParameter(\"Mark\")\r\n\tform.originalMarks.append(p.AsString())\r\n\tp.Set(p.AsString() + \"(new:\" + tag + \")\")\r\n\t\r\n\r\ndef assignMark(elementIds):\r\n\tfor elid in elementIds:\r\n\t\ttag = MarkGenerator(elid)\r\n\t\tp = doc.GetElement(elid).LookupParameter(\"Mark\")\r\n\t\tp.Set(tag)\r\n\r\ndef assignOriginalMark(elementIds, marks):\r\n\tfor elid,mark in zip(elementIds,marks):\r\n\t\tp = doc.GetElement(elid).LookupParameter(\"Mark\")\r\n\t\tp.Set(mark)\r\n\r\ndef OverrideColor(elid):\r\n\tbooleans = []\r\n\tview = doc.ActiveView\r\n\toverride = OverrideGraphicSettings()\r\n\toverride.SetProjectionFillPatternId(ElementId(19))\r\n\tif GetMark(elid) == MarkGenerator(elid):\r\n\t\toverride.SetProjectionFillColor(Color(0,255,0))\r\n\telif GetMark(elid) == \"\":\r\n\t\toverride.SetProjectionFillColor(Color(255,255,0))\r\n\telse:\r\n\t\toverride.SetProjectionFillColor(Color(255,0,0))\r\n\ttry:\r\n\t\tview.SetElementOverrides(elid, override)\r\n\texcept:\r\n\t\t\"uh-oh to be implemented\"\r\n\treturn booleans\r\n\r\n\r\ndef close(form):\r\n\tform.Close()\r\n\r\n\r\n\r\n\r\nclass CustomizableEvent:\r\n    def __init__(self):\r\n        self.function_or_method = None\r\n        self.args = ()\r\n        self.kwargs = {}\r\n\r\n    def raised_method(self):\r\n        self.function_or_method(*self.args, **self.kwargs)\r\n\r\n    def raise_event(self, function_or_method, *args, **kwargs):\r\n        self.args = args\r\n        self.kwargs = kwargs\r\n        self.function_or_method = function_or_method\r\n        custom_event.Raise()\r\n\r\ncustomizable_event = CustomizableEvent()\r\n\r\n# Create a subclass of IExternalEventHandler\r\nclass CustomHandler(IExternalEventHandler):\r\n    def Execute(self, application):\r\n        try:\r\n            customizable_event.raised_method()\r\n        except InvalidOperationException:\r\n            # If you don't catch this exeption Revit may crash.\r\n            print(\"InvalidOperationException catched\")\r\n\r\n    # noinspection PyMethodMayBeStatic, PyPep8Naming\r\n    def GetName(self):\r\n        return \"Execute an function or method in a IExternalHandler\"\r\n\r\n\r\n# Create an handler instance and his associated ExternalEvent\r\ncustom_handler = CustomHandler()\r\ncustom_event = ExternalEvent.Create(custom_handler)\r\n\r\n\r\n\r\nlabel1 = Label();\r\nbutton1 = Button();\r\nbutton2 = Button();\r\nbutton3 = Button();\r\nbutton4 = Button();\r\n\r\n# A simple WPF form used to call the ExternalEvent\r\nclass ModelessForm(Form):\r\n\t\"\"\"\r\n\tSimple modeless form sample\r\n\t\"\"\"\r\n\tdef __init__(self):\r\n\t\tself.Text = 'Place Beam Tags'\r\n\t\tself.elementsIds = []\r\n\t\tself.originalMarks = []\r\n\t\tself.values = []\r\n\t\tself.Show()\r\n\t\r\n\tdef addElements(self, items):\r\n\t\tfor i in items:\r\n\t\t\tself.elementsIds.append(i)\r\n\r\n\tdef acceptChanges(self, sender, e):\r\n\t\tif len(self.elementsIds) > 0:\r\n\t\t\tCustomizableEvent.raise_event(customizable_event, AcceptChanges, self.elementsIds) \r\n\t\t\t#self.Close()\r\n\t\telse:\r\n\t\t\tTaskDialog.Show(\"Warning\", \"No beams have been selected\")\r\n\t\r\n\tdef undoChanges(self, sender, e):\r\n\t\tif len(self.elementsIds) > 0:\r\n\t\t\tCustomizableEvent.raise_event(customizable_event, DiscardChanges, self.elementsIds, self.originalMarks)\r\n\t\t\t#self.Close()\r\n\t\telse:\r\n\t\t\tTaskDialog.Show(\"Warning\", \"No beams have been selected\")\r\n\t\t\r\n\tdef PlaceTags(self, sender, e):\r\n\t\tCustomizableEvent.raise_event(customizable_event, TagAndOverride)\r\n\t\t\r\n\tdef PlaceManyTags(self, sender, e):\r\n\t\tCustomizableEvent.raise_event(customizable_event, TagAndOverrideMultiple)\r\n\t\t\r\n\t\t\r\n\t\t\r\n# Let's launch our beautiful and useful form !\r\nform = ModelessForm()\r\nform.TopMost = True\r\n\r\n\r\nform.TopMost = True\r\nform.Height = 160\r\nform.Width = 380\r\nform.StartPosition = FormStartPosition.CenterScreen\r\n\r\n\r\nlabel1.Location = dPoint(110, 75);\r\nlabel1.Name = \"label1\";\r\nlabel1.Size = dSize(300, 63);\r\nlabel1.TabIndex = 2;\r\nlabel1.Text = \"You are updating the beam tags. Click Apply\" + \"\\n\" + \"Changes to update the beam Mark values.\";\r\nlabel1.UseCompatibleTextRendering = True;\r\n\r\n\r\nbutton1.Location = dPoint(10, 20);\r\nbutton1.Name = \"button1\";\r\nbutton1.Size = dSize(88, 32);\r\nbutton1.TabIndex = 0;\r\nbutton1.Text = \"Select one beam\";\r\nbutton1.UseCompatibleTextRendering = True;\r\nbutton1.UseVisualStyleBackColor = True;\r\nbutton1.Click += EventHandler(form.PlaceTags);\r\n\r\n\r\nbutton3.Location = dPoint(10, 75);\r\nbutton3.Name = \"button3\";\r\nbutton3.Size = dSize(88, 32);\r\nbutton3.TabIndex = 0;\r\nbutton3.Text = \"Select many beams\";\r\nbutton3.UseCompatibleTextRendering = True;\r\nbutton3.UseVisualStyleBackColor = True;\r\nbutton3.Click += EventHandler(form.PlaceManyTags);\r\n\r\n\r\nbutton2.Location = dPoint(240, 20);\r\nbutton2.Name = \"Cancel\";\r\nbutton2.Size = dSize(88, 32);\r\nbutton2.TabIndex = 1;\r\nbutton2.Text = \"Undo Changes\";\r\nbutton2.UseCompatibleTextRendering = True;\r\nbutton2.UseVisualStyleBackColor = True;\r\nbutton2.Click += EventHandler(form.undoChanges);\r\n\r\n\r\nbutton4.Location = dPoint(120, 20);\r\nbutton4.Name = \"OK\";\r\nbutton4.Size = dSize(100, 32);\r\nbutton4.TabIndex = 1;\r\nbutton4.Text = \"Apply Changes\";\r\nbutton4.UseCompatibleTextRendering = True;\r\nbutton4.UseVisualStyleBackColor = True;\r\nbutton4.Click += EventHandler(form.acceptChanges);\r\n\r\n\r\n\r\nform.Controls.Add(button1);\r\nform.Controls.Add(button2);\r\nform.Controls.Add(button3);\r\nform.Controls.Add(button4);\r\nform.Controls.Add(label1);\r\n\r\n#result = form.values\r\n\r\n\r\n\r\nOUT = form.elementsIds",
+      "VariableInputPorts": true,
+      "Id": "ff999a306f0c4d39b2cac0518f4bf415",
+      "Inputs": [
+        {
+          "Id": "4ecd8d781ad5447b8bd2f1db5000c0b3",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "a22d4384a6744474a80d2641acbd0528",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": true,
+      "Id": "a3a01c47285c48c7827a277dac8b8841",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "86029df071e14c009caa3a36b1bd9e34",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Selection between a true and false."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\n\r\nclr.AddReference(\"System.Windows.Forms\")\r\nfrom System.Windows.Forms import Application, Button, Form, Label, TextBox, CheckBox, FolderBrowserDialog, OpenFileDialog, DialogResult, ComboBox, FormBorderStyle, FormStartPosition\r\n\r\nclr.AddReference(\"System.Drawing\")\r\nfrom System.Drawing import Point as dPoint\r\nfrom System.Drawing import Size as dSize\r\n\r\n\r\nclr.AddReference(\"System\")\r\nfrom System import EventHandler\r\n\r\n\r\nclr.AddReference(\"RevitAPIUI\")\r\nfrom Autodesk.Revit.UI import IExternalEventHandler, ExternalEvent, TaskDialog\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import Transaction, OverrideGraphicSettings, ElementId, Color\r\n# noinspection PyUnresolvedReferences\r\nfrom Autodesk.Revit.Exceptions import InvalidOperationException\r\n\r\n\r\nclr.AddReference('RevitServices')\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\n\r\nglobal result\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n\r\ndef ResetOverrideColor(elements):\r\n\tview = doc.ActiveView\r\n\tbooleans = []\r\n\toverride = OverrideGraphicSettings()\r\n\tt = Transaction(doc, \"Undo\")\r\n\tt.Start()\r\n\tfor item in elements:\r\n\t\tview.SetElementOverrides(item, override)\r\n\t\tbooleans.append(True)\r\n\tt.Commit()\r\n\t#TaskDialog.Show(\"result\", str(len(elements)))\r\n\treturn booleans\r\n\t\r\nelements = uidoc.Selection.GetElementIds()\r\n\r\nform = []\r\n\r\nfor i in elements:\r\n\tform.append(i)\r\n\r\n\r\n\r\n\r\n\r\nOUT = elements, form, ResetOverrideColor(form)",
+      "VariableInputPorts": true,
+      "Id": "702fff34d69246e5a6523eca93b88411",
+      "Inputs": [
+        {
+          "Id": "cba4605babb444afa64da17cd46973c6",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "e6c3c92a31034fe1b5086d84fa939b18",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSModelElementsSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "65d8a146-dfdc-4e0a-b5c3-564c1288fabe-003b7c26"
+      ],
+      "Id": "87605e96583b497c89d41ee4cb565eb2",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "bff3fbe811144d48b2022e6489e2b707",
+          "Name": "Elements",
+          "Description": "The selected elements.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\n\r\nclr.AddReference(\"System.Windows.Forms\")\r\nfrom System.Windows.Forms import Application, Button, Form, Label, TextBox, CheckBox, FolderBrowserDialog, OpenFileDialog, DialogResult, ComboBox, FormBorderStyle, FormStartPosition\r\n\r\nclr.AddReference(\"System.Drawing\")\r\nfrom System.Drawing import Point as dPoint\r\nfrom System.Drawing import Size as dSize\r\n\r\n\r\nclr.AddReference(\"System\")\r\nfrom System import EventHandler\r\n\r\n\r\nclr.AddReference(\"RevitAPIUI\")\r\nfrom Autodesk.Revit.UI import IExternalEventHandler, ExternalEvent, TaskDialog\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import Transaction, OverrideGraphicSettings, ElementId, Color\r\n# noinspection PyUnresolvedReferences\r\nfrom Autodesk.Revit.Exceptions import InvalidOperationException\r\n\r\n\r\nclr.AddReference('RevitServices')\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\nimport math\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nbeams = UnwrapElement(IN[0])\r\n\r\nusage = {\"Primary\" : \"PB\", \"Secondary\" : \"SB\", \"Vertical Bracing\" : \"VB\", \"Diaphragm\" : \"DB\"}\r\n\r\n\r\ndef GenerateMark(beam):\r\n\txDist = abs((beam.Location.Curve.Evaluate(0.5, True).X*304.8 + 67286.598)/1000)\r\n\tyDist = abs((beam.Location.Curve.Evaluate(0.5, True).Y*304.8 - 559.835)/1000)\r\n\tlvlId = beam.LookupParameter(\"Reference Level\").AsElementId()\r\n\tlvlName = doc.GetElement(lvlId).Name\r\n\ts = lvlName.Split(' ')\r\n\ttry:\r\n\t\tusageValue = usage[beam.LookupParameter(\"Str Framing Use\").AsString()]\r\n\texcept:\r\n\t\tusageValue = \"Usage error\"\r\n\tif xDist<9.5 and yDist<10:\r\n\t\tvalue = '{}{}0{:.0f}0{:.0f}'.format(s[1],usageValue, xDist,yDist)\r\n\telif xDist<9.5:\r\n\t\tvalue = '{}{}0{:.0f}{:.0f}'.format(s[1],usageValue, xDist,yDist)\r\n\telif yDist<9.5:\r\n\t\tvalue = '{}{}{:.0f}0{:.0f}'.format(s[1],usageValue, xDist,yDist)\r\n\telse:\r\n\t\tvalue = '{}{}{:.0f}{:.0f}'.format(s[1],usageValue, xDist,yDist)\r\n\treturn value\r\n\t#return [xDist, yDist]\r\n\t\r\n\r\nOUT = [GenerateMark(b) for b in beams]",
+      "VariableInputPorts": true,
+      "Id": "0d59067cd159468aba3b6a01ab1222f3",
+      "Inputs": [
+        {
+          "Id": "1a9f2402cf2148c18b06956f8028410a",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "b390158d7b5e4116a105e97b17f56af7",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\n\r\nclr.AddReference(\"System.Windows.Forms\")\r\nfrom System.Windows.Forms import Application, Button, Form, Label, TextBox, CheckBox, FolderBrowserDialog, OpenFileDialog, DialogResult, ComboBox, FormBorderStyle, FormStartPosition\r\n\r\nclr.AddReference(\"System.Drawing\")\r\nfrom System.Drawing import Point as dPoint\r\nfrom System.Drawing import Size as dSize\r\n\r\n\r\nclr.AddReference(\"System\")\r\nfrom System import EventHandler\r\n\r\n\r\nclr.AddReference(\"RevitAPIUI\")\r\nfrom Autodesk.Revit.UI import IExternalEventHandler, ExternalEvent, TaskDialog\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import Transaction, OverrideGraphicSettings, ElementId, Color\r\n# noinspection PyUnresolvedReferences\r\nfrom Autodesk.Revit.Exceptions import InvalidOperationException\r\n\r\n\r\nclr.AddReference('RevitServices')\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\n\r\nglobal result\r\n\r\n\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n\r\n\r\nusage = {\"Primary\" : \"PB\", \"Secondary\" : \"SB\", \"Vertical Bracing\" : \"VB\", \"Diaphragm\" : \"DB\"}\r\n\r\n\r\ndef MarkGenerator(beamId):\r\n\tbeam = doc.GetElement(beamId)\r\n\txDist = abs((beam.Location.Curve.Evaluate(0.5, True).X*304.8 + 67286.598)/1000)\r\n\tyDist = abs((beam.Location.Curve.Evaluate(0.5, True).Y*304.8 - 559.835)/1000)\r\n\tlvlId = beam.LookupParameter(\"Reference Level\").AsElementId()\r\n\tlvlName = doc.GetElement(lvlId).Name\r\n\ts = lvlName.Split(' ')\r\n\ttry:\r\n\t\tusageValue = usage[beam.LookupParameter(\"Str Framing Use\").AsString()]\r\n\texcept:\r\n\t\tusageValue = \"Usage error\"\r\n\tif xDist<9.5 and yDist<10:\r\n\t\tvalue = '{}{}0{:.0f}0{:.0f}'.format(s[1],usageValue, xDist,yDist)\r\n\telif xDist<9.5:\r\n\t\tvalue = '{}{}0{:.0f}{:.0f}'.format(s[1],usageValue, xDist,yDist)\r\n\telif yDist<9.5:\r\n\t\tvalue = '{}{}{:.0f}0{:.0f}'.format(s[1],usageValue, xDist,yDist)\r\n\telse:\r\n\t\tvalue = '{}{}{:.0f}{:.0f}'.format(s[1],usageValue, xDist,yDist)\r\n\treturn value\r\n\r\ndef GetMark(beamId):\r\n\tp = doc.GetElement(beamId).LookupParameter(\"Mark\")\r\n\treturn p.AsString()\r\n\t\r\ndef OverrideColor(elid):\r\n\tbooleans = []\r\n\tview = doc.ActiveView\r\n\toverride = OverrideGraphicSettings()\r\n\toverride.SetProjectionFillPatternId(ElementId(19))\r\n\tif GetMark(elid) == MarkGenerator(elid):\r\n\t\toverride.SetProjectionFillColor(Color(0,255,0))\r\n\telif GetMark(elid) == \"\":\r\n\t\toverride.SetProjectionFillColor(Color(255,255,0))\r\n\telse:\r\n\t\toverride.SetProjectionFillColor(Color(255,0,0))\r\n\ttry:\r\n\t\tview.SetElementOverrides(elid, override)\r\n\texcept:\r\n\t\t\"uh-oh to be implemented\"\r\n\treturn booleans\r\n\t\r\nele = UnwrapElement(IN[0]).Id\r\n\r\ndef setTemporaryMark(elid):\r\n\ttag = MarkGenerator(elid)\r\n\tp = doc.GetElement(elid).LookupParameter(\"Mark\")\r\n\treturn (p.AsString() + \"(new:\" + tag + \")\")\r\n\t\t\r\n\t\t\r\neid = uidoc.Selection.GetElementIds()\r\n\r\n\r\nOUT = OverrideColor(ele), MarkGenerator(ele), [e for e in eid], [setTemporaryMark(e) for e in eid], eid",
+      "VariableInputPorts": true,
+      "Id": "3dac9804b89a4e99b5644965f67cd225",
+      "Inputs": [
+        {
+          "Id": "d53b5ae892e8466c822453608c42fd1d",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "7c6a0e92664e40cb93cdb4ea73e741a3",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "8fd262e1a1a3454dbdf968e1a5bac6bd",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": true,
+      "Id": "553b23474c4949778f4f0d3de5bc9db9",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "4ee924a31d6845199e53c598aa9773e0",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Selection between a true and false."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\n\r\nclr.AddReference(\"System.Windows.Forms\")\r\nfrom System.Windows.Forms import Application, Button, Form, Label, TextBox, CheckBox, FolderBrowserDialog, OpenFileDialog, DialogResult, ComboBox, FormBorderStyle, FormStartPosition\r\n\r\nclr.AddReference(\"System.Drawing\")\r\nfrom System.Drawing import Point as dPoint\r\nfrom System.Drawing import Size as dSize\r\n\r\n\r\nclr.AddReference(\"System\")\r\nfrom System import EventHandler\r\n\r\n\r\nclr.AddReference(\"RevitAPIUI\")\r\nfrom Autodesk.Revit.UI import IExternalEventHandler, ExternalEvent, TaskDialog\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import Transaction, OverrideGraphicSettings, ElementId, Color\r\n# noinspection PyUnresolvedReferences\r\nfrom Autodesk.Revit.Exceptions import InvalidOperationException\r\n\r\n\r\nclr.AddReference('RevitServices')\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\n\r\nglobal result\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n\r\nusage = {\"Primary\" : \"PB\", \"Secondary\" : \"SB\", \"Vertical Bracing\" : \"VB\", \"Diaphragm\" : \"DB\"}\r\n\r\ndef MarkGenerator(beamId):\r\n\tbeam = doc.GetElement(beamId)\r\n\txDist = abs((beam.Location.Curve.Evaluate(0.5, True).X*304.8 + 67286.598)/1000)\r\n\tyDist = abs((beam.Location.Curve.Evaluate(0.5, True).Y*304.8 - 559.835)/1000)\r\n\tlvlId = beam.LookupParameter(\"Reference Level\").AsElementId()\r\n\tlvlName = doc.GetElement(lvlId).Name\r\n\ts = lvlName.Split(' ')\r\n\tif s[1] == \"Ground\":\r\n\t\ts = [\"Upper Ground\",\"UG\"]\r\n\ttry:\r\n\t\tusageValue = usage[beam.LookupParameter(\"Str Framing Use\").AsString()]\r\n\texcept:\r\n\t\tusageValue = \"Usage error\"\r\n\tif xDist<9.5 and yDist<10:\r\n\t\tvalue = '{}{}0{:.0f}0{:.0f}'.format(s[1],usageValue, xDist,yDist)\r\n\telif xDist<9.5:\r\n\t\tvalue = '{}{}0{:.0f}{:.0f}'.format(s[1],usageValue, xDist,yDist)\r\n\telif yDist<9.5:\r\n\t\tvalue = '{}{}{:.0f}0{:.0f}'.format(s[1],usageValue, xDist,yDist)\r\n\telse:\r\n\t\tvalue = '{}{}{:.0f}{:.0f}'.format(s[1],usageValue, xDist,yDist)\r\n\treturn value\r\n\r\n\r\nbeam = UnwrapElement(IN[0])\r\n\r\nOUT = MarkGenerator(beam.Id)",
+      "VariableInputPorts": true,
+      "Id": "0f174003966340bcaf2f71d73cd272b4",
+      "Inputs": [
+        {
+          "Id": "7cb26907099b48c182318d45623f0890",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "15833360a5cc4368852aa43244ab35ba",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\n\r\nclr.AddReference(\"System.Windows.Forms\")\r\nfrom System.Windows.Forms import Application, Button, Form, Label, TextBox, CheckBox, FolderBrowserDialog, OpenFileDialog, DialogResult, ComboBox, FormBorderStyle, FormStartPosition\r\n\r\nclr.AddReference(\"System.Drawing\")\r\nfrom System.Drawing import Point as dPoint\r\nfrom System.Drawing import Size as dSize\r\n\r\n\r\nclr.AddReference(\"System\")\r\nfrom System import EventHandler\r\n\r\n\r\nclr.AddReference(\"RevitAPIUI\")\r\nfrom Autodesk.Revit.UI import IExternalEventHandler, ExternalEvent, TaskDialog\r\nfrom Autodesk.Revit.UI.Selection import *\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import Transaction, OverrideGraphicSettings, ElementId, Color\r\n# noinspection PyUnresolvedReferences\r\nfrom Autodesk.Revit.Exceptions import InvalidOperationException\r\n\r\n\r\nclr.AddReference('RevitServices')\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\n\r\nglobal result\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n\r\n\r\nclass CustomISelectionFilter(ISelectionFilter):\r\n\tdef __init__(self, category_name):\r\n\t\tself.category_name = category_name\r\n\tdef AllowElement(self, e):\r\n\t\tif e.Category.Name == self.category_name:\r\n\t\t\treturn True\r\n\t\telse:\r\n\t\t\treturn False\r\n\tdef AllowReference(self, ref, point):\r\n\t\treturn false\r\n\r\n\r\n\"\"\"\r\nref = uidoc.Selection.PickObject(ObjectType.Element, CustomISelectionFilter(\"Structural Framing\"), \"Select a Beam\")\r\nelementId = doc.GetElement(ref).Id\r\n\"\"\"\r\n\r\n\r\nref = uidoc.Selection.GetElementIds()\r\n\r\nelement = [doc.GetElement(r) for r in ref]\r\n\r\nOUT = element",
+      "VariableInputPorts": true,
+      "Id": "06792ff3b83d44df85217d1d48b62a02",
+      "Inputs": [
+        {
+          "Id": "c3e6b599badf4dd0bf89982406ab0ea4",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "1d28bc4bbf3c480d9214044852efa0e3",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "4ae07d60c1e74cc49153c868cd5c45f7",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": false,
+      "Id": "43b967293df84401a6a4c9811d66f146",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "f0afad5231e54af0945dd7ec3c76c7a4",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Selection between a true and false."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\n\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.DB.Structure import *\r\n\r\n\r\nclr.AddReference('RevitAPIUI')\r\nfrom Autodesk.Revit.UI import *\r\n#from Autodesk.Revit.UI.Selection import *\r\n\r\n\r\nclr.AddReference('System')\r\nfrom System.Collections.Generic import List\r\n\r\nclr.AddReference('RevitNodes')\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference('RevitServices')\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nimport math\r\nfrom System.Collections.Generic import Dictionary,List\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n\r\n\r\nclass CustomISelectionFilter(ISelectionFilter):\r\n\tdef __init__(self, category_name):\r\n\t\tself.category_name = category_name\r\n\tdef AllowElement(self, e):\r\n\t\tif e.Category.Name == self.category_name:\r\n\t\t\treturn True\r\n\t\telse:\r\n\t\t\treturn False\r\n\tdef AllowReference(self, ref, point):\r\n\t\treturn false\r\n\t\t\r\n\r\ntry:\r\n    beam = uidoc.Selection.PickObjects(ObjectType.Element, CustomISelectionFilter(\"Structural Framing\"), \"Select a Beam\")\r\n    TaskDialog.Show(\"Result\", \"You have selected \" + str(len(beam)) + \" beams\")\r\nexcept:\r\n    TaskDialog.Show(\"Operation Cancelled\",\"The user cancelled the operation\")\r\n    \r\n    \r\nOUT = [doc.GetElement(b) for b in beam]\r\n",
+      "VariableInputPorts": true,
+      "Id": "275aa2e51861450283debbaf7af4a732",
+      "Inputs": [
+        {
+          "Id": "3605004592264f9386dda844125dd404",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "b511d83c103b4517a2279801ffc3e22d",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\n\r\nclr.AddReference(\"System.Windows.Forms\")\r\nfrom System.Windows.Forms import Application, Button, Form, Label, TextBox, CheckBox, FolderBrowserDialog, OpenFileDialog, DialogResult, ComboBox, FormBorderStyle, FormStartPosition\r\n\r\nclr.AddReference(\"System.Drawing\")\r\nfrom System.Drawing import Point as dPoint\r\nfrom System.Drawing import Size as dSize\r\n\r\n\r\nclr.AddReference(\"System\")\r\nfrom System import EventHandler\r\n\r\n\r\nclr.AddReference(\"RevitAPIUI\")\r\nfrom Autodesk.Revit.UI import IExternalEventHandler, ExternalEvent, TaskDialog\r\nfrom Autodesk.Revit.UI.Selection import *\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import Transaction, OverrideGraphicSettings, ElementId, Color\r\n# noinspection PyUnresolvedReferences\r\nfrom Autodesk.Revit.Exceptions import InvalidOperationException\r\n\r\n\r\nclr.AddReference('RevitServices')\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\n\r\nglobal result\r\n\r\n\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n\r\n\r\nusage = {\"Primary\" : \"PB\", \"Secondary\" : \"SB\", \"Vertical Bracing\" : \"VB\", \"Diaphragm\" : \"DB\"}\r\n\r\n\r\ndef MarkGenerator(beamId):\r\n\tbeam = doc.GetElement(beamId)\r\n\txDist = abs((beam.Location.Curve.Evaluate(0.5, True).X*304.8 + 67286.598)/1000)\r\n\tyDist = abs((beam.Location.Curve.Evaluate(0.5, True).Y*304.8 - 559.835)/1000)\r\n\tlvlId = beam.LookupParameter(\"Reference Level\").AsElementId()\r\n\tlvlName = doc.GetElement(lvlId).Name\r\n\ts = lvlName.Split(' ')\r\n\tif s[1] == \"Ground\":\r\n\t\ts = [\"Upper Ground\",\"UG\"]\r\n\ttry:\r\n\t\tusageValue = usage[beam.LookupParameter(\"Str Framing Use\").AsString()]\r\n\texcept:\r\n\t\tusageValue = \"Usage error\"\r\n\tif xDist<9.5 and yDist<10:\r\n\t\tvalue = '{}{}0{:.0f}0{:.0f}'.format(s[1],usageValue, xDist,yDist)\r\n\telif xDist<9.5:\r\n\t\tvalue = '{}{}0{:.0f}{:.0f}'.format(s[1],usageValue, xDist,yDist)\r\n\telif yDist<9.5:\r\n\t\tvalue = '{}{}{:.0f}0{:.0f}'.format(s[1],usageValue, xDist,yDist)\r\n\telse:\r\n\t\tvalue = '{}{}{:.0f}{:.0f}'.format(s[1],usageValue, xDist,yDist)\r\n\treturn value\r\n\r\ndef GetMark(beamId):\r\n\tp = doc.GetElement(beamId).LookupParameter(\"Mark\")\r\n\treturn p.AsString()\r\n\r\n\r\ndef TagAndOverride():\r\n\tref = uidoc.Selection.PickObject(ObjectType.Element)\r\n\teid = doc.GetElement(ref).Id\r\n\tTaskDialog.Show(\"result\", eid.ToString())\r\n\r\n\r\n\r\ndef DiscardChanges(elementIds, originalMarks):\r\n\tt = Transaction(doc, \"Discard changes\")\r\n\tt.Start()\r\n\tResetOverrideColor(elementIds)\r\n\tassignOriginalMark(elementIds, originalMarks)\r\n\tt.Commit()\r\n\t\r\n\r\ndef AcceptChanges(elementIds):\r\n\tt = Transaction(doc, \"Cancel operation\")\r\n\tt.Start()\r\n\tResetOverrideColor(elementIds)\r\n\tassignMark(elementIds)\r\n\tt.Commit()\r\n\t\r\n\t\r\n\r\ndef ResetOverrideColor(elements):\r\n\tv = doc.ActiveView\r\n\tbooleans = []\r\n\toverride = OverrideGraphicSettings()\t\r\n\tfor item in elements:\r\n\t\ttry:\r\n\t\t\tv.SetElementOverrides(item, override)\r\n\t\t\tbooleans.append(True)\r\n\t\texcept:\r\n\t\t\tbooleans.append(False)\r\n\t#TaskDialog.Show(\"result\", str( len(elements) ) )\r\n\treturn booleans\r\n\t\r\n\r\ndef setTemporaryMark(elid):\r\n\ttag = MarkGenerator(elid)\r\n\tp = doc.GetElement(elid).LookupParameter(\"Mark\")\r\n\tform.originalMarks.append(p.AsString())\r\n\tp.Set(p.AsString() + \"(new:\" + tag + \")\")\r\n\t\r\n\r\ndef assignMark(elementIds):\r\n\tfor elid in elementIds:\r\n\t\ttag = MarkGenerator(elid)\r\n\t\tp = doc.GetElement(elid).LookupParameter(\"Mark\")\r\n\t\tp.Set(tag)\r\n\r\ndef assignOriginalMark(elementIds, marks):\r\n\tfor elid,mark in zip(elementIds,marks):\r\n\t\tp = doc.GetElement(elid).LookupParameter(\"Mark\")\r\n\t\tp.Set(mark)\r\n\r\ndef OverrideColor(elid):\r\n\tbooleans = []\r\n\tview = doc.ActiveView\r\n\toverride = OverrideGraphicSettings()\r\n\toverride.SetProjectionFillPatternId(ElementId(19))\r\n\tif GetMark(elid) == MarkGenerator(elid):\r\n\t\toverride.SetProjectionFillColor(Color(0,255,0))\r\n\telif GetMark(elid) == \"\":\r\n\t\toverride.SetProjectionFillColor(Color(255,255,0))\r\n\telse:\r\n\t\toverride.SetProjectionFillColor(Color(255,0,0))\r\n\ttry:\r\n\t\tview.SetElementOverrides(elid, override)\r\n\texcept:\r\n\t\t\"uh-oh to be implemented\"\r\n\treturn booleans\r\n\r\n\r\ndef close(form):\r\n\tform.Close()\r\n\r\n\r\n\r\n\r\nclass CustomizableEvent:\r\n    def __init__(self):\r\n        self.function_or_method = None\r\n        self.args = ()\r\n        self.kwargs = {}\r\n\r\n    def raised_method(self):\r\n        self.function_or_method(*self.args, **self.kwargs)\r\n\r\n    def raise_event(self, function_or_method, *args, **kwargs):\r\n        self.args = args\r\n        self.kwargs = kwargs\r\n        self.function_or_method = function_or_method\r\n        custom_event.Raise()\r\n\r\ncustomizable_event = CustomizableEvent()\r\n\r\n# Create a subclass of IExternalEventHandler\r\nclass CustomHandler(IExternalEventHandler):\r\n    def Execute(self, application):\r\n        try:\r\n            customizable_event.raised_method()\r\n        except InvalidOperationException:\r\n            # If you don't catch this exeption Revit may crash.\r\n            print(\"InvalidOperationException catched\")\r\n\r\n    # noinspection PyMethodMayBeStatic, PyPep8Naming\r\n    def GetName(self):\r\n        return \"Execute an function or method in a IExternalHandler\"\r\n\r\n\r\n# Create an handler instance and his associated ExternalEvent\r\ncustom_handler = CustomHandler()\r\ncustom_event = ExternalEvent.Create(custom_handler)\r\n\r\n\r\n\r\nlabel1 = Label();\r\nbutton1 = Button();\r\nbutton2 = Button();\r\n\r\nbutton4 = Button();\r\n\r\n# A simple WPF form used to call the ExternalEvent\r\nclass ModelessForm(Form):\r\n\t\"\"\"\r\n\tSimple modeless form sample\r\n\t\"\"\"\r\n\tdef __init__(self):\r\n\t\tself.Text = 'Place Beam Tags'\r\n\t\tself.elementsIds = []\r\n\t\tself.originalMarks = []\r\n\t\tself.values = []\r\n\t\tself.Show()\r\n\t\r\n\tdef addElements(self, items):\r\n\t\tfor i in items:\r\n\t\t\tself.elementsIds.append(i)\r\n\r\n\tdef acceptChanges(self, sender, e):\r\n\t\tif len(self.elementsIds) > 0:\r\n\t\t\tCustomizableEvent.raise_event(customizable_event, AcceptChanges, self.elementsIds) \r\n\t\t\t#self.Close()\r\n\t\telse:\r\n\t\t\tTaskDialog.Show(\"Warning\", \"No beams have been selected\")\r\n\t\r\n\tdef undoChanges(self, sender, e):\r\n\t\tCustomizableEvent.raise_event(customizable_event, DiscardChanges, self.elementsIds, self.originalMarks)\r\n#\t\tself.Close()\r\n\t\t\r\n\tdef PlaceTags(self, sender, e):\r\n\t\tCustomizableEvent.raise_event(customizable_event, TagAndOverride)\r\n\t\t\r\n\t\t\r\n\t\t\r\n# Let's launch our beautiful and useful form !\r\nform = ModelessForm()\r\nform.TopMost = True\r\n\r\n\r\nform.TopMost = True\r\nform.Height = 150\r\nform.Width = 380\r\nform.StartPosition = FormStartPosition.CenterScreen\r\n\r\n\r\nlabel1.Location = dPoint(12, 75);\r\nlabel1.Name = \"label1\";\r\nlabel1.Size = dSize(300, 63);\r\nlabel1.TabIndex = 2;\r\nlabel1.Text = \"You are updating the beam tags. Click Apply Changes to update the beam Mark values.\";\r\nlabel1.UseCompatibleTextRendering = True;\r\n\r\n\r\nbutton1.Location = dPoint(10, 20);\r\nbutton1.Name = \"button1\";\r\nbutton1.Size = dSize(88, 32);\r\nbutton1.TabIndex = 0;\r\nbutton1.Text = \"New Tags\";\r\nbutton1.UseCompatibleTextRendering = True;\r\nbutton1.UseVisualStyleBackColor = True;\r\nbutton1.Click += EventHandler(form.PlaceTags);\r\n\r\n\r\nbutton2.Location = dPoint(250, 20);\r\nbutton2.Name = \"Cancel\";\r\nbutton2.Size = dSize(88, 32);\r\nbutton2.TabIndex = 1;\r\nbutton2.Text = \"Undo Changes\";\r\nbutton2.UseCompatibleTextRendering = True;\r\nbutton2.UseVisualStyleBackColor = True;\r\nbutton2.Click += EventHandler(form.undoChanges);\r\n\r\n\r\nbutton4.Location = dPoint(125, 20);\r\nbutton4.Name = \"OK\";\r\nbutton4.Size = dSize(100, 32);\r\nbutton4.TabIndex = 1;\r\nbutton4.Text = \"Apply Changes\";\r\nbutton4.UseCompatibleTextRendering = True;\r\nbutton4.UseVisualStyleBackColor = True;\r\nbutton4.Click += EventHandler(form.acceptChanges);\r\n\r\n\r\n\r\nform.Controls.Add(button1);\r\nform.Controls.Add(button2);\r\n\r\nform.Controls.Add(button4);\r\nform.Controls.Add(label1);\r\n\r\n#result = form.values\r\n\r\n\r\n\r\nOUT = form.elementsIds",
+      "VariableInputPorts": true,
+      "Id": "574091d6b5264213974a09f0612bdd3b",
+      "Inputs": [
+        {
+          "Id": "4991e637c44a44749a27e29d94c9fa75",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "f2f059bd1f40461c961300300a2bcb4c",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "86029df071e14c009caa3a36b1bd9e34",
+      "End": "4ecd8d781ad5447b8bd2f1db5000c0b3",
+      "Id": "44ed8f75b3464b96b3d0e83083defd88"
+    },
+    {
+      "Start": "86029df071e14c009caa3a36b1bd9e34",
+      "End": "1d28bc4bbf3c480d9214044852efa0e3",
+      "Id": "d9231a713138482d889b56b496f72e7b"
+    },
+    {
+      "Start": "bff3fbe811144d48b2022e6489e2b707",
+      "End": "d53b5ae892e8466c822453608c42fd1d",
+      "Id": "16279e2b0c16448eb3a50445c762108c"
+    },
+    {
+      "Start": "bff3fbe811144d48b2022e6489e2b707",
+      "End": "7cb26907099b48c182318d45623f0890",
+      "Id": "fa1174b046a14f65ac0c63d2bda02bba"
+    },
+    {
+      "Start": "bff3fbe811144d48b2022e6489e2b707",
+      "End": "c3e6b599badf4dd0bf89982406ab0ea4",
+      "Id": "069646dc65d94d548b318ef08d30b140"
+    },
+    {
+      "Start": "4ee924a31d6845199e53c598aa9773e0",
+      "End": "7c6a0e92664e40cb93cdb4ea73e741a3",
+      "Id": "2fa33cf45d604be0b403e33bb06e70bc"
+    },
+    {
+      "Start": "f0afad5231e54af0945dd7ec3c76c7a4",
+      "End": "3605004592264f9386dda844125dd404",
+      "Id": "bc42ebd0c9594f4aac87014ba8262af8"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.1.5055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "ff999a306f0c4d39b2cac0518f4bf415",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 577.81207784081346,
+        "Y": 465.43403369158307
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Boolean",
+        "Id": "a3a01c47285c48c7827a277dac8b8841",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 307.02568238801894,
+        "Y": 464.680346111581
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "702fff34d69246e5a6523eca93b88411",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": true,
+        "X": 921.8835566343721,
+        "Y": 818.87057928604145
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Model Elements",
+        "Id": "87605e96583b497c89d41ee4cb565eb2",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 234.51850037243184,
+        "Y": 800.42125038460358
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "0d59067cd159468aba3b6a01ab1222f3",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 298.024289179529,
+        "Y": 113.95513680773809
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "3dac9804b89a4e99b5644965f67cd225",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": true,
+        "X": 676.54613692246562,
+        "Y": 890.10305615473851
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Boolean",
+        "Id": "553b23474c4949778f4f0d3de5bc9db9",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 457.6799634148004,
+        "Y": 1002.9105395780811
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "MarkGenerator",
+        "Id": "0f174003966340bcaf2f71d73cd272b4",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": true,
+        "X": 518.10770699556133,
+        "Y": 716.337946812102
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "UIDoc Selection",
+        "Id": "06792ff3b83d44df85217d1d48b62a02",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": true,
+        "X": 762.11788656201429,
+        "Y": 647.1526408488337
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Refresh",
+        "Id": "43b967293df84401a6a4c9811d66f146",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1071.7843524862176,
+        "Y": 645.11978550051947
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "275aa2e51861450283debbaf7af4a732",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1288.5373754511738,
+        "Y": 644.45896751198427
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "574091d6b5264213974a09f0612bdd3b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": true,
+        "X": 1115.0580605331802,
+        "Y": 508.02426084598756
+      }
+    ],
+    "Annotations": [],
+    "X": -36.817337409740389,
+    "Y": -269.27157032577855,
+    "Zoom": 1.0625614610591096
+  }
+}

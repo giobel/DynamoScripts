@@ -1,0 +1,64 @@
+<Workspace Version="0.8.2.2392" X="-177.129229744953" Y="-397.649597834356" zoom="1.06060772236021" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="a36f4441-33ce-4d0f-9c01-419d4d9f5f8d" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="1300.15802266696" y="781.604534315936" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>#Copyright(c) 2015, Konrad K Sobon
+# @arch_laboratory, http://archi-lab.net
+
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+tags= UnwrapElement(IN[0])
+
+elements = []
+
+for t in tags:
+	elements.append(t.GetTaggedLocalElement())
+		
+
+#Assign your output to the OUT variable
+OUT = elements</Script>
+    </DSIronPythonNode.PythonNode>
+    <DSRevitNodesUI.Categories guid="11f04d0c-dafc-4230-833f-c3ef557a2039" type="DSRevitNodesUI.Categories" nickname="Categories" x="401.374548087523" y="782.055242184731" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" index="78:CableTrayTags" />
+    <DSRevitNodesUI.ElementsOfCategory guid="db1fd9d8-00f6-4468-97ae-e976bc7fd376" type="DSRevitNodesUI.ElementsOfCategory" nickname="All Elements of Category" x="694" y="782" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+    <Dynamo.Nodes.DSModelElementsSelection guid="0e8de6a0-2814-4dc7-b4ce-f7fb02545d8b" type="Dynamo.Nodes.DSModelElementsSelection" nickname="Select Model Elements" x="406.899128122303" y="635.188774949106" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" />
+    <Dynamo.Nodes.Function guid="62aa39ed-073c-48d1-9167-fce1deb29aaf" type="Dynamo.Nodes.Function" nickname="Element.OwnerView" x="944.899191198652" y="893.244693455184" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="a0fc8138-f7bc-4425-abe6-2ef1b411d447" />
+      <Name value="Element.OwnerView" />
+      <Description value="Gets the owner view of a given Revit element (if possible)" />
+      <Inputs>
+        <Input value="element" />
+      </Inputs>
+      <Outputs>
+        <Output value="view" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="11f04d0c-dafc-4230-833f-c3ef557a2039" start_index="0" end="db1fd9d8-00f6-4468-97ae-e976bc7fd376" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="db1fd9d8-00f6-4468-97ae-e976bc7fd376" start_index="0" end="a36f4441-33ce-4d0f-9c01-419d4d9f5f8d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="db1fd9d8-00f6-4468-97ae-e976bc7fd376" start_index="0" end="62aa39ed-073c-48d1-9167-fce1deb29aaf" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

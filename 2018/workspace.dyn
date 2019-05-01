@@ -1,0 +1,85 @@
+{
+  "Uuid": "52936ed7-d96e-4251-bc40-d19215205cba",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "workspace",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nimport datetime\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nclr.AddReference('DynamoRevitDS')\r\nimport Dynamo\r\n#access to the current Dynamo instance and workspace\r\ndynamoRevit = Dynamo.Applications.DynamoRevit()\r\ncurrentWorkspace = dynamoRevit.RevitDynamoModel.CurrentWorkspace\r\n\r\n#custom definition to mark the node as changed\r\n\r\ndef nodesAdded(obj):\r\n    for i in currentWorkspace.Nodes:\r\n        if i.NickName.StartsWith(\"*Force\"):\r\n            i.MarkNodeAsModified(True)\r\n#the handlers for a node being added or removed\r\ncurrentWorkspace.NodeAdded += nodesAdded\r\ncurrentWorkspace.NodeRemoved += nodesAdded\r\n\r\n#usind the current time for the output as an example\r\nOUT = currentWorkspace",
+      "VariableInputPorts": true,
+      "Id": "4925ef128ff444dea1eef31bde9a14e7",
+      "Inputs": [
+        {
+          "Id": "f3d95fb02d0547d0b1cb26d7a96f5523",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "4980eb3a1fa542fd81793182b289052e",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    }
+  ],
+  "Connectors": [],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.1.5055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "4925ef128ff444dea1eef31bde9a14e7",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 776.0,
+        "Y": 404.0
+      }
+    ],
+    "Annotations": [],
+    "X": 0.0,
+    "Y": 0.0,
+    "Zoom": 1.0
+  }
+}

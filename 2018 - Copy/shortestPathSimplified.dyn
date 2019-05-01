@@ -1,0 +1,146 @@
+{
+  "Uuid": "9f4da955-b842-4c64-94d8-b0ee56847854",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "shortestPathSimplified",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "",
+      "Id": "1cdb79d4879e4b3eae442f97859346f6",
+      "Inputs": [],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "def find_shortest_path(graph, start, end, path=[]):\r\n    path = path + [start]\r\n    if start == end:\r\n        return path\r\n    if not graph.has_key(start): \r\n        return 'start node is not a key of the graph'\r\n    shortest = None\r\n    for node in graph[start]:\r\n        if node not in path:\r\n            newpath = find_shortest_path(graph, node, end, path)\r\n            if newpath:\r\n                if not shortest or len(newpath) < len(shortest):\r\n                    shortest = newpath\r\n    return shortest\r\n\r\ngraph = {'A': ['B', 'C'],\r\n         'B': ['C', 'A'],\r\n         'C': ['D','A','B'],\r\n         'E': ['F','D','G'],\r\n         'F': ['E'],\r\n         'G': ['D','E','H'],\r\n         'D': ['C','G','E'],\r\n         'H': ['G']}\r\n         \r\nOUT = find_shortest_path(graph, 'C', 'H')",
+      "VariableInputPorts": true,
+      "Id": "6748a554b1564a6b8a9887c86b4b6691",
+      "Inputs": [
+        {
+          "Id": "cb2074eaa130453bbfffb84623589919",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "5439859a74fb401cb4e3b6cdb62ae1c4",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "graph = {'A': ['B', 'C'],\r\n         'B': ['C', 'A'],\r\n         'C': ['D','A','B'],\r\n         'D': ['C','G','E'],\r\n         'E': ['F','D','G'],\r\n         'F': ['E'],\r\n         'G': ['D','E','H'],\r\n         'H': ['G']}\r\n\r\nr = ''\r\nif not graph.has_key('I'):\r\n\tr = 'aaa'\r\n\r\npath = []\r\nstart = 'C'\r\npath = path + [start]\r\n\r\n\r\n\r\nOUT = path",
+      "VariableInputPorts": true,
+      "Id": "651949d0cce54a38b0be02f02f3a80db",
+      "Inputs": [
+        {
+          "Id": "de161b2b04be47638cdd85c664561bdb",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "eacb3e41301b45c58bb85c85b55bedd7",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    }
+  ],
+  "Connectors": [],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.1.0.6255",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "1cdb79d4879e4b3eae442f97859346f6",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -52.0,
+        "Y": 125.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "6748a554b1564a6b8a9887c86b4b6691",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 116.0,
+        "Y": 369.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "651949d0cce54a38b0be02f02f3a80db",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1370.0,
+        "Y": 453.0
+      }
+    ],
+    "Annotations": [],
+    "X": 0.0,
+    "Y": 0.0,
+    "Zoom": 1.0
+  }
+}

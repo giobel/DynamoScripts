@@ -1,0 +1,71 @@
+<Workspace Version="1.3.1.1736" X="36.0853482266698" Y="848.64241352728" zoom="0.839369585477947" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="ModelView.Ifc4DesignTransfer" resolvedName="GeometryGym.Ifc.ModelView" assemblyName="GeometryGymIFC.dll" />
+    <ClassMap partialName="Autodesk.Point" resolvedName="Autodesk.DesignScript.Geometry.Point" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Autodesk.DesignScript.Geometry.Point" resolvedName="Autodesk.DesignScript.Geometry.Point" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Vector" resolvedName="Autodesk.DesignScript.Geometry.Vector" assemblyName="ProtoGeometry.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="5e445850-e6ed-4d39-9b31-8b8b331a865b" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="CSharpScript.FromString" x="1587.5" y="-322.5" isVisible="true" isUpstreamVisible="true" lacing="Longest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="..\AppData\Roaming\Dynamo\Dynamo Core\1.3\packages\Dynamic CSharp Interpreter\bin\Core.dll" function="Scripting.CSharpScript.FromString@string,var[]..[],string[]">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="True" />
+      <PortInfo index="2" default="True" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <CoreNodeModels.Input.Filename guid="82ce2f69-6435-402b-9491-dae3370ebfbb" type="CoreNodeModels.Input.Filename" nickname="File Path" x="1100.04592942692" y="-179.619311285832" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>C:\Users\giovanni.brogiolo\Documents\GeometryGymIFCExamples\packages\GeometryGymIFC.0.0.15\lib\net45\GeometryGymIFC.dll</System.String>
+      <HintPath>C:\Users\giovanni.brogiolo\Documents\GeometryGymIFCExamples\packages\GeometryGymIFC.0.0.15\lib\net45\GeometryGymIFC.dll</HintPath>
+    </CoreNodeModels.Input.Filename>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="9dc35627-ffb3-47a4-9774-f593740704fa" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="211.718806742023" y="-959.823541324319" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;&#xA;using System;&#xA;using System.Collections.Generic;&#xA;using System.Linq;&#xA;using System.Text;&#xA;using System.Threading.Tasks;&#xA;using GeometryGym.Ifc;&#xA;using Autodesk.DesignScript.Geometry;&#xA;&#xA;public static DatabaseIfc Dict(Point Pt)&#xA;	{&#xA;			double len = 5000;&#xA;			string mpsNames = \&quot;mspNames\&quot;;&#xA;			List&lt;Plane&gt; clipPlanes = new List&lt;Plane&gt;();&#xA;			string PName = \&quot;IPE\&quot;;&#xA;			DatabaseIfc db = new DatabaseIfc(ModelView.Ifc4DesignTransfer&#xA;			);&#xA;			IfcBuilding building = new IfcBuilding(db, \&quot;IfcBuilding\&quot;&#xA;			);&#xA;			IfcProject project = new IfcProject(building,&#xA;			\&quot;IfcProject\&quot;,&#xA;			IfcUnitAssignment.Length.Millimetre&#xA;			);&#xA;			IfcMaterial s355 = new IfcMaterial(db,\&quot;S355JR\&quot;);&#xA;&#xA;			IfcIShapeProfileDef pd = new IfcIShapeProfileDef(&#xA;			db,PName,300,150,7.1,10.7,15);&#xA;&#xA;			IfcMaterialProfile mp = new IfcMaterialProfile(PName, s355, pd);&#xA;&#xA;			IfcMaterialProfileSet mps = new IfcMaterialProfileSet(mpsNames,mp);&#xA;&#xA;			IfcMaterialProfileSetUsage mpu = new IfcMaterialProfileSetUsage(&#xA;			mps,IfcCardinalPointReference.MID);&#xA;&#xA;			IfcCartesianPoint ifcPoint = new IfcCartesianPoint(db, Pt.X,Pt.Y,Pt.Z);&#xA;&#xA;			IfcAxis2Placement3D axis = new IfcAxis2Placement3D(ifcPoint);&#xA;&#xA;			IfcBeamStandardCase beam = new IfcBeamStandardCase(&#xA;				building,&#xA;				mpu,&#xA;				axis,&#xA;				len);&#xA;&#xA;			return db;&#xA;	}&#xA;&#xA;&#xA;Point Pt = IN[0] as Point;&#xA;&#xA;Dict(Pt)&#xA;			&quot;;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="4b8a38fe-0bec-48c7-9ddc-cc16d145ae82" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1009.74298779429" y="-305.302651085296" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" CodeText="Autodesk.Point.ByCoordinates(0,0,0);" ShouldFocus="false" />
+    <CoreNodeModels.FromObject guid="ca77c33e-0f36-4c86-bb3f-30c1ed4d86c7" type="CoreNodeModels.FromObject" nickname="String from Object" x="2355.75903951335" y="-297.011940874187" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.FromObject>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="26ae50db-ab9f-4763-a746-c6e61067bbe1" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.Deconstruct" x="1974.82504679154" y="-321.039004553265" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="DSCoreNodes.dll" function="DSCore.List.Deconstruct@var[]..[]">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="e59ffb4d-848b-48ff-99e3-990037030d5f" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1748.73365910305" y="-827.201909539212" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;ISO-10303-21;&#xA;HEADER;&#xA;FILE_DESCRIPTION(('ViewDefinition [notYetAssigned]'),'2;&#xA;1');&#xA;FILE_NAME(&#xA;/* name */ 'C:\\Users\\giovanni.brogiolo\\Documents\\GeometryGymIFCExamples\\ConsoleParametricFooting\\ParametricFooting.ifc',&#xA;/* time_stamp */ '2017-09-06T13:36:04',&#xA;/* author */ ('giovanni.brogiolo'),&#xA;/* organization */ ('Unknown'),&#xA;/* preprocessor_version */ 'GeometryGymIFC v0.0.15.0 by Geometry Gym Pty Ltd built 2017-07-28T01:17:24',&#xA;/* originating_system */ 'ConsoleParametricFooting v1.0.0.0',&#xA;/* authorization */ 'None');&#xA;&#xA;FILE_SCHEMA (('IFC4'));&#xA;ENDSEC;&#xA;&#xA;DATA;&#xA;&quot;;" ShouldFocus="false" />
+    <CoreNodeModels.Input.Filename guid="16dfab27-4525-4c6c-bfcb-09d874c0b10d" type="CoreNodeModels.Input.Filename" nickname="File Path" x="3346.87319637145" y="-515.612560163347" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.String>..\Desktop\IfcTest2.ifc</System.String>
+      <HintPath>C:\Users\giovanni.brogiolo\Desktop\IfcTest2.ifc</HintPath>
+    </CoreNodeModels.Input.Filename>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="fc4894e3-c012-4b7a-bacc-ee5276565434" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="File.WriteText" x="3602.08926636684" y="-516.15769411731" isVisible="true" isUpstreamVisible="true" lacing="Longest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="DSCoreNodes.dll" function="DSCore.IO.File.WriteText@string,string">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSVarArgFunction guid="ff11f6f5-9cf4-4f7f-9082-0526b47c2b7a" type="Dynamo.Graph.Nodes.ZeroTouch.DSVarArgFunction" nickname="String.Join" x="3293.88115939021" y="-354.872510263882" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="DSCoreNodes.dll" function="DSCore.String.Join@string,string[]" inputcount="2">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSVarArgFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="dabadfc0-3c29-4040-9f15-8422828a7179" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="2985.79569824184" y="-413.828439655257" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;\n&quot;;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="722cc5c7-b8b0-45da-8bfe-5b6b650d443f" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.AddItemToFront" x="2693.68693300997" y="-267.758463811302" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.List.AddItemToFront@var[]..[],var[]..[]">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="a9e93bb6-5e26-442a-aafc-2e3faffb10da" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.AddItemToEnd" x="2986.57701919566" y="-291.189670706157" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true" assembly="DSCoreNodes.dll" function="DSCore.List.AddItemToEnd@var[]..[],var[]..[]">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="4585ea6e-9868-4f7a-818c-2d0253f79ea8" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="2687.52390516622" y="-422.80076725928" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;ENDSEC;&#xA;&#xA;END-ISO-10303-21;&#xA;&quot;;" ShouldFocus="false" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="5e445850-e6ed-4d39-9b31-8b8b331a865b" start_index="0" end="26ae50db-ab9f-4763-a746-c6e61067bbe1" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="82ce2f69-6435-402b-9491-dae3370ebfbb" start_index="0" end="5e445850-e6ed-4d39-9b31-8b8b331a865b" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9dc35627-ffb3-47a4-9774-f593740704fa" start_index="0" end="5e445850-e6ed-4d39-9b31-8b8b331a865b" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="4b8a38fe-0bec-48c7-9ddc-cc16d145ae82" start_index="0" end="5e445850-e6ed-4d39-9b31-8b8b331a865b" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="ca77c33e-0f36-4c86-bb3f-30c1ed4d86c7" start_index="0" end="722cc5c7-b8b0-45da-8bfe-5b6b650d443f" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="26ae50db-ab9f-4763-a746-c6e61067bbe1" start_index="1" end="ca77c33e-0f36-4c86-bb3f-30c1ed4d86c7" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="e59ffb4d-848b-48ff-99e3-990037030d5f" start_index="0" end="722cc5c7-b8b0-45da-8bfe-5b6b650d443f" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="16dfab27-4525-4c6c-bfcb-09d874c0b10d" start_index="0" end="fc4894e3-c012-4b7a-bacc-ee5276565434" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="ff11f6f5-9cf4-4f7f-9082-0526b47c2b7a" start_index="0" end="fc4894e3-c012-4b7a-bacc-ee5276565434" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="dabadfc0-3c29-4040-9f15-8422828a7179" start_index="0" end="ff11f6f5-9cf4-4f7f-9082-0526b47c2b7a" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="722cc5c7-b8b0-45da-8bfe-5b6b650d443f" start_index="0" end="a9e93bb6-5e26-442a-aafc-2e3faffb10da" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="a9e93bb6-5e26-442a-aafc-2e3faffb10da" start_index="0" end="ff11f6f5-9cf4-4f7f-9082-0526b47c2b7a" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="4585ea6e-9868-4f7a-818c-2d0253f79ea8" start_index="0" end="a9e93bb6-5e26-442a-aafc-2e3faffb10da" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

@@ -1,0 +1,129 @@
+<Workspace Version="1.3.0.875" X="-1014.77287339653" Y="-148.879109933413" zoom="0.48391633011669" ScaleFactor="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSRevitNodesUI.ElementTypes guid="b54c202a-80e8-4246-aa4b-7997755cb122" type="DSRevitNodesUI.ElementTypes" nickname="Element Types" x="2196.88923347291" y="774.223196987676" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false" index="125:FilledRegionType" />
+    <DSRevitNodesUI.ElementsOfType guid="7a4a94bc-0ca0-4d19-a74c-aa088790e7a9" type="DSRevitNodesUI.ElementsOfType" nickname="All Elements of Type" x="2434.54967124098" y="774.695783898886" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true">
+      <PortInfo index="0" default="False" />
+    </DSRevitNodesUI.ElementsOfType>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="2a9cc15e-1886-4dc0-9661-e3d922a43d46" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="2709.65418081187" y="767.849485701456" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" CodeText="{a[6]};" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="a2e37312-5868-4aa2-8236-ab2d87750d3b" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="2994.651163822" y="770.204367105316" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" CodeText="a;" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <PythonNodeModels.PythonNode guid="6e2ff73e-ed8c-41ef-b69f-497277e547d3" type="PythonNodeModels.PythonNode" nickname="Python Script" x="3275.3829993771" y="838.190049754627" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+import Autodesk
+from Autodesk.Revit.DB import *
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+activeViewId = doc.ActiveView.Id;
+
+regions = []
+#planePts = UnwrapElement(IN[0])
+frt = UnwrapElement(IN[0])
+
+centre = XYZ(100,10,50)
+
+frame = Frame( centre, XYZ.BasisX, XYZ.BasisY, XYZ.BasisZ )
+
+radius = 1
+
+arc = Arc.Create(XYZ(-10,0),XYZ(10,10,0),XYZ(10,0,0))
+
+line = Line.CreateBound(arc.GetEndPoint( 1 ), arc.GetEndPoint( 0 ) );
+
+halfCircle = CurveLoop()
+
+halfCircle.Append( arc )
+halfCircle.Append( line )
+
+profileLoops = []
+profileLoops.Add(halfCircle)
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+region = FilledRegion.Create(doc,frt[0].Id,activeViewId,profileLoops)
+regions.Add(region)
+
+TransactionManager.Instance.TransactionTaskDone()
+
+
+"""
+regions = []
+
+
+
+
+profileLoops = []
+
+halfCircle = CurveLoop()
+profileLoops.Add(halfCircle)
+
+
+radius = 1000;
+startAngle = 0
+endAngle = 180
+
+plane = Plane.CreateByThreePoints(ptCoord[0],ptCoord[1],ptCoord[2])
+arc1 = Arc.Create(plane, radius, 0, 180)
+#arc2 = Arc.MakeBound(arc1,0,1)
+arc2 = Arc.Create(plane, radius, 180, 360)
+
+#arc3 = Arc.Create(arc2.GetEndPoint(1),arc2.GetEndPoint(0),arc2.Evaluate(0.5,True))
+
+
+halfCircle.Append(arc1)
+#halfCircle.Append(arc2)
+
+
+halfCircle.Append(arc1)
+halfCircle.Append(arc2)
+region = FilledRegion.Create(doc,frt[0].Id,activeViewId,profileLoops)
+regions.Add(region)
+
+"""
+
+#Assign your outputs to the OUT variable
+OUT = regions</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="49e175a1-17c0-46c6-a5d0-d5d003f5f2c6" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.Name" x="2847.08619079812" y="546.959885341215" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="RevitNodes.dll" function="Revit.Elements.Element.Name">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="b54c202a-80e8-4246-aa4b-7997755cb122" start_index="0" end="7a4a94bc-0ca0-4d19-a74c-aa088790e7a9" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="7a4a94bc-0ca0-4d19-a74c-aa088790e7a9" start_index="0" end="49e175a1-17c0-46c6-a5d0-d5d003f5f2c6" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="7a4a94bc-0ca0-4d19-a74c-aa088790e7a9" start_index="0" end="2a9cc15e-1886-4dc0-9661-e3d922a43d46" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="2a9cc15e-1886-4dc0-9661-e3d922a43d46" start_index="0" end="a2e37312-5868-4aa2-8236-ab2d87750d3b" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="a2e37312-5868-4aa2-8236-ab2d87750d3b" start_index="0" end="6e2ff73e-ed8c-41ef-b69f-497277e547d3" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations>
+    <Dynamo.Graph.Annotations.AnnotationModel guid="acc85068-d220-4a69-9419-e7eec843ff68" annotationText="FILLED REGION TYPE" left="2186.88923347291" top="721.849485701456" width="896.96193034909" height="145.44629819743" fontSize="30" InitialTop="767.849485701456" InitialHeight="129.44629819743" TextblockHeight="36" backgrouund="#FFC1D676">
+      <Models ModelGuid="b54c202a-80e8-4246-aa4b-7997755cb122" />
+      <Models ModelGuid="7a4a94bc-0ca0-4d19-a74c-aa088790e7a9" />
+      <Models ModelGuid="2a9cc15e-1886-4dc0-9661-e3d922a43d46" />
+      <Models ModelGuid="a2e37312-5868-4aa2-8236-ab2d87750d3b" />
+    </Dynamo.Graph.Annotations.AnnotationModel>
+  </Annotations>
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-42.2696220543053" eyeY="45.7920905588308" eyeZ="204.303173262476" lookX="42.2696220543053" lookY="-45.7920905588308" lookZ="-204.303173262476" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

@@ -1,0 +1,161 @@
+{
+  "Uuid": "3c9d0464-8643-5ffe-96e5-ab1769818209",
+  "IsCustomNode": false,
+  "Description": "",
+  "Name": "setActiveWorkset",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Enable Python support and load DesignScript library\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\nfrom System.Collections.Generic import List\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nwt = doc.GetWorksetTable()\r\n\r\nfec = FilteredWorksetCollector(doc)\r\n\r\n#find all user worksets\r\nfec.OfKind(WorksetKind.UserWorkset);\r\n\r\nworksets = fec.ToWorksets();\r\n\r\nfor w in worksets:\r\n\tif w.Name == IN[0].Name:\r\n\t\tWorksetTable.SetActiveWorksetId(wt, w.Id)\r\n\t\tOUT = w.Name",
+      "VariableInputPorts": true,
+      "Id": "bbc10cbef3534b17baaf7a2c34aedff0",
+      "Inputs": [
+        {
+          "Id": "caa8d79920b24fb1a2a86aec664a49ce",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "54ec49e35fbc4a2890d178ba9f9c6408",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Revit.Elements.Element.Id",
+      "Id": "b7fe33275d6748c48f22da0c66359a5e",
+      "Inputs": [
+        {
+          "Id": "facf35cf38e04ccab74a0994711ed8fc",
+          "Name": "element",
+          "Description": "Revit.Elements.Element",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "33bdffd1a4d04a4f8ddf8f87b57582b3",
+          "Name": "int",
+          "Description": "int",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Get the Element Id for this element\n\nElement.Id: int"
+    },
+    {
+      "ConcreteType": "archilabUI.WorksetUi, archilabUI",
+      "SelectedIndex": 9,
+      "NodeType": "ExtensionNode",
+      "Id": "89e9678a8d1a4abdab127568678b76da",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "e470124c456c4078ae16f3207497e921",
+          "Name": "workset",
+          "Description": "The selected workset",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Retrieve all available Worksets."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "e470124c456c4078ae16f3207497e921",
+      "End": "caa8d79920b24fb1a2a86aec664a49ce",
+      "Id": "84161775c4964120911344e2a0b17ac7"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.1.5055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "bbc10cbef3534b17baaf7a2c34aedff0",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 868.84650623142306,
+        "Y": 474.87603605117988
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Element.Id",
+        "Id": "b7fe33275d6748c48f22da0c66359a5e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 826.0,
+        "Y": 155.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Worksets",
+        "Id": "89e9678a8d1a4abdab127568678b76da",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 587.91176981380625,
+        "Y": 473.71506920283258
+      }
+    ],
+    "Annotations": [],
+    "X": -741.96941890915741,
+    "Y": -433.46467347138514,
+    "Zoom": 1.545620359375
+  }
+}

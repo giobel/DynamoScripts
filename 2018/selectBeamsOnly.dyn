@@ -1,0 +1,138 @@
+{
+  "Uuid": "3c9d0464-8643-5ffe-96e5-ab1769818209",
+  "IsCustomNode": false,
+  "Description": "",
+  "Name": "selectBeamsOnly",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\n\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.DB.Structure import *\r\n\r\n\r\nclr.AddReference('RevitAPIUI')\r\nfrom Autodesk.Revit.UI import *\r\nfrom Autodesk.Revit.UI.Selection import *\r\n\r\n\r\nclr.AddReference('System')\r\nfrom System.Collections.Generic import List\r\n\r\nclr.AddReference('RevitNodes')\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference('RevitServices')\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nimport math\r\nfrom System.Collections.Generic import Dictionary,List\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n\r\n\r\nclass CustomISelectionFilter(ISelectionFilter):\r\n\tdef __init__(self, category_name):\r\n\t\tself.category_name = category_name\r\n\tdef AllowElement(self, e):\r\n\t\tif e.Category.Name == self.category_name:\r\n\t\t\treturn True\r\n\t\telse:\r\n\t\t\treturn False\r\n\tdef AllowReference(self, ref, point):\r\n\t\treturn false\r\n\t\t\r\n\r\ntry:\r\n    beam = uidoc.Selection.PickObjects(ObjectType.Element, CustomISelectionFilter(\"Structural Framing\"), \"Select a Beam\")\r\n    TaskDialog.Show(\"Result\", \"You have selected \" + str(len(beam)) + \" beams\")\r\nexcept:\r\n    TaskDialog.Show(\"Operation Cancelled\",\"The user cancelled the operation\")\r\n    \r\n    \r\nOUT = [doc.GetElement(b) for b in beam]\r\n",
+      "VariableInputPorts": true,
+      "Id": "03a9c36f99e54d7cad6571b381b01356",
+      "Inputs": [
+        {
+          "Id": "30f1bf9f188f4a1186bb4602992c92e9",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "1961771d87f1453f930bda8db4a811e1",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": false,
+      "Id": "6ef62d0e5dca4abd9e63b8104818abf1",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "3eb1dd97e46249b69f636892c2a03744",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Selection between a true and false."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "3eb1dd97e46249b69f636892c2a03744",
+      "End": "30f1bf9f188f4a1186bb4602992c92e9",
+      "Id": "722744727d5247cba84ad2edfefbe619"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.1.5055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "03a9c36f99e54d7cad6571b381b01356",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 435.50451715872987,
+        "Y": 313.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Refresh",
+        "Id": "6ef62d0e5dca4abd9e63b8104818abf1",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 199.0,
+        "Y": 313.05199074420807
+      }
+    ],
+    "Annotations": [
+      {
+        "Id": "289ba01d26d54a339c5f86b8147b77a5",
+        "Title": "Select beams",
+        "Nodes": [
+          "03a9c36f99e54d7cad6571b381b01356"
+        ],
+        "Left": 425.50451715872987,
+        "Top": 217.0,
+        "Width": 144.0,
+        "Height": 189.0,
+        "FontSize": 36.0,
+        "InitialTop": 313.0,
+        "InitialHeight": 123.0,
+        "TextblockHeight": 86.0,
+        "Background": "#FFC1D676"
+      }
+    ],
+    "X": -203.0,
+    "Y": -104.0,
+    "Zoom": 1.0
+  }
+}
