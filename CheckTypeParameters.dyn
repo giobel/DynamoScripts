@@ -1,0 +1,158 @@
+<Workspace Version="0.8.2.2392" X="398.893615348668" Y="-537.43337189939" zoom="0.98313155107616" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="507a6ec9-df39-4668-89b5-0a94460155f2" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="-242.219196043526" y="857.759867927003" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="0">
+      <Script>import clr
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+from Autodesk.Revit.DB import *
+clr.AddReference("RevitAPIUI")
+from Autodesk.Revit.UI import TaskDialog
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+# Import ToProtoType, ToRevitType geometry conversion extension methods
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+clr.ImportExtensions(Revit.GeometryConversion)
+from System.Collections.Generic import *
+import System
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+
+
+
+collector = FilteredElementCollector( doc ).WhereElementIsNotElementType()
+
+cat = []
+
+for c in collector:
+	if (None != c.Category and c.Category.HasMaterialQuantities):
+		cat.append(c)
+
+typeIds = [c.GetTypeId() for c in cat]
+
+
+unique = list(set(typeIds))
+
+indexes = []
+
+f = lambda my_list, value:filter(lambda x: my_list[x] == value, range(len(my_list)))
+
+for x in unique:
+	indexes.append(f(typeIds, x))
+
+result = []
+
+for i in indexes:
+	sub = []
+	result.append(sub)
+	for j in i:
+		sub.append(cat[j])
+
+check = []
+
+for r in result:
+	for i in r:
+		try:
+			eid = i.GetTypeId()
+			e = doc.GetElement(eid)
+			check.append(e.get_Parameter("Discipline").AsString())
+		except:
+			check.append("error")
+
+OUT = result, check</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="56b8dc7f-8b5e-452b-b390-5b92d59064f4" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="852.183941018437" y="670.169549073787" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="1..a;" ShouldFocus="false" />
+    <DSIronPythonNode.PythonNode guid="2cdd82ca-0044-447d-84d2-edb0b0a5b488" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="1126.13538106158" y="600.62133315603" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="3">
+      <Script>import clr
+# Import RevitAPI
+clr.AddReference("RevitAPI")
+from Autodesk.Revit.DB import *
+clr.AddReference("RevitAPIUI")
+from Autodesk.Revit.UI import TaskDialog
+# Import DocumentManager and TransactionManager
+clr.AddReference("RevitServices")
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+# Import ToProtoType, ToRevitType geometry conversion extension methods
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+clr.ImportExtensions(Revit.GeometryConversion)
+from System.Collections.Generic import *
+import System
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
+
+
+
+elements = UnwrapElement(IN[0])
+
+locCode = IN[1]
+
+
+model_cat = []
+error = []
+
+count = 0
+total = 0
+
+if IN[2] == True:
+	TransactionManager.Instance.EnsureInTransaction(doc)
+	for i in range(0,len(elements)):
+		for j in range(0,len(elements[i])):
+			total +=1
+			try:
+				locationCode = elements[i][j].get_Parameter("Mark")
+				locationCode.Set(str(locCode[i][j]))
+				count +=1
+			except:
+				error.append(elements[i][j])
+		
+		TransactionManager.Instance.TransactionTaskDone()
+		OUT  = str(count)+"/"+str(total)+" modified", error
+else:
+	OUT = "Set true to run"
+
+#OUT = model_cat, [c.Name for c in model_cat], elements
+</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSFunction guid="4e366bfb-6fce-43df-b5c5-ab003252f616" type="Dynamo.Nodes.DSFunction" nickname="Element.Name" x="1628.58256050905" y="656.014342329194" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="RevitNodes.dll" function="Revit.Elements.Element.Name" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="688a983e-b1df-4cc5-a49d-35a487c6146e" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1409.91644760526" y="663.087505906348" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="a[1];" ShouldFocus="false" />
+    <DSCoreNodesUI.BoolSelector guid="92e8c49d-066a-424c-b36c-6b2bd13ce840" type="DSCoreNodesUI.BoolSelector" nickname="Boolean" x="850.864234934129" y="957.927722450469" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <System.Boolean>True</System.Boolean>
+    </DSCoreNodesUI.BoolSelector>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="651934fa-e6b0-416a-9b2f-d15cba711737" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="617" y="574" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="a[0];" ShouldFocus="false" />
+    <Dynamo.Nodes.DSFunction guid="e446df20-6ea1-4393-b9b3-8e896a8b3b0b" type="Dynamo.Nodes.DSFunction" nickname="List.Count" x="829.605103330842" y="460.550634157182" isVisible="true" isUpstreamVisible="true" lacing="Longest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.Count@var[]..[]" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="dcd75741-c029-48f0-8e35-54cf72cca1a7" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="33.6740003622077" y="857.776947616248" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="a[1];" ShouldFocus="false" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="507a6ec9-df39-4668-89b5-0a94460155f2" start_index="0" end="dcd75741-c029-48f0-8e35-54cf72cca1a7" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="56b8dc7f-8b5e-452b-b390-5b92d59064f4" start_index="0" end="2cdd82ca-0044-447d-84d2-edb0b0a5b488" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="2cdd82ca-0044-447d-84d2-edb0b0a5b488" start_index="0" end="688a983e-b1df-4cc5-a49d-35a487c6146e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="688a983e-b1df-4cc5-a49d-35a487c6146e" start_index="0" end="4e366bfb-6fce-43df-b5c5-ab003252f616" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="92e8c49d-066a-424c-b36c-6b2bd13ce840" start_index="0" end="2cdd82ca-0044-447d-84d2-edb0b0a5b488" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="651934fa-e6b0-416a-9b2f-d15cba711737" start_index="0" end="2cdd82ca-0044-447d-84d2-edb0b0a5b488" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="651934fa-e6b0-416a-9b2f-d15cba711737" start_index="0" end="e446df20-6ea1-4393-b9b3-8e896a8b3b0b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e446df20-6ea1-4393-b9b3-8e896a8b3b0b" start_index="0" end="56b8dc7f-8b5e-452b-b390-5b92d59064f4" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations>
+    <Dynamo.Models.AnnotationModel guid="cbd2988b-1278-4aee-8920-41ad6591946c" annotationText="Element Types not modified" left="1399.91644760526" top="560.014342329194" width="386.66611290379" height="196.073163577154" fontSize="36" InitialTop="656.014342329194" InitialHeight="130.073163577154" TextblockHeight="86" backgrouund="#FFC1D676">
+      <Models ModelGuid="4e366bfb-6fce-43df-b5c5-ab003252f616" />
+      <Models ModelGuid="688a983e-b1df-4cc5-a49d-35a487c6146e" />
+    </Dynamo.Models.AnnotationModel>
+  </Annotations>
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

@@ -1,0 +1,64 @@
+<Workspace Version="0.8.2.2392" X="304" Y="129" zoom="1" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="bf79f060-35f9-42cf-bccb-41b64aea5c24" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="256" y="262" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>#Copyright(c) 2017, john pierson
+# @60secondrevit, http://sixtysecondrevit.com
+#Based on a node from Dimitar Venkov
+#adapted by john pierson for rhythm
+import clr
+
+clr.AddReference("RevitAPIUI")
+from  Autodesk.Revit.UI import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+doc = DocumentManager.Instance.CurrentDBDocument
+uidoc=DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+sel1 = uidoc.Selection
+ot1 = Selection.ObjectType.Element
+el_ref = sel1.PickObjects(ot1, "Select model elements")
+typelist = list()
+idlist = list()
+for i in el_ref:
+	
+	try:
+		typelist.append(doc.GetElement(i.ElementId))
+	except:
+		typelist.append(list())
+		
+
+OUT = typelist</Script>
+    </DSIronPythonNode.PythonNode>
+    <DSCoreNodesUI.BoolSelector guid="f0d50fa3-e824-45b6-acfa-6659c3bf1928" type="DSCoreNodesUI.BoolSelector" nickname="Boolean" x="49" y="334" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <System.Boolean>False</System.Boolean>
+    </DSCoreNodesUI.BoolSelector>
+    <Dynamo.Nodes.Function guid="e6e46a89-87bf-4272-8c01-5461f546092e" type="Dynamo.Nodes.Function" nickname="FamilyInstance.FlipFacingOrientation" x="616" y="307" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="99bbb3d0-6e28-451b-ad29-5afff05cc36c" />
+      <Name value="FamilyInstance.FlipFacingOrientation" />
+      <Description value="Flips the facing orientation of a given family instance" />
+      <Inputs>
+        <Input value="familyInstance" />
+      </Inputs>
+      <Outputs>
+        <Output value="familyInstance" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="bf79f060-35f9-42cf-bccb-41b64aea5c24" start_index="0" end="e6e46a89-87bf-4272-8c01-5461f546092e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f0d50fa3-e824-45b6-acfa-6659c3bf1928" start_index="0" end="bf79f060-35f9-42cf-bccb-41b64aea5c24" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

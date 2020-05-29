@@ -1,0 +1,197 @@
+{
+  "Uuid": "03650fbc-4c96-42a3-b1c5-d3fc69377d47",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "adv1",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Load the Python Standard and DesignScript Libraries\r\nimport sys\r\nimport clr\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nimport math\r\n\r\n#data = [12,14,1969]\r\n\r\ndata = IN[0]\r\n\r\nresult = 0\r\n\r\nfor d in data:\r\n\tresult += math.floor(d/3)-2\r\n\t\r\nOUT = result",
+      "VariableInputPorts": true,
+      "Id": "ac41904469e9485abd889d50b30eea29",
+      "Inputs": [
+        {
+          "Id": "6b625e5b769f4ddbb35331c52a5c7795",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "282e669b487848fa9625eb86e150a244",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "[70904,66770,118678,58460,128566,60820,107153,113196,52413,118335,96711,88120,129744,64049,90586,54466,55693,102407,148273,110281,111814,60951,102879,135253,130081,86645,72934,147097,74578,124073,100003,103314,86468,84557,94232,120012,64372,143081,96664,148076,147357,139897,113139,143022,144298,81293,53679,139311,107156,121730,132519,132666,80464,111118,76734,139023,111287,126811,130539,129173,67549,102058,72673,91194,64753,59488,126300,94407,126813,60028,95129,79270,123465,60966,111920,76549,110195,119975,112557,129676,104941,89583,121895,108901,135247,75129,148646,131128,78931,111637,72752,140761,57387,85684,77596,134159,63031,148361,133856,82022];",
+      "Id": "ba495c4870434e9bbcb54a852d20e8e5",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "381d2a42453845dea3b2a4a695b4f66a",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Load the Python Standard and DesignScript Libraries\r\nimport sys\r\nimport clr\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nimport math\r\n\r\n#data = [12,14,1969]\r\n\r\ndata = IN[0]\r\n\r\nresult = []\r\n\r\ndef calcFuel(x):\r\n\treturn math.floor(x/3)-2\r\n\r\n\r\nresu = 0\r\n\r\nfor d in data:\r\n\tinput = d\r\n\twhile calcFuel(input) > 0:\r\n\t\tresu += calcFuel(input)\r\n\t\tinput = calcFuel(input)\r\n\r\nOUT = resu",
+      "VariableInputPorts": true,
+      "Id": "6f4f8ad356b645eda8d0dc4bec7d732e",
+      "Inputs": [
+        {
+          "Id": "23a539b4c2ec47bda8a934e9c17ec78c",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "4cdb0e815f4747fd896653339245dd8a",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "[100756];",
+      "Id": "6cb42da3ae2d4453a82b36ce880a2424",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "2315a368a715421e970673d2378ec12b",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "2315a368a715421e970673d2378ec12b",
+      "End": "23a539b4c2ec47bda8a934e9c17ec78c",
+      "Id": "be659632caa64acabc2691c61aa312b9"
+    },
+    {
+      "Start": "2315a368a715421e970673d2378ec12b",
+      "End": "6b625e5b769f4ddbb35331c52a5c7795",
+      "Id": "554a590537dd4ac7b53cb9b21611e592"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.2.0.4667",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "ac41904469e9485abd889d50b30eea29",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 207.70906141849048,
+        "Y": 158.55153063128785
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "ba495c4870434e9bbcb54a852d20e8e5",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -572.080223634551,
+        "Y": 286.28980732829336
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "6f4f8ad356b645eda8d0dc4bec7d732e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 229.207851285939,
+        "Y": 391.316790335193
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "6cb42da3ae2d4453a82b36ce880a2424",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -32.0,
+        "Y": 399.0
+      }
+    ],
+    "Annotations": [],
+    "X": 161.38309076499141,
+    "Y": -109.39864879525783,
+    "Zoom": 1.0857035604471861
+  }
+}
